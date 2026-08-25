@@ -1,10 +1,10 @@
 {
-  "appId": "com.gizmolabs.openwhispr",
+  "appId": "com.murmur.app",
   "afterPack": "scripts/afterPack.js",
-  "productName": "OpenWhispr",
+  "productName": "Murmur",
   "protocols": {
-    "name": "OpenWhispr Protocol",
-    "schemes": ["openwhispr"]
+    "name": "Murmur Protocol",
+    "schemes": ["murmur"]
   },
   "directories": {
     "output": "dist"
@@ -106,28 +106,15 @@
         "whisper-server-*",
         "llama-server-*",
         "sherpa-onnx-*",
-        "yt-dlp-*",
-        "qdrant-*",
-        "macos-audio-tap",
         "macos-globe-listener",
         "macos-fast-paste",
-        "macos-mic-listener",
-        "macos-calendar-listener",
         "macos-text-monitor",
-        "macos-media-remote",
-        "MediaRemoteAdapter.framework/**",
         "linux-fast-paste",
-        "linux-system-audio-helper",
         "linux-text-monitor",
         "linux-key-listener*",
-        "meeting-aec-helper-*",
         "windows-key-listener*",
-        "windows-mic-listener*",
-        "windows-system-audio-helper*",
         "windows-text-monitor*",
         "windows-fast-paste*",
-        "all-MiniLM-L6-v2/**/*",
-        "diarization-models/**/*",
         "whisper-vad/**/*",
         "*.dylib",
         "*.dll",
@@ -151,8 +138,8 @@
     "hardenedRuntime": true,
     "entitlements": "resources/mac/entitlements.mac.plist",
     "entitlementsInherit": "resources/mac/entitlements.mac.plist",
-    "identity": "Gizmo Labs Inc. (T832773L2J)",
-    "notarize": true,
+    "identity": null,
+    "notarize": false,
     "extraResources": [
       {
         "from": "src/assets/Assets.car",
@@ -161,23 +148,14 @@
     ],
     "extendInfo": {
       "LSUIElement": false,
-      "CFBundleIconName": "openwhispr",
-      "NSMicrophoneUsageDescription": "OpenWhispr uses the microphone to capture your voice for transcription.",
-      "NSAudioCaptureUsageDescription": "OpenWhispr uses system audio to capture other participants' audio from calls and meetings.",
-      "NSAccessibilityUsageDescription": "OpenWhispr needs accessibility permissions to paste transcribed text into other applications.",
-      "NSCalendarsUsageDescription": "OpenWhispr reads your calendar to detect upcoming meetings and link meeting notes to events.",
-      "NSCalendarsFullAccessUsageDescription": "OpenWhispr reads your calendar to detect upcoming meetings and link meeting notes to events."
+      "CFBundleIconName": "murmur",
+      "NSMicrophoneUsageDescription": "Murmur uses the microphone to capture your voice for transcription.",
+      "NSAccessibilityUsageDescription": "Murmur needs accessibility permissions to paste transcribed text into other applications."
     }
   },
   "win": {
     "target": ["nsis", "portable"],
     "icon": "src/assets/icon.ico",
-    "azureSignOptions": {
-      "endpoint": "https://eus.codesigning.azure.net/",
-      "certificateProfileName": "openwhispr-release",
-      "codeSigningAccountName": "OpenWhispr",
-      "publisherName": "CN=Gizmo Labs Inc., O=Gizmo Labs Inc., L=Wilmington, S=Delaware, C=US"
-    },
     "extraResources": [
       {
         "from": "resources/bin/nircmd.exe",
@@ -259,7 +237,7 @@
     "include": "resources/nsis/installer.nsh"
   },
   "dmg": {
-    "title": "OpenWhispr",
+    "title": "Murmur",
     "icon": "src/assets/icon.icns",
     "window": {
       "width": 540,
@@ -268,8 +246,8 @@
   },
   "publish": {
     "provider": "github",
-    "owner": "OpenWhispr",
-    "repo": "openwhispr",
+    "owner": "REPLACE_WITH_YOUR_GITHUB_USER",
+    "repo": "murmur",
     "private": false,
     "releaseType": "draft"
   }

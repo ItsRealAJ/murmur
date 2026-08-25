@@ -179,7 +179,7 @@ class WindowManager {
         this.mainWindow.focus();
       } else {
         // On Windows/Linux the pill is a normal/toolbar window, so focus()
-        // activated OpenWhispr — blur before dropping focusability to hand
+        // activated Murmur — blur before dropping focusability to hand
         // the foreground back to the app the user was in.
         this.mainWindow.blur();
         this.mainWindow.setFocusable(false);

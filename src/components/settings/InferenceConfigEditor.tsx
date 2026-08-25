@@ -14,7 +14,6 @@ import { usePolicyModeOptions, usePolicySnapshot } from "../../hooks/usePolicy";
 import { InferenceModeSelector } from "../ui/SettingsSection";
 import type { InferenceModeOption } from "../ui/SettingsSection";
 import ReasoningModelSelector from "../ReasoningModelSelector";
-import EnterpriseSection from "../EnterpriseSection";
 import OpenAICompatiblePanel from "../OpenAICompatiblePanel";
 import { Toggle } from "../ui/toggle";
 import type { InferenceMode } from "../../types/electron";
@@ -27,7 +26,6 @@ import {
 } from "../../models/ModelRegistry";
 import { useManagedScopeResolution } from "../../stores/enterpriseIdentityStore";
 import TestConnectionButton from "../TestConnectionButton";
-import { getEnterpriseCallSettings } from "../../services/ai/enterpriseSettings";
 import { Button } from "../ui/button";
 import { resetOnboardingProgress } from "../onboarding/flow";
 
@@ -75,14 +73,6 @@ export default function InferenceConfigEditor({
   const { modes, effectiveMode, isModeAllowed } = usePolicyModeOptions<InferenceModeOption>(
     (
       [
-        {
-          id: "openwhispr",
-          label: t(`${prefix}.openwhispr`),
-          description: t(`${prefix}.openwhisprDesc`),
-          icon: <Cloud className="w-4 h-4" />,
-          disabled: !isSignedIn,
-          badge: !isSignedIn ? t("common.freeAccountRequired") : undefined,
-        },
         {
           id: "providers",
           label: t(`${prefix}.providers`),
@@ -220,7 +210,6 @@ export default function InferenceConfigEditor({
           <TestConnectionButton
             provider={managed.provider}
             getConfig={() => ({
-              ...getEnterpriseCallSettings(managed.provider, scope),
               model: managed.model,
             })}
           />
@@ -296,15 +285,6 @@ export default function InferenceConfigEditor({
           </div>
           <Toggle checked={config.disableThinking} onChange={setField("disableThinking")} />
         </div>
-      )}
-
-      {effectiveMode === "enterprise" && (
-        <EnterpriseSection
-          currentProvider={config.provider}
-          reasoningModel={config.model}
-          setReasoningModel={setModel}
-          setLocalReasoningProvider={setProvider}
-        />
       )}
     </div>
   );

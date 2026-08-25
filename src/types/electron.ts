@@ -1,6 +1,5 @@
 import type { ModelDefinition } from "../models/ModelRegistry";
 import type { TinfoilCatalogModel } from "../models/tinfoilModels";
-import type { UsageResponse } from "../lib/usageStore";
 import type { OrgPolicy } from "./policy";
 import type { ManagedEnterpriseConfig } from "./enterpriseIdentity";
 
@@ -1927,7 +1926,7 @@ declare global {
         callback: (state: { generation: number; hasToken: boolean }) => void
       ) => () => void;
 
-      // OpenWhispr Cloud API
+      // Murmur Cloud API
       cloudTranscribe?: (
         audioBuffer: ArrayBuffer,
         opts: { language?: string; prompt?: string; useCase?: string; diarization?: boolean }
@@ -1996,13 +1995,6 @@ declare global {
         code?: string;
         messageKey?: string;
       }>;
-      cloudUsage?: () => Promise<
-        UsageResponse & {
-          success: boolean;
-          error?: string;
-          code?: string;
-        }
-      >;
       cloudCheckout?: (opts?: {
         plan?: "monthly" | "annual";
         tier?: "pro" | "business";

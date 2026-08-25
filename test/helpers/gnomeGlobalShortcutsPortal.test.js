@@ -55,7 +55,7 @@ function createBus() {
 test("initialization sends GetId through the D-Bus helper with complete headers", async () => {
   const bus = createBus();
   const previousFlatpakId = process.env.FLATPAK_ID;
-  process.env.FLATPAK_ID = "com.openwhispr.App";
+  process.env.FLATPAK_ID = "com.murmur.App";
   const GnomeGlobalShortcutsPortal = loadPortal(() => bus);
 
   try {

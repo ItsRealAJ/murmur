@@ -13,7 +13,7 @@ test("per-provider reasoning model memory", async (t) => {
     },
   });
   const vite = await createRendererServer(t, {
-    cachePrefix: "openwhispr-reasoning-model-memory-test-",
+    cachePrefix: "murmur-reasoning-model-memory-test-",
   });
   const { useSettingsStore } = await vite.ssrLoadModule("/stores/settingsStore.ts");
   const state = () => useSettingsStore.getState();
@@ -82,7 +82,7 @@ test("explicit model click commits the (provider, model) pair atomically", async
     },
   });
   const vite = await createRendererServer(t, {
-    cachePrefix: "openwhispr-reasoning-click-commit-test-",
+    cachePrefix: "murmur-reasoning-click-commit-test-",
   });
   const { useSettingsStore } = await vite.ssrLoadModule("/stores/settingsStore.ts");
   const state = () => useSettingsStore.getState();
@@ -122,7 +122,7 @@ test("corrupt persisted reasoning model memory hydrates as empty, not a crash", 
     },
   });
   const vite = await createRendererServer(t, {
-    cachePrefix: "openwhispr-reasoning-model-memory-corrupt-test-",
+    cachePrefix: "murmur-reasoning-model-memory-corrupt-test-",
   });
   const { useSettingsStore } = await vite.ssrLoadModule("/stores/settingsStore.ts");
   assert.deepEqual(useSettingsStore.getState().reasoningModelByProvider, {});
@@ -141,7 +141,7 @@ test("retired cloud model selections are repointed to the provider default", asy
     },
   });
   const vite = await createRendererServer(t, {
-    cachePrefix: "openwhispr-retired-cloud-model-test-",
+    cachePrefix: "murmur-retired-cloud-model-test-",
   });
   const { useSettingsStore, reconcileRetiredCloudModelSelections } = await vite.ssrLoadModule(
     "/stores/settingsStore.ts"

@@ -1,4 +1,3 @@
-import { withSessionRefresh } from "../lib/auth";
 import { resolveTranscriptionRoute } from "../helpers/transcriptionRoute";
 import { getTranscriptionProviders } from "../models/ModelRegistry";
 
@@ -32,7 +31,7 @@ export interface FileTranscriptionConfig {
   localTranscriptionProvider: string;
   whisperModel: string;
   parakeetModel: string;
-  isOpenWhisprCloud: boolean;
+  isMurmurCloud: boolean;
   getApiKey: () => string;
   cloudTranscriptionProvider: string;
   cloudTranscriptionBaseUrl: string;
@@ -81,18 +80,6 @@ export async function transcribeFile(
   diarize: boolean,
   opts: { requestId?: string; timestamps?: boolean } = {}
 ): Promise<FileTranscriptionResult> {
-  if (cfg.isOpenWhisprCloud) {
-    return withSessionRefresh(async () => {
-      const r = await window.electronAPI.transcribeAudioFileCloud!(filePath, opts);
-      if (!r.success && r.code) {
-        throw Object.assign(new Error(r.error || "Cloud transcription failed"), {
-          code: r.code,
-        });
-      }
-      return r;
-    });
-  }
-
   if (cfg.useLocalWhisper) {
     return window.electronAPI.transcribeAudioFile(filePath, {
       provider: cfg.localTranscriptionProvider as "whisper" | "nvidia",
@@ -152,7 +139,7 @@ export function shouldUseByokDiarize(
   return (
     diarizationEnabled &&
     !cfg.useLocalWhisper &&
-    !cfg.isOpenWhisprCloud &&
+    !cfg.isMurmurCloud &&
     cfg.transcriptionMode !== "self-hosted" &&
     (cfg.cloudTranscriptionProvider === "openai" || cfg.cloudTranscriptionProvider === "mistral")
   );

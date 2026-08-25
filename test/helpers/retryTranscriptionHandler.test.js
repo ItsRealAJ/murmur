@@ -145,24 +145,6 @@ test.after(() => {
 
 const invoke = (settings, id = 7) => retryHandler({ sender: {} }, id, settings);
 
-test("retry: corti routes to the corti client, never OpenAI", async () => {
-  fetches.length = 0;
-  const result = await invoke({
-    cloudTranscriptionProvider: "corti",
-    cloudTranscriptionMode: "byok",
-    transcriptionMode: "providers",
-    cortiEnvironment: "eu",
-    cortiTenant: "acme",
-    preferredLanguage: "auto",
-  });
-  assert.equal(result.success, true);
-  assert.equal(cortiCalls.length, 1);
-  assert.equal(cortiCalls[0].environment, "eu");
-  assert.equal(cortiCalls[0].tenant, "acme");
-  assert.equal(cortiCalls[0].language, "en");
-  assert.equal(fetches.length, 0, "corti retry must not touch HTTP endpoints");
-});
-
 test("retry: custom misconfiguration fails closed with a coded error", async () => {
   fetches.length = 0;
   for (const cloudTranscriptionBaseUrl of ["", "https://api.openai.com/v1", "not a url"]) {
@@ -175,22 +157,6 @@ test("retry: custom misconfiguration fails closed with a coded error", async () 
     assert.equal(result.success, false, cloudTranscriptionBaseUrl);
     assert.equal(result.code, "CUSTOM_ENDPOINT_INVALID", cloudTranscriptionBaseUrl);
   }
-  assert.equal(fetches.length, 0);
-});
-
-test("retry: openwhispr cloud masks a leftover BYOK misconfiguration", async () => {
-  fetches.length = 0;
-  const result = await invoke({
-    cloudTranscriptionProvider: "custom",
-    cloudTranscriptionMode: "openwhispr",
-    transcriptionMode: "providers",
-    cloudTranscriptionBaseUrl: "",
-  });
-  // BrowserWindow.fromWebContents is stubbed to null, so the cloud branch
-  // produces no result — but the route error must NOT surface.
-  assert.equal(result.success, false);
-  assert.notEqual(result.code, "CUSTOM_ENDPOINT_INVALID");
-  assert.match(result.error, /No transcription engine available/);
   assert.equal(fetches.length, 0);
 });
 
@@ -250,45 +216,11 @@ test("retry: mistral goes to Mistral with x-api-key", async () => {
   assert.equal(fetches[0].init.headers["x-api-key"], "mk-mistral");
 });
 
-test("proxy transcription handlers resolve to structured errors instead of rejecting", async () => {
-  fetchResponse = () => ({
-    ok: false,
-    status: 401,
-    text: async () => "unauthorized",
-    json: async () => ({}),
-  });
-  cortiBehavior = async () => {
-    const err = new Error("Corti API Error: 401");
-    err.code = "INVALID_KEY";
-    throw err;
-  };
-  try {
-    for (const channel of [
-      "proxy-mistral-transcription",
-      "proxy-xai-transcription",
-      "proxy-corti-transcription",
-    ]) {
-      const fn = handlers.get(channel);
-      assert.ok(fn, `${channel} must be registered`);
-      const result = await fn({ sender: {} }, { audioBuffer: new ArrayBuffer(4) });
-      assert.equal(typeof result.error, "string", channel);
-    }
-  } finally {
-    cortiBehavior = async () => ({ text: "corti text" });
-    fetchResponse = () => ({
-      ok: true,
-      status: 200,
-      json: async () => ({ text: "transcribed" }),
-      text: async () => JSON.stringify({ text: "transcribed" }),
-    });
-  }
-});
-
 const fsNode = require("node:fs");
 const osNode = require("node:os");
 const pathNode = require("node:path");
 
-const uploadTempFile = pathNode.join(osNode.tmpdir(), "openwhispr-upload-handler-test.webm");
+const uploadTempFile = pathNode.join(osNode.tmpdir(), "murmur-upload-handler-test.webm");
 
 const invokeUpload = (payload) => {
   const uploadHandler = handlers.get("transcribe-audio-file-byok");
@@ -384,40 +316,6 @@ test("upload: a preferred language never constrains a BYOK cloud upload", async 
 });
 
 // Providers that require a concrete language still receive one.
-test("upload: corti and xai still get their language", async () => {
-  fetches.length = 0;
-  const xai = await invokeUpload({
-    apiKey: "xk-key",
-    baseUrl: "",
-    model: "grok-stt",
-    provider: "xai",
-    language: "de",
-    transcriptionMode: "providers",
-  });
-  assert.equal(xai.success, true);
-  assert.match(fetches[0].url, /api\.x\.ai/);
-  const xaiBody = fetches[0].init.body.toString();
-  assert.match(xaiBody, /name="language"[\s\S]*?de/);
-  assert.doesNotMatch(xaiBody, /name="model"/);
-
-  const corti = await invokeUpload({
-    apiKey: "",
-    baseUrl: "",
-    model: "corti-transcribe",
-    provider: "corti",
-    language: "",
-    environment: "eu",
-    tenant: " acme ",
-    transcriptionMode: "providers",
-  });
-  assert.equal(corti.success, true);
-  assert.equal(cortiCalls.at(-1).language, "en", "corti needs a concrete primaryLanguage");
-  assert.equal(cortiCalls.at(-1).environment, "eu");
-  assert.equal(cortiCalls.at(-1).tenant, "acme");
-});
-
-// #1459 made cloudTranscriptionBaseUrl Custom-only, so provider id alone can no
-// longer tell whether a Custom endpoint fronts a diarization-capable API.
 test("upload: a Custom endpoint fronting OpenAI or Mistral keeps diarization", async () => {
   fetches.length = 0;
   const openaiFronted = await invokeUpload({

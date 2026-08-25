@@ -39,7 +39,7 @@ function managerWithCapture(createManager, capture) {
 
 test("a standalone command banks a panel directive and returns the transcript", async (t) => {
   const { createManager } = await loadAudioManager(t, {
-    cachePrefix: "openwhispr-assistant-standalone-",
+    cachePrefix: "murmur-assistant-standalone-",
     settingsKey: "__assistantStandaloneSettings",
   });
   const { manager, modelCalls } = managerWithCapture(createManager, null);
@@ -58,7 +58,7 @@ test("a standalone command banks a panel directive and returns the transcript", 
 
 test("a wake-word command is banked without the address", async (t) => {
   const { createManager } = await loadAudioManager(t, {
-    cachePrefix: "openwhispr-assistant-wakeword-",
+    cachePrefix: "murmur-assistant-wakeword-",
     settingsKey: "__assistantWakewordSettings",
   });
   const { manager } = managerWithCapture(createManager, null);
@@ -72,7 +72,7 @@ test("a wake-word command is banked without the address", async (t) => {
 
 test("a policy-restricted org never gets a panel command banked", async (t) => {
   const { createManager } = await loadAudioManager(t, {
-    cachePrefix: "openwhispr-assistant-policy-",
+    cachePrefix: "murmur-assistant-policy-",
     settingsKey: "__assistantPolicySettings",
   });
   const { manager } = managerWithCapture(createManager, null);
@@ -92,7 +92,7 @@ test("a policy-restricted org never gets a panel command banked", async (t) => {
 
 test("the directive carries the raw screenshot past the attach gate", async (t) => {
   const { createManager } = await loadAudioManager(t, {
-    cachePrefix: "openwhispr-assistant-screenshot-",
+    cachePrefix: "murmur-assistant-screenshot-",
     settingsKey: "__assistantScreenshotSettings",
   });
   const { manager } = managerWithCapture(createManager, null);
@@ -108,7 +108,7 @@ test("the directive carries the raw screenshot past the attach gate", async (t) 
 
 test("an attached screenshot still reaches the panel through the raw carry", async (t) => {
   const { createManager } = await loadAudioManager(t, {
-    cachePrefix: "openwhispr-assistant-attached-",
+    cachePrefix: "murmur-assistant-attached-",
     settingsKey: "__assistantAttachedSettings",
   });
   const { manager } = managerWithCapture(createManager, null);
@@ -128,7 +128,7 @@ test("an attached screenshot still reaches the panel through the raw carry", asy
 
 test("an Agent-panel selection stays on the panel route without touching external selection editing", async (t) => {
   const { createManager } = await loadAudioManager(t, {
-    cachePrefix: "openwhispr-assistant-internal-selection-",
+    cachePrefix: "murmur-assistant-internal-selection-",
     settingsKey: "__assistantInternalSelectionSettings",
   });
   let externalCaptureCalls = 0;
@@ -164,7 +164,7 @@ test("an Agent-panel selection stays on the panel route without touching externa
 
 test("a selection without a reachable dictation agent routes to the panel with the selection quoted", async (t) => {
   const { createManager } = await loadAudioManager(t, {
-    cachePrefix: "openwhispr-assistant-sel-unreachable-",
+    cachePrefix: "murmur-assistant-sel-unreachable-",
     settingsKey: "__assistantSelUnreachableSettings",
   });
   const capture = { status: "selected", text: "the selected paragraph", sessionId: "s1" };
@@ -185,7 +185,7 @@ test("a selection without a reachable dictation agent routes to the panel with t
 
 test("a too-large selection with no dictation editor goes to the panel as a plain command", async (t) => {
   const { createManager } = await loadAudioManager(t, {
-    cachePrefix: "openwhispr-assistant-toolarge-",
+    cachePrefix: "murmur-assistant-toolarge-",
     settingsKey: "__assistantTooLargeSettings",
   });
   const { manager } = managerWithCapture(createManager, { status: "too_large", maxCharacters: 6000 });
@@ -198,7 +198,7 @@ test("a too-large selection with no dictation editor goes to the panel as a plai
 
 test("an ambiguous capture with no dictation editor goes to the panel as a plain command", async (t) => {
   const { createManager } = await loadAudioManager(t, {
-    cachePrefix: "openwhispr-assistant-ambiguous-",
+    cachePrefix: "murmur-assistant-ambiguous-",
     settingsKey: "__assistantAmbiguousSettings",
   });
   const { manager } = managerWithCapture(createManager, { status: "target_changed" });
@@ -210,7 +210,7 @@ test("an ambiguous capture with no dictation editor goes to the panel as a plain
 
 test("a selection with the dictation agent reachable keeps the in-place edit path", async (t) => {
   const { createManager } = await loadAudioManager(t, {
-    cachePrefix: "openwhispr-assistant-sel-reachable-",
+    cachePrefix: "murmur-assistant-sel-reachable-",
     settingsKey: "__assistantSelReachableSettings",
   });
   const capture = { status: "selected", text: "the selected paragraph", sessionId: "s1" };

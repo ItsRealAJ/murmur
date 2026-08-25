@@ -8,10 +8,10 @@ Enable verbose logging to diagnose issues like "no audio detected" or transcript
 
 ```bash
 # macOS
-/Applications/OpenWhispr.app/Contents/MacOS/OpenWhispr --log-level=debug
+/Applications/Murmur.app/Contents/MacOS/Murmur --log-level=debug
 
 # Windows
-OpenWhispr.exe --log-level=debug
+Murmur.exe --log-level=debug
 ```
 
 ### Option 2: Environment File
@@ -24,15 +24,15 @@ OPENWHISPR_LOG_LEVEL=debug
 
 **Env file locations:**
 
-- macOS: `~/Library/Application Support/OpenWhispr/.env`
-- Windows: `%APPDATA%\OpenWhispr\.env`
-- Linux: `~/.config/OpenWhispr/.env`
+- macOS: `~/Library/Application Support/Murmur/.env`
+- Windows: `%APPDATA%\Murmur\.env`
+- Linux: `~/.config/Murmur/.env`
 
 ## Log File Locations
 
-- **macOS**: `~/Library/Application Support/OpenWhispr/logs/debug-*.log`
-- **Windows**: `%APPDATA%\OpenWhispr\logs\debug-*.log`
-- **Linux**: `~/.config/OpenWhispr/logs/debug-*.log`
+- **macOS**: `~/Library/Application Support/Murmur/logs/debug-*.log`
+- **Windows**: `%APPDATA%\Murmur\logs\debug-*.log`
+- **Linux**: `~/.config/Murmur/logs/debug-*.log`
 
 ## What Gets Logged
 

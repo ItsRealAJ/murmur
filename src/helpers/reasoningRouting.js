@@ -37,7 +37,7 @@ export function buildReasoningScopePatches(settings, mode) {
 // Onboarding "use Corti everywhere" payloads. Transcription always routes to
 // Corti. Reasoning routes to Corti only in the EU region with an API key, since
 // Corti Models is EU-only and needs its own key; otherwise it routes to the
-// HIPAA-compliant OpenWhispr Cloud so clinical text never reaches a third party.
+// HIPAA-compliant Murmur Cloud so clinical text never reaches a third party.
 // useCleanupModel is forced true either way so the routing sticks.
 export function buildCortiOnboardingPayloads(
   transcriptionProvider,

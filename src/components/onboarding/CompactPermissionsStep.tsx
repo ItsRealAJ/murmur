@@ -128,7 +128,7 @@ export default function CompactPermissionsStep({
   };
 
   return (
-    <CompactOnboardingFrame showLegalNotice={false}>
+    <CompactOnboardingFrame>
       {/* Continue appears once the required permission (microphone) is granted.
           Portalled to body: inside the step wrapper it can never out-stack the
           shell's z-50 drag band (see OnboardingShell), so clicks would be
@@ -149,7 +149,7 @@ export default function CompactPermissionsStep({
         )}
 
       <div className="onboarding-shell-scroll h-full overflow-y-auto px-6 pb-6 pt-44 text-center">
-        {/* text-balance evens the two lines out ("Set up OpenWhispr" / "in 3
+        {/* text-balance evens the two lines out ("Set up Murmur" / "in 3
             minutes") instead of leaving one word stranded. Preferred over a
             hardcoded <br> because the break point stays correct in all 9
             locales, where the string length differs. */}

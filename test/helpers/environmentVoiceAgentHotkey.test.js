@@ -72,7 +72,7 @@ function installDotenvStub(t) {
 
 test("adopts a legacy chat-agent hotkey as the voice-agent hotkey", async (t) => {
   const userDataDirectory = fs.mkdtempSync(
-    path.join(os.tmpdir(), "openwhispr-voice-agent-hotkey-")
+    path.join(os.tmpdir(), "murmur-voice-agent-hotkey-")
   );
   const environmentSnapshot = snapshotEnvironment();
   const originalResourcesPath = process.resourcesPath;

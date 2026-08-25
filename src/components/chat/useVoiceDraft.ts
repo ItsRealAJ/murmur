@@ -58,7 +58,7 @@ export function useVoiceDraft({ onTranscript, onError }: UseVoiceDraftOptions) {
     localTranscriptionProvider: localTranscriptionProvider as string,
     whisperModel,
     parakeetModel,
-    isOpenWhisprCloud: isSignedIn && cloudTranscriptionMode === "openwhispr" && !useLocalWhisper,
+    isMurmurCloud: isSignedIn && cloudTranscriptionMode === "openwhispr" && !useLocalWhisper,
     getApiKey: () => getTranscriptionApiKey(cloudTranscriptionProvider as string, settings),
     cloudTranscriptionProvider: cloudTranscriptionProvider as string,
     cloudTranscriptionBaseUrl: cloudTranscriptionBaseUrl || "",

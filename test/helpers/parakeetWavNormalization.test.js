@@ -59,7 +59,7 @@ function createPcm16Wav(sampleValue, sampleCount = 160) {
 }
 
 test("transcribes audible mono 16 kHz float32 WAV input", async () => {
-  const tempHome = fs.mkdtempSync(path.join(os.tmpdir(), "openwhispr-parakeet-wav-test-"));
+  const tempHome = fs.mkdtempSync(path.join(os.tmpdir(), "murmur-parakeet-wav-test-"));
   const originalLoad = Module._load;
   let ffmpegUtils;
   Module._load = function loadWithElectronStub(request, parent, isMain) {
@@ -92,7 +92,7 @@ test("transcribes audible mono 16 kHz float32 WAV input", async () => {
   }
 
   try {
-    const modelDir = path.join(tempHome, ".cache", "openwhispr", "parakeet-models", MODEL_NAME);
+    const modelDir = path.join(tempHome, ".cache", "murmur", "parakeet-models", MODEL_NAME);
     fs.mkdirSync(modelDir, { recursive: true });
     for (const file of REQUIRED_MODEL_FILES) {
       fs.writeFileSync(path.join(modelDir, file), "");

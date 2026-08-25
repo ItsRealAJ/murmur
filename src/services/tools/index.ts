@@ -1,44 +1,25 @@
 import { ToolRegistry } from "./ToolRegistry";
-import { createSearchNotesTool } from "./searchNotesTool";
-import { getNoteTool } from "./getNoteTool";
-import { createNoteTool } from "./createNoteTool";
-import { updateNoteTool } from "./updateNoteTool";
-import { listFoldersTool } from "./listFoldersTool";
 import { clipboardTool } from "./clipboardTool";
 import { webSearchTool } from "./webSearchTool";
-import { calendarTool } from "./calendarTool";
-import type { ContainerScope } from "../../types/chat";
 
 export { ToolRegistry } from "./ToolRegistry";
 export type { ToolDefinition, ToolResult } from "./ToolRegistry";
 
+/**
+ * Mumur's assistant has a deliberately small tool surface.
+ *
+ * Upstream also registered note CRUD, folder listing, semantic note search, and
+ * calendar lookup. Those backed the notes and meetings features this fork does
+ * not ship, so only the two tools that make sense for a dictation app remain:
+ * reading the clipboard, and optional web search.
+ */
 interface ToolRegistrySettings {
-  isSignedIn: boolean;
-  calendarConnected: boolean;
-  cloudBackupEnabled: boolean;
-  /** Pins search_notes to a container (overview chat); the LLM cannot widen it. */
-  searchScope?: ContainerScope;
   webSearchEnabled: boolean;
 }
 
 export function createToolRegistry(settings: ToolRegistrySettings): ToolRegistry {
   const registry = new ToolRegistry();
-
-  const useCloudSearch = settings.isSignedIn && settings.cloudBackupEnabled;
-  registry.register(createSearchNotesTool({ useCloudSearch, fixedScope: settings.searchScope }));
-  registry.register(getNoteTool);
-  registry.register(createNoteTool);
-  registry.register(updateNoteTool);
-  registry.register(listFoldersTool);
   registry.register(clipboardTool);
-
-  if (settings.isSignedIn && settings.webSearchEnabled) {
-    registry.register(webSearchTool);
-  }
-
-  if (settings.calendarConnected) {
-    registry.register(calendarTool);
-  }
-
+  if (settings.webSearchEnabled) registry.register(webSearchTool);
   return registry;
 }

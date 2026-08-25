@@ -92,7 +92,7 @@ function baseLanguageOf(language?: string): string | undefined {
 
 // The name only counts as addressing the agent when it starts the dictation,
 // follows a greeting cue ("hey Jarvis"), or opens a new sentence. A mere
-// mention elsewhere ("I showed OpenWhispr to a friend") is dictated content,
+// mention elsewhere ("I showed Murmur to a friend") is dictated content,
 // not a command.
 function isAddressedAt(
   index: number,

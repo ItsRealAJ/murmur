@@ -13,7 +13,7 @@ export function createExternalLinkHandler(url: string) {
   };
 }
 
-// Tags an outbound link with OpenWhispr UTM attribution. Non-http(s) and
+// Tags an outbound link with Murmur UTM attribution. Non-http(s) and
 // already-attributed URLs pass through unchanged so existing links can't break.
 export function withUtm(url: string, campaign = "app"): string {
   try {

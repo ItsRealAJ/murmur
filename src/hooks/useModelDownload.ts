@@ -116,8 +116,8 @@ export function useModelDownload({
 
   useEffect(() => {
     const handleModelsCleared = () => onModelsClearedRef.current?.();
-    window.addEventListener("openwhispr-models-cleared", handleModelsCleared);
-    return () => window.removeEventListener("openwhispr-models-cleared", handleModelsCleared);
+    window.addEventListener("murmur-models-cleared", handleModelsCleared);
+    return () => window.removeEventListener("murmur-models-cleared", handleModelsCleared);
   }, []);
 
   const hydrateActiveDownload = useCallback(

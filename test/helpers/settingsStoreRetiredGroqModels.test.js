@@ -18,7 +18,7 @@ test("retired groq model selections migrate to served replacements", async (t) =
 
   const { storage } = installBrowserGlobals(t);
   const vite = await createRendererServer(t, {
-    cachePrefix: "openwhispr-retired-groq-models-test-",
+    cachePrefix: "murmur-retired-groq-models-test-",
   });
 
   const load = async () => {

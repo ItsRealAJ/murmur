@@ -248,7 +248,7 @@ async function renderAssistantPanel(
   });
 
   const vite = await createRendererServer(t, {
-    cachePrefix: "openwhispr-assistant-panel-test-",
+    cachePrefix: "murmur-assistant-panel-test-",
     mockModules: {
       "/chat/useChatPersistence": `
         export function useChatPersistence() {
@@ -374,7 +374,7 @@ test("starting a new conversation clears the displayed response and parent conte
   });
 
   const vite = await createRendererServer(t, {
-    cachePrefix: "openwhispr-assistant-panel-reset-test-",
+    cachePrefix: "murmur-assistant-panel-reset-test-",
     mockModules: {
       "lucide-react": `
         import React from "react";
@@ -606,7 +606,7 @@ test("the Assistant uses its localized fallback for an unknown active tool", asy
 test("a failed Assistant resize releases its open claim so opening can retry", async (t) => {
   installBrowserGlobals(t);
   const vite = await createRendererServer(t, {
-    cachePrefix: "openwhispr-assistant-open-failure-test-",
+    cachePrefix: "murmur-assistant-open-failure-test-",
   });
   const { useAssistantPanel } = await vite.ssrLoadModule("/hooks/useAssistantPanel.js");
   let resizeCalls = 0;
@@ -635,7 +635,7 @@ test("a failed Assistant resize releases its open claim so opening can retry", a
 test("a failed live-transcript resize releases its open claim so opening can retry", async (t) => {
   installBrowserGlobals(t);
   const vite = await createRendererServer(t, {
-    cachePrefix: "openwhispr-live-transcript-open-failure-test-",
+    cachePrefix: "murmur-live-transcript-open-failure-test-",
   });
   const { useLiveTranscriptPanel } = await vite.ssrLoadModule("/hooks/useLiveTranscriptPanel.js");
   let resizeCalls = 0;

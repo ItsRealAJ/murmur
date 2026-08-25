@@ -35,7 +35,7 @@ function loadModelManager() {
     // modelManagerBridge requires modelDirUtils lazily (inside getModelsDir),
     // after this mock is uninstalled — load it now so its electron binding is
     // the stub and modelsDir resolves inside the per-test temp home instead of
-    // the real ~/.cache/openwhispr.
+    // the real ~/.cache/murmur.
     require("../../src/helpers/modelDirUtils.js");
     return require("../../src/helpers/modelManagerBridge.js").default;
   } finally {
@@ -44,7 +44,7 @@ function loadModelManager() {
 }
 
 test("getAllModels surfaces in-flight local model download state", async (t) => {
-  const tmpHome = await fs.mkdtemp(path.join(os.tmpdir(), "openwhispr-model-status-"));
+  const tmpHome = await fs.mkdtemp(path.join(os.tmpdir(), "murmur-model-status-"));
   electronHome = tmpHome;
   t.after(() => fs.rm(tmpHome, { recursive: true, force: true }));
 
@@ -75,7 +75,7 @@ test("getAllModels surfaces in-flight local model download state", async (t) => 
 });
 
 test("getAllModels retries when a download completes during filesystem checks", async (t) => {
-  const tmpHome = await fs.mkdtemp(path.join(os.tmpdir(), "openwhispr-model-snapshot-"));
+  const tmpHome = await fs.mkdtemp(path.join(os.tmpdir(), "murmur-model-snapshot-"));
   electronHome = tmpHome;
   t.after(() => fs.rm(tmpHome, { recursive: true, force: true }));
 
@@ -123,7 +123,7 @@ test("getAllModels retries when a download completes during filesystem checks", 
 });
 
 test("downloadModel rejects a second local model while another model is active", async (t) => {
-  const tmpHome = await fs.mkdtemp(path.join(os.tmpdir(), "openwhispr-single-download-"));
+  const tmpHome = await fs.mkdtemp(path.join(os.tmpdir(), "murmur-single-download-"));
   electronHome = tmpHome;
   t.after(() => fs.rm(tmpHome, { recursive: true, force: true }));
 
@@ -146,7 +146,7 @@ test("downloadModel rejects a second local model while another model is active",
 });
 
 test("cancelDownload keeps the local LLM guard until the request unwinds", async (t) => {
-  const tmpHome = await fs.mkdtemp(path.join(os.tmpdir(), "openwhispr-cancel-guard-"));
+  const tmpHome = await fs.mkdtemp(path.join(os.tmpdir(), "murmur-cancel-guard-"));
   electronHome = tmpHome;
   t.after(() => fs.rm(tmpHome, { recursive: true, force: true }));
 

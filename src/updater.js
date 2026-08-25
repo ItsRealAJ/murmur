@@ -29,8 +29,8 @@ class UpdateManager {
 
     autoUpdater.setFeedURL({
       provider: "github",
-      owner: "OpenWhispr",
-      repo: "openwhispr",
+      owner: "REPLACE_WITH_YOUR_GITHUB_USER",
+      repo: "murmur",
       private: false,
     });
 

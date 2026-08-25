@@ -67,7 +67,7 @@ test("the main and renderer geometry adapters agree with the native assistant fo
 
 test("renderer presentation consumes the shared live-transcript geometry", async (t) => {
   const vite = await createRendererServer(t, {
-    cachePrefix: "openwhispr-voice-surface-geometry-test-",
+    cachePrefix: "murmur-voice-surface-geometry-test-",
     mockModules: {
       "/voiceSurfaceGeometry.mjs": OVERRIDDEN_VOICE_SURFACE_GEOMETRY,
     },
@@ -117,7 +117,7 @@ test("DictationErrorCard reports content height at the shared expected width", a
   });
 
   const vite = await createRendererServer(t, {
-    cachePrefix: "openwhispr-dictation-error-geometry-test-",
+    cachePrefix: "murmur-dictation-error-geometry-test-",
     noExternal: true,
     mockModules: {
       "react/jsx-dev-runtime": `

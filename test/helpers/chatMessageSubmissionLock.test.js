@@ -7,7 +7,7 @@ const { createRendererServer, installBrowserGlobals } = require("../lib/renderer
 test("message submission lock rejects a rapid second send until conversation creation settles", async (t) => {
   installBrowserGlobals(t);
   const vite = await createRendererServer(t, {
-    cachePrefix: "openwhispr-chat-submission-lock-test-",
+    cachePrefix: "murmur-chat-submission-lock-test-",
   });
   const { createMessageSubmissionLock } = await vite.ssrLoadModule(
     "/components/chat/useChatMessageSender.ts"
@@ -37,7 +37,7 @@ test("message submission lock rejects a rapid second send until conversation cre
 test("message sender reports whether the submission lock accepted the send", async (t) => {
   installBrowserGlobals(t);
   const vite = await createRendererServer(t, {
-    cachePrefix: "openwhispr-chat-message-sender-test-",
+    cachePrefix: "murmur-chat-message-sender-test-",
   });
   const { useChatMessageSender } = await vite.ssrLoadModule(
     "/components/chat/useChatMessageSender.ts"

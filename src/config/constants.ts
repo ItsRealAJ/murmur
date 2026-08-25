@@ -101,13 +101,13 @@ const computeBaseUrl = (candidates: Array<string | undefined>, fallback: string)
 };
 
 const DEFAULT_OPENAI_BASE = computeBaseUrl(
-  [env.OPENWHISPR_OPENAI_BASE_URL as string | undefined, env.OPENAI_BASE_URL as string | undefined],
+  [env.MURMUR_OPENAI_BASE_URL as string | undefined, env.OPENAI_BASE_URL as string | undefined],
   "https://api.openai.com/v1"
 );
 
 const DEFAULT_TRANSCRIPTION_BASE = computeBaseUrl(
   [
-    env.OPENWHISPR_TRANSCRIPTION_BASE_URL as string | undefined,
+    env.MURMUR_TRANSCRIPTION_BASE_URL as string | undefined,
     env.WHISPER_BASE_URL as string | undefined,
   ],
   DEFAULT_OPENAI_BASE
@@ -161,8 +161,8 @@ export const CACHE_CONFIG = {
   PASTE_DELAY_MS: 50, // Delay before paste simulation to allow clipboard to settle
 } as const;
 
-// OpenWhispr Cloud API
-export const OPENWHISPR_API_URL = (env.VITE_OPENWHISPR_API_URL as string) || "";
+// Murmur Cloud API
+export const MURMUR_API_URL = (env.VITE_MURMUR_API_URL as string) || "";
 
 // Retry Configuration
 export const RETRY_CONFIG = {

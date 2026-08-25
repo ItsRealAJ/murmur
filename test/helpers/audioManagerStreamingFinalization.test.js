@@ -4,7 +4,7 @@ const { loadAudioManager } = require("./harness/audioManager");
 
 async function loadManagerClass(t) {
   const { AudioManager } = await loadAudioManager(t, {
-    cachePrefix: "openwhispr-streaming-finalization-test-",
+    cachePrefix: "murmur-streaming-finalization-test-",
     settingsKey: "__streamingFinalizationSettings",
     settings: {
       useLocalWhisper: false,

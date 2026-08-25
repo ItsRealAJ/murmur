@@ -70,7 +70,7 @@ test("fan-out with partial settings only mirrors the provided routing fields", a
   }
 });
 
-const OPENWHISPR_REASONING = { useCleanupModel: true, cleanupCloudMode: "openwhispr" };
+const MURMUR_REASONING = { useCleanupModel: true, cleanupCloudMode: "openwhispr" };
 
 test("onboarding routes transcription and reasoning to corti in the eu region with an api key", async () => {
   const { buildCortiOnboardingPayloads } = await load();
@@ -115,7 +115,7 @@ test("us data region routes reasoning to openwhispr cloud, transcription stays c
     true
   );
 
-  assert.deepEqual(reasoning, OPENWHISPR_REASONING);
+  assert.deepEqual(reasoning, MURMUR_REASONING);
   assert.equal(transcription.cloudTranscriptionProvider, "corti");
 });
 
@@ -127,7 +127,7 @@ test("eu region without an api key routes reasoning to openwhispr cloud", async 
     "eu",
     false
   );
-  assert.deepEqual(reasoning, OPENWHISPR_REASONING);
+  assert.deepEqual(reasoning, MURMUR_REASONING);
 });
 
 test("undefined data region routes reasoning to openwhispr cloud", async () => {
@@ -138,7 +138,7 @@ test("undefined data region routes reasoning to openwhispr cloud", async () => {
     undefined,
     true
   );
-  assert.deepEqual(reasoning, OPENWHISPR_REASONING);
+  assert.deepEqual(reasoning, MURMUR_REASONING);
 });
 
 test("missing corti reasoning provider routes reasoning to openwhispr cloud", async () => {
@@ -150,7 +150,7 @@ test("missing corti reasoning provider routes reasoning to openwhispr cloud", as
     true
   );
 
-  assert.deepEqual(reasoning, OPENWHISPR_REASONING);
+  assert.deepEqual(reasoning, MURMUR_REASONING);
   assert.equal(transcription.cloudTranscriptionProvider, "corti");
 });
 
@@ -162,7 +162,7 @@ test("corti reasoning provider with empty models routes reasoning to openwhispr 
     "eu",
     true
   );
-  assert.deepEqual(reasoning, OPENWHISPR_REASONING);
+  assert.deepEqual(reasoning, MURMUR_REASONING);
 });
 
 test("a scope inherits the fallback key when it inherits the endpoint", async () => {

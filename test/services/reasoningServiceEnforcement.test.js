@@ -33,7 +33,7 @@ function buildPolicy({ agentEnabled = true, llmModes = [], llmByokProviders = []
 test("ReasoningService entry points enforce the org policy", async (t) => {
   installBrowserGlobals(t);
   const vite = await createRendererServer(t, {
-    cachePrefix: "openwhispr-reasoning-enforcement-test-",
+    cachePrefix: "murmur-reasoning-enforcement-test-",
   });
 
   const reasoningService = (await vite.ssrLoadModule("/services/ReasoningService.ts")).default;

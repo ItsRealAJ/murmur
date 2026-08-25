@@ -10,7 +10,7 @@ const { app } = require("electron");
 const sidecarPidFile = require("./sidecarPidFile");
 const { BIN_SUBDIR: LLAMA_VULKAN_BIN_SUBDIR } = require("./llamaVulkanManager");
 
-// Range kept clear of cliBridge (8200-8219) to avoid port-bind collisions.
+// Range kept clear of the 8200-8219 block reserved by earlier builds.
 const PORT_RANGE_START = 8221;
 const PORT_RANGE_END = 8240;
 const STARTUP_TIMEOUT_MS = 120000;

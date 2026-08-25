@@ -1,10 +1,10 @@
 import type { InferenceMode } from "./electron";
 
 /**
- * Organization policy delivered by the OpenWhispr API and enforced by the app.
+ * Organization policy delivered by the Murmur API and enforced by the app.
  *
- * Mirrors the canonical schema in `openwhispr-api/lib/policy-schema.ts` and
- * `openwhispr-admin/lib/policy-schema.ts` — keep the three in sync. Provider and
+ * Mirrors the canonical schema in `murmur-api/lib/policy-schema.ts` and
+ * `murmur-admin/lib/policy-schema.ts` — keep the three in sync. Provider and
  * mode ids match the model registry exactly.
  */
 

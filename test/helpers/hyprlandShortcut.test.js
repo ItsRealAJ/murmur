@@ -25,7 +25,7 @@ function loadManager(execFileSync) {
 
 function withTempHyprConfig(fn) {
   return async () => {
-    const root = fs.mkdtempSync(path.join(os.tmpdir(), "openwhispr-hyprland-test-"));
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "murmur-hyprland-test-"));
     const saved = Object.fromEntries(ENV_KEYS.map((key) => [key, process.env[key]]));
     for (const key of ENV_KEYS) delete process.env[key];
     process.env.XDG_CONFIG_HOME = path.join(root, "config");
@@ -57,7 +57,7 @@ function successfulHyprctl(provider) {
 }
 
 const DBUS_COMMAND =
-  "dbus-send --session --type=method_call --dest=com.openwhispr.App /com/openwhispr/App com.openwhispr.App.Toggle";
+  "dbus-send --session --type=method_call --dest=com.murmur.App /com/murmur/App com.murmur.App.Toggle";
 
 test(
   "persists a legacy binding through hyprland.conf",
@@ -75,10 +75,10 @@ test(
     assert.ok(
       fs
         .readFileSync(configPath, "utf8")
-        .includes(`source = ${path.join(configDir, "openwhispr-binds.conf")}\n`)
+        .includes(`source = ${path.join(configDir, "murmur-binds.conf")}\n`)
     );
     assert.match(
-      fs.readFileSync(path.join(configDir, "openwhispr-binds.conf"), "utf8"),
+      fs.readFileSync(path.join(configDir, "murmur-binds.conf"), "utf8"),
       /bind = CTRL SHIFT, Return, exec, dbus-send/
     );
     assert.equal(await manager.unregisterKeybinding(), true);
@@ -110,13 +110,13 @@ test(
     assert.equal(hyprctl.calls.filter(({ args }) => args[0] === "systeminfo").length, 1);
 
     assert.equal(HyprlandShortcutManager.getHyprlandConfigStatus().path, luaPath);
-    assert.match(fs.readFileSync(luaPath, "utf8"), /pcall\(require, .+openwhispr-binds\.lua/);
+    assert.match(fs.readFileSync(luaPath, "utf8"), /pcall\(require, .+murmur-binds\.lua/);
     assert.equal(
-      (fs.readFileSync(luaPath, "utf8").match(/openwhispr-binds\.lua/g) || []).length,
+      (fs.readFileSync(luaPath, "utf8").match(/murmur-binds\.lua/g) || []).length,
       1
     );
-    const binds = fs.readFileSync(path.join(configDir, "openwhispr-binds.lua"), "utf8");
-    assert.match(binds, /^-- OpenWhispr keybinds/m);
+    const binds = fs.readFileSync(path.join(configDir, "murmur-binds.lua"), "utf8");
+    assert.match(binds, /^-- Murmur keybinds/m);
     assert.match(binds, /hl\.bind\("CTRL \+ SHIFT \+ RETURN", hl\.dsp\.exec_cmd\("dbus-send/);
     assert.doesNotMatch(
       fs.readFileSync(path.join(configDir, "hyprland.conf"), "utf8"),
@@ -249,7 +249,7 @@ test(
     assert.equal(await manager.registerKeybinding("Control+Shift+Enter"), false);
     assert.equal(manager.isRegistered, false);
     assert.equal(manager.currentBinding, null);
-    assert.equal(fs.existsSync(path.join(configDir, "openwhispr-binds.lua")), false);
+    assert.equal(fs.existsSync(path.join(configDir, "murmur-binds.lua")), false);
   })
 );
 
@@ -292,7 +292,7 @@ test(
     assert.equal(HyprlandShortcutManager.getHyprlandConfigStatus().path, configPath);
     assert.equal(hyprctl.calls.filter(({ args }) => args[0] === "systeminfo").length, 0);
     assert.match(fs.readFileSync(configPath, "utf8"), /pcall\(require,/);
-    assert.equal(fs.existsSync(path.join(path.dirname(configPath), "openwhispr-binds.lua")), true);
+    assert.equal(fs.existsSync(path.join(path.dirname(configPath), "murmur-binds.lua")), true);
   })
 );
 
@@ -314,7 +314,7 @@ test(
     assert.equal(await manager.registerKeybinding("Control+Shift+Enter"), true);
     assert.equal(calls.filter(({ args }) => args[0] === "systeminfo").length, 1);
     assert.equal(calls.filter(({ args }) => args[0] === "eval").length, 2);
-    assert.equal(fs.existsSync(path.join(configDir, "openwhispr-binds.lua")), true);
+    assert.equal(fs.existsSync(path.join(configDir, "murmur-binds.lua")), true);
   })
 );
 
@@ -343,7 +343,7 @@ test(
   "replaces an old dofile loader before a trailing top-level return",
   withTempHyprConfig(async (configDir) => {
     const luaPath = path.join(configDir, "hyprland.lua");
-    const bindsPath = path.join(configDir, "openwhispr-binds.lua");
+    const bindsPath = path.join(configDir, "murmur-binds.lua");
     fs.mkdirSync(configDir, { recursive: true });
     fs.writeFileSync(
       luaPath,
@@ -360,7 +360,7 @@ test(
     const content = fs.readFileSync(luaPath, "utf8");
     const protectedLoader = `pcall(require, "${bindsPath}")`;
     assert.doesNotMatch(content, /dofile\(/);
-    assert.equal((content.match(/openwhispr-binds\.lua/g) || []).length, 1);
+    assert.equal((content.match(/murmur-binds\.lua/g) || []).length, 1);
     assert.ok(content.indexOf(protectedLoader) < content.indexOf("return {}"));
   })
 );
@@ -369,7 +369,7 @@ test(
   "removes the previous header wording when rewriting managed binds",
   withTempHyprConfig(async (configDir) => {
     const configPath = path.join(configDir, "hyprland.conf");
-    const bindsPath = path.join(configDir, "openwhispr-binds.conf");
+    const bindsPath = path.join(configDir, "murmur-binds.conf");
     fs.mkdirSync(configDir, { recursive: true });
     fs.writeFileSync(configPath, "# legacy config\n");
     fs.writeFileSync(
@@ -395,10 +395,10 @@ test(
   "removes stale managed legacy artifacts after migrating to Lua",
   withTempHyprConfig(async (configDir) => {
     const confPath = path.join(configDir, "hyprland.conf");
-    const legacyBindsPath = path.join(configDir, "openwhispr-binds.conf");
+    const legacyBindsPath = path.join(configDir, "murmur-binds.conf");
     fs.mkdirSync(configDir, { recursive: true });
     fs.writeFileSync(path.join(configDir, "hyprland.lua"), "-- lua config\n");
-    fs.writeFileSync(confPath, "# keep this comment\nsource = ./openwhispr-binds.conf\n");
+    fs.writeFileSync(confPath, "# keep this comment\nsource = ./murmur-binds.conf\n");
     fs.writeFileSync(
       legacyBindsPath,
       "# OpenWhispr keybinds (managed automatically)\n" +

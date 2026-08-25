@@ -39,9 +39,9 @@ export function getOnboardingSetupAvailability({
     isModeAllowedByPolicy(policy, "llm", "providers") &&
     filterByokProviderOptionsByPolicy(llmProviders, "llm", policy).length > 0;
 
-  const cloud =
-    isModeAllowedByPolicy(policy, "transcription", "openwhispr") &&
-    (!agentAllowed || isModeAllowedByPolicy(policy, "llm", "openwhispr"));
+  // Murmur has no hosted account tier — the only paths are the user's own API
+  // key (BYOK / self-hosted) or fully on-device. Never offer a sign-in card.
+  const cloud = false;
   const local =
     isModeAllowedByPolicy(policy, "transcription", "local") &&
     (!agentAllowed || isModeAllowedByPolicy(policy, "llm", "local"));

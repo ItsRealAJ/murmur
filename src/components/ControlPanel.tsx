@@ -12,8 +12,6 @@ import {
   PanelLeftOpen,
   PanelLeftClose,
 } from "lucide-react";
-import UpgradePrompt from "./UpgradePrompt";
-import PostMigrationOnboarding from "./PostMigrationOnboarding";
 import { ConfirmDialog, AlertDialog } from "./ui/dialog";
 import { useDialogs } from "../hooks/useDialogs";
 import { useHotkey } from "../hooks/useHotkey";
@@ -21,7 +19,6 @@ import { useToast } from "./ui/useToast";
 import { useUpdater } from "../hooks/useUpdater";
 import { useSettings } from "../hooks/useSettings";
 import { useAuth } from "../hooks/useAuth";
-import { useJoinableWorkspaces } from "../hooks/useJoinableWorkspaces";
 import { useUsage } from "../hooks/useUsage";
 import { decideUpsell } from "../lib/upsell";
 import { useCollapsibleSidebar } from "../hooks/useCollapsibleSidebar";
@@ -47,27 +44,12 @@ import {
   isTranscriptionContextAllowed,
   isUpdateRequiredByOrg,
 } from "../stores/policyRules";
-import {
-  useIsMeetingMode,
-  useIsNarrowWindow,
-  useMeetingRecordingStore,
-} from "../stores/meetingRecordingStore";
 import ControlPanelSidebar, { type ControlPanelView } from "./ControlPanelSidebar";
-import MeetingRecordingMount from "./MeetingRecordingMount";
-import MeetingRecordingPill from "./notes/MeetingRecordingPill";
 import WindowControls from "./WindowControls";
 
 import { getCachedPlatform } from "../utils/platform";
 import { isAccessibilitySkipped } from "../utils/permissions";
 import { eligibleGpuOffers, type GpuOffers } from "../utils/gpuBannerPolicy";
-import {
-  setActiveNoteId,
-  setActiveFolderId,
-  navigateToContainer,
-  useActiveNoteId,
-  initializeNotes,
-} from "../stores/noteStore";
-import { fetchProviders as fetchStreamingProviders } from "../stores/streamingProvidersStore";
 import {
   executeTranslationChain,
   hasTextContent,
@@ -75,12 +57,7 @@ import {
 } from "../helpers/translationChain";
 import { applyChineseScript, resolveChineseScriptTarget } from "../utils/chineseScript";
 import HistoryView from "./HistoryView";
-import BackgroundActionToastListener from "./notes/BackgroundActionToastListener";
-import SpaceSyncToastListener from "./notes/SpaceSyncToastListener";
-import { syncService } from "../services/SyncService.js";
 import logger from "../utils/logger";
-import AcceptInvitationModal from "./AcceptInvitationModal";
-import JoinYourTeamModal from "./JoinYourTeamModal";
 import {
   consumePendingInvitationToken,
   clearPendingInvitationToken,
@@ -98,13 +75,7 @@ const toggleIconClass =
   "text-foreground/60 group-hover:text-foreground/75 dark:text-foreground/50 dark:group-hover:text-foreground/65 transition-colors duration-150";
 
 const SettingsModal = React.lazy(() => import("./SettingsModal"));
-const ReferralModal = React.lazy(() => import("./ReferralModal"));
-const PersonalNotesView = React.lazy(() => import("./notes/PersonalNotesView"));
 const DictionaryView = React.lazy(() => import("./DictionaryView"));
-const UploadAudioView = React.lazy(() => import("./notes/UploadAudioView"));
-const IntegrationsView = React.lazy(() => import("./IntegrationsView"));
-const ChatView = React.lazy(() => import("./chat/ChatView"));
-const CommandSearch = React.lazy(() => import("./CommandSearch"));
 
 interface ControlPanelProps {
   /** Open the settings modal at this section on mount (e.g. after onboarding). */
@@ -144,18 +115,7 @@ export default function ControlPanel({ initialSettingsSection }: ControlPanelPro
     hidePeek: hideSidebarPeek,
     leaveToggle: leaveSidebarToggle,
   } = useCollapsibleSidebar();
-  const isMeetingMode = useIsMeetingMode();
-  const isNarrowWindow = useIsNarrowWindow();
-  const activeNoteId = useActiveNoteId();
-  const isSidePanelLayout =
-    isMeetingMode || (isNarrowWindow && activeView === "personal-notes" && activeNoteId != null);
-  const recordingNoteId = useMeetingRecordingStore((s) => s.recordingNoteId);
-  const recordingFolderId = useMeetingRecordingStore((s) => s.recordingFolderId);
-  const [meetingRecordingRequest, setMeetingRecordingRequest] = useState<{
-    noteId: number;
-    folderId: number;
-    event: any;
-  } | null>(null);
+  const isSidePanelLayout = false;
   const [gpuAccelAvailable, setGpuAccelAvailable] = useState<GpuOffers>({
     transcription: false,
     intelligence: null,
@@ -170,12 +130,6 @@ export default function ControlPanel({ initialSettingsSection }: ControlPanelPro
   const { toast } = useToast();
   const { useCleanupModel, setUseLocalWhisper, setCloudTranscriptionMode } = useSettings();
   const { isSignedIn, isLoaded: authLoaded, user } = useAuth();
-  // Suppressed while a deep-linked invitation is open so the two never stack.
-  const {
-    joinable,
-    dismiss: dismissJoinable,
-    markRequested,
-  } = useJoinableWorkspaces(user?.id ?? null, isSignedIn && !invitationToken);
   const usage = useUsage();
   const upsell = decideUpsell({
     authLoaded,
@@ -444,47 +398,6 @@ export default function ControlPanel({ initialSettingsSection }: ControlPanelPro
   }, [gpuBannerSettings, agentAllowedByPolicy, gpuBannerDismissed]);
 
   useEffect(() => {
-    const drain = async () => {
-      const data = await window.electronAPI?.getPendingMeetingNoteNavigation?.();
-      if (!data) return;
-      setActiveFolderId(data.folderId);
-      setActiveNoteId(data.noteId);
-      setActiveView("personal-notes");
-      setMeetingRecordingRequest({
-        noteId: data.noteId,
-        folderId: data.folderId,
-        event: data.event,
-      });
-      initializeNotes(null, 50, data.folderId);
-      if (
-        data.trigger === "hotkey" &&
-        useSettingsStore.getState().meetingHotkeyLayoutMode === "side-panel"
-      ) {
-        window.electronAPI?.snapToMeetingMode?.();
-      }
-    };
-    drain();
-    const cleanup = window.electronAPI?.onMeetingNoteNavigationPending?.(drain);
-    return () => cleanup?.();
-  }, []);
-
-  useEffect(() => {
-    const drain = async () => {
-      const data = await window.electronAPI?.getPendingNoteNavigation?.();
-      if (!data) return;
-      if (data.folderId) {
-        setActiveFolderId(data.folderId);
-        initializeNotes(null, 50, data.folderId);
-      }
-      setActiveNoteId(data.noteId);
-      setActiveView("personal-notes");
-    };
-    drain();
-    const cleanup = window.electronAPI?.onNoteNavigationPending?.(drain);
-    return () => cleanup?.();
-  }, []);
-
-  useEffect(() => {
     const cleanup = window.electronAPI?.onShowSettings?.(() => {
       setShowSettings(true);
     });
@@ -507,15 +420,6 @@ export default function ControlPanel({ initialSettingsSection }: ControlPanelPro
     });
     return () => cleanup?.();
   }, [toast, t]);
-
-  useEffect(() => {
-    fetchStreamingProviders();
-  }, []);
-
-  const handleMeetingRecordingRequestHandled = useCallback(
-    () => setMeetingRecordingRequest(null),
-    []
-  );
 
   const handleExitMeetingMode = useCallback(() => {
     window.electronAPI?.restoreFromMeetingMode?.();
@@ -552,7 +456,6 @@ export default function ControlPanel({ initialSettingsSection }: ControlPanelPro
             const result = await window.electronAPI.deleteTranscription(id);
             if (result.success) {
               removeFromStore(id);
-              syncService.requestSyncAll("manual");
             } else {
               showAlertDialog({
                 title: t("controlPanel.history.couldNotDeleteTitle"),
@@ -581,7 +484,6 @@ export default function ControlPanel({ initialSettingsSection }: ControlPanelPro
           const result = await window.electronAPI.clearTranscriptions();
           if (result.success) {
             clearStore();
-            syncService.requestSyncAll("manual");
             toast({
               title: t("controlPanel.history.clearAllSuccess"),
               variant: "success",
@@ -891,16 +793,6 @@ export default function ControlPanel({ initialSettingsSection }: ControlPanelPro
 
   return (
     <div className="h-screen bg-background flex flex-col">
-      <MeetingRecordingMount />
-      <MeetingRecordingPill
-        activeView={activeView}
-        activeNoteId={activeNoteId}
-        onReturnToNote={() => {
-          setActiveView("personal-notes");
-          setActiveFolderId(recordingFolderId);
-          setActiveNoteId(recordingNoteId);
-        }}
-      />
       <ConfirmDialog
         open={confirmDialog.open}
         onOpenChange={hideConfirmDialog}
@@ -918,19 +810,6 @@ export default function ControlPanel({ initialSettingsSection }: ControlPanelPro
         onOk={() => {}}
       />
 
-      <UpgradePrompt
-        open={showUpgradePrompt}
-        onOpenChange={setShowUpgradePrompt}
-        wordsUsed={limitData?.wordsUsed}
-        limit={limitData?.limit}
-      />
-
-      <PostMigrationOnboarding
-        open={showPostMigration}
-        onOpenChange={setShowPostMigration}
-        onDone={dismissPostMigrationPermanently}
-      />
-
       {showSettings && (
         <Suspense fallback={null}>
           <SettingsModal
@@ -940,52 +819,6 @@ export default function ControlPanel({ initialSettingsSection }: ControlPanelPro
               if (!open) setSettingsSection(undefined);
             }}
             initialSection={settingsSection}
-          />
-        </Suspense>
-      )}
-
-      {showReferrals && (
-        <Suspense fallback={null}>
-          <ReferralModal open={showReferrals} onOpenChange={setShowReferrals} />
-        </Suspense>
-      )}
-
-      <AcceptInvitationModal
-        token={invitationToken}
-        onClose={() => setInvitationToken(null)}
-        onAccepted={(entry) => {
-          setInvitationNotesEntry(entry);
-          setActiveView("personal-notes");
-        }}
-      />
-
-      <JoinYourTeamModal
-        joinable={joinable}
-        domain={user?.email?.split("@")[1] ?? null}
-        onDismiss={dismissJoinable}
-        onRequested={markRequested}
-        onJoined={() => setActiveView("personal-notes")}
-      />
-
-      {showSearch && (
-        <Suspense fallback={null}>
-          <CommandSearch
-            open={showSearch}
-            onOpenChange={setShowSearch}
-            transcriptions={history}
-            onNoteSelect={(id, folderId, spaceId) => {
-              if (folderId != null) setActiveFolderId(folderId);
-              else if (spaceId != null) navigateToContainer(spaceId, null);
-              setActiveNoteId(id);
-              setActiveView("personal-notes");
-            }}
-            onContainerSelect={(spaceId, folderId) => {
-              navigateToContainer(spaceId, folderId);
-              setActiveView("personal-notes");
-            }}
-            onTranscriptSelect={() => {
-              setActiveView("home");
-            }}
           />
         </Suspense>
       )}
@@ -1201,57 +1034,11 @@ export default function ControlPanel({ initialSettingsSection }: ControlPanelPro
                   setSettingsSection(section);
                   setShowSettings(true);
                 }}
-                onOpenIntegrations={() => setActiveView("integrations")}
               />
-            )}
-            {activeView === "chat" && agentAllowedByPolicy && (
-              <Suspense fallback={null}>
-                <ChatView />
-              </Suspense>
-            )}
-            {activeView === "personal-notes" && (
-              <Suspense fallback={null}>
-                <PersonalNotesView
-                  onOpenSettings={(section) => {
-                    setSettingsSection(section);
-                    setShowSettings(true);
-                  }}
-                  meetingRecordingRequest={meetingRecordingRequest}
-                  onMeetingRecordingRequestHandled={handleMeetingRecordingRequestHandled}
-                  invitationEntry={invitationNotesEntry}
-                  onInvitationEntryHandled={() => setInvitationNotesEntry(null)}
-                />
-              </Suspense>
             )}
             {activeView === "dictionary" && (
               <Suspense fallback={null}>
                 <DictionaryView />
-              </Suspense>
-            )}
-            {activeView === "upload" && policyActionsAllowed && (
-              <Suspense fallback={null}>
-                <UploadAudioView
-                  onNoteCreated={(noteId, folderId) => {
-                    setActiveNoteId(noteId);
-                    if (folderId) setActiveFolderId(folderId);
-                    setActiveView("personal-notes");
-                  }}
-                  onOpenSettings={(section) => {
-                    setSettingsSection(section);
-                    setShowSettings(true);
-                  }}
-                />
-              </Suspense>
-            )}
-            {activeView === "integrations" && (
-              <Suspense fallback={null}>
-                <IntegrationsView
-                  isPaid={usage?.hasPaidAccessOptimistic ?? false}
-                  onUpgrade={() => {
-                    setSettingsSection("plansBilling");
-                    setShowSettings(true);
-                  }}
-                />
               </Suspense>
             )}
           </div>
@@ -1279,8 +1066,6 @@ export default function ControlPanel({ initialSettingsSection }: ControlPanelPro
           </div>
         )}
       </div>
-      <BackgroundActionToastListener />
-      <SpaceSyncToastListener />
     </div>
   );
 }

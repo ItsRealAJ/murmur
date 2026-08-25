@@ -5,7 +5,7 @@ const os = require("node:os");
 const path = require("node:path");
 const Module = require("node:module");
 
-let userDataDir = fs.mkdtempSync(path.join(os.tmpdir(), "openwhispr-retention-db-"));
+let userDataDir = fs.mkdtempSync(path.join(os.tmpdir(), "murmur-retention-db-"));
 const originalLoad = Module._load;
 
 Module._load = function patchedLoad(request, parent, isMain) {
@@ -34,7 +34,7 @@ function isNativeBindingUnavailable(error) {
 }
 
 function createDb(t) {
-  userDataDir = fs.mkdtempSync(path.join(os.tmpdir(), "openwhispr-retention-db-"));
+  userDataDir = fs.mkdtempSync(path.join(os.tmpdir(), "murmur-retention-db-"));
   try {
     return new DatabaseManager();
   } catch (error) {

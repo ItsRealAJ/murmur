@@ -7,7 +7,7 @@ const { createRendererServer, installBrowserGlobals } = require("../lib/renderer
 test("useAudioRecording accepts an onboarding event handler on its initial render", async (t) => {
   installBrowserGlobals(t);
   const vite = await createRendererServer(t, {
-    cachePrefix: "openwhispr-audio-recording-initialization-",
+    cachePrefix: "murmur-audio-recording-initialization-",
     mockModules: {
       "/helpers/audioManager": "export default class AudioManager {}",
     },

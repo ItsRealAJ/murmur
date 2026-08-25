@@ -2,27 +2,27 @@ const { execFileSync } = require("child_process");
 const debugLogger = require("./debugLogger");
 const GnomeGlobalShortcutsPortal = require("./gnomeGlobalShortcutsPortal");
 
-const DBUS_SERVICE_NAME = "com.openwhispr.App";
-const DBUS_OBJECT_PATH = "/com/openwhispr/App";
-const DBUS_INTERFACE = "com.openwhispr.App";
+const DBUS_SERVICE_NAME = "com.murmur.App";
+const DBUS_OBJECT_PATH = "/com/murmur/App";
+const DBUS_INTERFACE = "com.murmur.App";
 
 // Per-slot gsettings paths and display names
 const SLOT_CONFIG = {
   dictation: {
-    path: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/openwhispr/",
-    name: "OpenWhispr Toggle",
+    path: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/murmur/",
+    name: "Murmur Toggle",
   },
   meeting: {
-    path: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/openwhispr-meeting/",
-    name: "OpenWhispr Meeting",
+    path: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/murmur-meeting/",
+    name: "Murmur Meeting",
   },
   voiceAgent: {
-    path: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/openwhispr-voice-agent/",
-    name: "OpenWhispr Voice Assistant",
+    path: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/murmur-voice-agent/",
+    name: "Murmur Voice Assistant",
   },
   translation: {
-    path: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/openwhispr-translation/",
-    name: "OpenWhispr Translation",
+    path: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/murmur-translation/",
+    name: "Murmur Translation",
   },
 };
 
@@ -176,7 +176,7 @@ class GnomeShortcutManager {
   // so the entry errors silently forever and squats its key. Prune it once.
   removeRetiredAgentKeybinding() {
     const retiredPath =
-      "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/openwhispr-agent/";
+      "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/murmur-agent/";
     try {
       const existing = this.getExistingKeybindings();
       if (!existing.includes(retiredPath)) return;

@@ -3,11 +3,9 @@ const path = require("path");
 const fs = require("fs");
 const { randomUUID } = require("crypto");
 const debugLogger = require("./debugLogger");
-const { buildNoteSearchQuery } = require("./noteSearch");
-const { normalizeStoredSpeakerCount } = require("./speakerCount");
 const { app } = require("electron");
 
-// Server-enforced trigger cap (openwhispr-api); enforced here so one oversized
+// Server-enforced trigger cap (murmur-api); enforced here so one oversized
 // trigger can't 400 the whole sync batch.
 const MAX_SNIPPET_TRIGGER_LENGTH = 100;
 
@@ -3365,40 +3363,6 @@ class DatabaseManager {
     }
   }
 
-  searchNotes(query, limit = 50, spaceId = null, folderId = null) {
-    try {
-      if (!this.db) throw new Error("Database not initialized");
-      const ftsQuery = buildNoteSearchQuery(query);
-      if (!ftsQuery) return [];
-      const params = [ftsQuery];
-      let scopeFilter = "";
-      if (spaceId != null) {
-        scopeFilter += " AND n.space_id = ?";
-        params.push(spaceId);
-      }
-      if (folderId != null) {
-        scopeFilter += " AND n.folder_id = ?";
-        params.push(folderId);
-      }
-      params.push(limit);
-      return this.db
-        .prepare(
-          `
-        SELECT n.*
-        FROM notes n
-        JOIN notes_fts ON notes_fts.rowid = n.id
-        WHERE notes_fts MATCH ? AND n.deleted_at IS NULL${scopeFilter}
-        ORDER BY notes_fts.rank
-        LIMIT ?
-      `
-        )
-        .all(...params);
-    } catch (error) {
-      debugLogger.error("Error searching notes", { error: error.message }, "database");
-      throw error;
-    }
-  }
-
   getUpcomingEvents(windowMinutes = 1440) {
     try {
       if (!this.db) throw new Error("Database not initialized");
@@ -4325,9 +4289,9 @@ class DatabaseManager {
         INSERT INTO notes (client_note_id, cloud_id, title, content, enhanced_content,
           enhancement_prompt, enhanced_at_content_hash, note_type, source_file,
           audio_duration_seconds, transcript, folder_id, space_id, participants, calendar_event_id,
-          diarization_enabled, expected_speaker_count, updated_by_user_id, owner_user_id, sync_status, created_at, updated_at,
+          updated_by_user_id, owner_user_id, sync_status, created_at, updated_at,
           cloud_updated_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'synced', ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'synced', ?, ?, ?)
         ON CONFLICT(client_note_id) DO UPDATE SET
           cloud_id = excluded.cloud_id,
           title = excluded.title,
@@ -4350,8 +4314,6 @@ class DatabaseManager {
           space_id = excluded.space_id,
           participants = COALESCE(excluded.participants, participants),
           calendar_event_id = COALESCE(excluded.calendar_event_id, calendar_event_id),
-          diarization_enabled = COALESCE(excluded.diarization_enabled, diarization_enabled),
-          expected_speaker_count = COALESCE(excluded.expected_speaker_count, expected_speaker_count),
           updated_by_user_id = COALESCE(excluded.updated_by_user_id, updated_by_user_id),
           owner_user_id = COALESCE(excluded.owner_user_id, owner_user_id),
           sync_status = 'synced',
@@ -4375,8 +4337,6 @@ class DatabaseManager {
         localSpaceId ?? this.getPrivateSpaceId(),
         cloudNote.participants || null,
         cloudNote.calendar_event_id || null,
-        cloudNote.diarization_enabled ?? null,
-        normalizeStoredSpeakerCount(cloudNote.expected_speaker_count),
         cloudNote.updated_by_user_id || null,
         cloudNote.user_id || null,
         cloudNote.created_at,

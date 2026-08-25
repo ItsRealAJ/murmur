@@ -1,5 +1,5 @@
 {
-  description = "OpenWhispr – privacy-first voice dictation, meeting transcription & notes";
+  description = "Murmur – local-first voice dictation";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -16,16 +16,16 @@
         system:
         let
           pkgs = import nixpkgs { inherit system; };
-          openwhispr = pkgs.callPackage ./nix/package.nix { };
+          murmur = pkgs.callPackage ./nix/package.nix { };
         in
         {
-          default = openwhispr;
-          openwhispr = openwhispr;
+          default = murmur;
+          murmur = murmur;
         }
       );
 
       overlays.default = _final: _prev: {
-        openwhispr = self.packages.x86_64-linux.openwhispr;
+        murmur = self.packages.x86_64-linux.murmur;
       };
 
       nixosModules.default = import ./nix/module.nix self;

@@ -11,7 +11,7 @@ function collectAudioCaptureHelperPids(managers) {
     .filter((pid) => Number.isInteger(pid) && pid > 0);
 }
 
-// Every pid whose mic use is OpenWhispr's own: the Electron process tree plus
+// Every pid whose mic use is Murmur's own: the Electron process tree plus
 // any live capture helper. Evaluated on each call so helpers are covered from
 // the moment they spawn and drop out when they exit.
 function createExcludedProcessIdProvider(

@@ -5,7 +5,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  /* OpenWhispr Theme — registers color tokens with Tailwind v4.
+  /* Murmur Theme — registers color tokens with Tailwind v4.
      These are the light-mode defaults; .dark overrides them below. */
   --color-primary: #2563eb;
   --color-primary-foreground: #ffffff;
@@ -777,7 +777,7 @@ body:has(.onboarding-canvas) kbd {
     0 8px 16px color-mix(in oklch, var(--onboarding-keycap-shadow) 7%, transparent);
 }
 
-/* OpenWhispr Brand Typography */
+/* Murmur Brand Typography */
 .brand-heading {
   font-family: var(--font-family-sans);
   font-weight: 600;

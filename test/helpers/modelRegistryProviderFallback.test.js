@@ -13,7 +13,7 @@ test("non-registry ids of every local family fall back to the local provider", a
     initialStorage: { _providerSettingsMigrated: "1", cleanupMode: "local" },
   });
   const vite = await createRendererServer(t, {
-    cachePrefix: "openwhispr-model-provider-fallback-test-",
+    cachePrefix: "murmur-model-provider-fallback-test-",
   });
   const { getModelProvider } = await vite.ssrLoadModule("/models/ModelRegistry.ts");
 
@@ -35,7 +35,7 @@ test("gemma fallback does not capture gemini ids or registry cloud gemma models"
     initialStorage: { _providerSettingsMigrated: "1", cleanupMode: "local" },
   });
   const vite = await createRendererServer(t, {
-    cachePrefix: "openwhispr-model-provider-fallback-test-",
+    cachePrefix: "murmur-model-provider-fallback-test-",
   });
   const { getModelProvider } = await vite.ssrLoadModule("/models/ModelRegistry.ts");
 

@@ -48,7 +48,7 @@ const EMPTY_RESPONSE_TEXT = JSON.parse(
 async function renderChatStreaming(t, { electronAPI = {}, settings = {} } = {}) {
   installBrowserGlobals(t, { window: { electronAPI } });
   const vite = await createRendererServer(t, {
-    cachePrefix: "openwhispr-chat-streaming-cancellation-test-",
+    cachePrefix: "murmur-chat-streaming-cancellation-test-",
   });
   const [{ default: viteI18next }, { initReactI18next }] = await Promise.all([
     vite.ssrLoadModule("i18next"),

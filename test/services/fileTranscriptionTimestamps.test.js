@@ -25,7 +25,7 @@ function byokConfig() {
 test("timestamps opt-in reaches the BYOK IPC call and segments flow back", async (t) => {
   const { window } = installBrowserGlobals(t);
   const vite = await createRendererServer(t, {
-    cachePrefix: "openwhispr-file-timestamps-test-",
+    cachePrefix: "murmur-file-timestamps-test-",
     mockModules: {
       "/lib/auth": "export const withSessionRefresh = (fn) => fn();",
     },

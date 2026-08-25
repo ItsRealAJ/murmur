@@ -94,7 +94,7 @@ async function mountLiveTranscript(t, initialProps = {}) {
   installBrowserGlobals(t);
   const container = installHookDom(t);
   const vite = await createRendererServer(t, {
-    cachePrefix: "openwhispr-live-transcript-hold-test-",
+    cachePrefix: "murmur-live-transcript-hold-test-",
   });
   const { useLiveTranscriptPanel } = await vite.ssrLoadModule("/hooks/useLiveTranscriptPanel.js");
   let props = {

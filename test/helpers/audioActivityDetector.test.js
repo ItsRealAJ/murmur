@@ -663,7 +663,7 @@ test("linux: a stale startup reconciliation cannot restore reliability after lis
 });
 
 test("win32: portable native state seam handles reference counts and failures", (t) => {
-  const temporaryDirectory = fs.mkdtempSync(path.join(os.tmpdir(), "openwhispr-mic-listener-"));
+  const temporaryDirectory = fs.mkdtempSync(path.join(os.tmpdir(), "murmur-mic-listener-"));
   const executablePath = path.join(temporaryDirectory, "mic-listener-state-test");
   t.after(() => fs.rmSync(temporaryDirectory, { force: true, recursive: true }));
 

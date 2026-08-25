@@ -25,7 +25,10 @@ const enterpriseIds = modelData.enterpriseProviders.map((p) => p.id);
 
 test("every selectable cloud and enterprise provider has an inference handler", () => {
   const handlers = inferenceProviderIds();
-  assert.ok(cloudIds.length > 0 && enterpriseIds.length > 0, "catalogs are non-empty");
+  // Mumur ships no managed-enterprise providers (bedrock/azure/vertex were
+  // removed with the enterprise inference path), so that catalog is empty.
+  assert.equal(enterpriseIds.length, 0, "enterprise catalog is empty in this fork");
+  assert.ok(cloudIds.length > 0, "cloud catalog is non-empty");
 
   for (const id of [...cloudIds, ...enterpriseIds]) {
     assert.ok(handlers.includes(id), `provider "${id}" is selectable but has no inference handler`);

@@ -17,7 +17,6 @@ import { stripThinkingTags } from "../helpers/stripThinking.js";
 import { getLlmRequestTimeoutSeconds } from "../helpers/llmRequestTimeout.js";
 import { streamText, stepCountIs } from "ai";
 import { getAIModel } from "./ai/providers";
-import { createEnterpriseChatModel } from "./ai/enterpriseChatModel";
 import { getManagedScopeResolution } from "../stores/enterpriseIdentityStore";
 import type { InferenceScope } from "../config/inferenceScopes";
 import { PROVIDER_REGISTRY, type ProviderContext } from "./ai/inferenceProviders";
@@ -817,11 +816,11 @@ class ReasoningService extends BaseReasoningService {
     // exemption below can't apply — honor the toggle directly.
     const openrouterDisableThinking = provider === "openrouter" && config.disableThinking === true;
     // Resolving a Tinfoil model refreshes the registry, so read model config after it.
-    const aiModel = isEnterprise
-      ? createEnterpriseChatModel(provider as EnterpriseProvider, model, config.inferenceScope)
-      : await getAIModel(aiProvider, model, apiKey, baseURL, {
-          disableThinking: openrouterDisableThinking,
-        });
+    // Mumur has no managed-enterprise route (getManagedScopeResolution is always
+    // "manual"), so model resolution is always the BYOK/local path.
+    const aiModel = await getAIModel(aiProvider, model, apiKey, baseURL, {
+      disableThinking: openrouterDisableThinking,
+    });
 
     if (abortController.signal.aborted) {
       yield { type: "done", finishReason: "stop" };

@@ -107,7 +107,7 @@ const waitForMicrotasks = () => new Promise((resolve) => setImmediate(resolve));
 test("raw self-hosted streaming filters split tags and flushes visible trailing text", async (t) => {
   const { reasoningService } = await loadReasoningService(
     t,
-    "openwhispr-raw-streaming-think-test-"
+    "murmur-raw-streaming-think-test-"
   );
   const originalFetch = globalThis.fetch;
   t.after(() => {
@@ -132,7 +132,7 @@ test("raw self-hosted streaming filters split tags and flushes visible trailing 
 test("raw self-hosted streaming flushes visible trailing text at body EOF", async (t) => {
   const { reasoningService } = await loadReasoningService(
     t,
-    "openwhispr-raw-streaming-think-eof-test-"
+    "murmur-raw-streaming-think-eof-test-"
   );
   const originalFetch = globalThis.fetch;
   t.after(() => {
@@ -157,7 +157,7 @@ test("raw self-hosted streaming flushes visible trailing text at body EOF", asyn
 test("tool-enabled self-hosted streaming filters nested tags", async (t) => {
   const { reasoningService, vite } = await loadReasoningService(
     t,
-    "openwhispr-tool-streaming-think-test-"
+    "murmur-tool-streaming-think-test-"
   );
   const { ToolRegistry } = await vite.ssrLoadModule("/services/tools/ToolRegistry.ts");
   const registry = new ToolRegistry();
@@ -194,7 +194,7 @@ test("tool-enabled self-hosted streaming filters nested tags", async (t) => {
 test("tool-loop filtering resets after an unterminated reasoning block", async (t) => {
   const { reasoningService, vite } = await loadReasoningService(
     t,
-    "openwhispr-tool-step-streaming-think-test-"
+    "murmur-tool-step-streaming-think-test-"
   );
   const { ToolRegistry } = await vite.ssrLoadModule("/services/tools/ToolRegistry.ts");
   const registry = new ToolRegistry();
@@ -241,7 +241,7 @@ test("tool-loop filtering resets after an unterminated reasoning block", async (
 test("tool-enabled streaming does not flush buffered text after abort", async (t) => {
   const { reasoningService } = await loadReasoningService(
     t,
-    "openwhispr-abort-streaming-think-test-"
+    "murmur-abort-streaming-think-test-"
   );
   const originalFetch = globalThis.fetch;
   t.after(() => {
@@ -295,7 +295,7 @@ test("cancelling during local model setup stops before streaming begins", async 
   });
   const { reasoningService } = await loadReasoningService(
     t,
-    "openwhispr-model-setup-cancel-test-",
+    "murmur-model-setup-cancel-test-",
     {
       window: {
         electronAPI: {
@@ -342,7 +342,7 @@ test("cancelling tool-ineligible local setup prevents raw streaming", async (t) 
   });
   const { reasoningService } = await loadReasoningService(
     t,
-    "openwhispr-tool-ineligible-model-setup-cancel-test-",
+    "murmur-tool-ineligible-model-setup-cancel-test-",
     {
       window: {
         electronAPI: {
@@ -387,7 +387,7 @@ test("cancelling tool-ineligible local setup prevents raw streaming", async (t) 
 });
 
 test("cancelling a raw stream after its reader starts ends normally", async (t) => {
-  const { reasoningService } = await loadReasoningService(t, "openwhispr-raw-reader-cancel-test-");
+  const { reasoningService } = await loadReasoningService(t, "murmur-raw-reader-cancel-test-");
   const originalFetch = globalThis.fetch;
   t.after(() => {
     globalThis.fetch = originalFetch;
@@ -433,7 +433,7 @@ test("cancelling a raw stream after its reader starts ends normally", async (t) 
 });
 
 test("a timeout-owned abort during raw response reading remains a timeout error", async (t) => {
-  const { reasoningService } = await loadReasoningService(t, "openwhispr-raw-reader-timeout-test-");
+  const { reasoningService } = await loadReasoningService(t, "murmur-raw-reader-timeout-test-");
   const originalFetch = globalThis.fetch;
   const originalSetTimeout = globalThis.setTimeout;
   t.after(() => {
@@ -479,7 +479,7 @@ test("a timeout-owned abort during raw response reading remains a timeout error"
 test("tool-enabled streaming rejects instead of flushing buffered text after a stream error", async (t) => {
   const { reasoningService } = await loadReasoningService(
     t,
-    "openwhispr-error-streaming-think-test-"
+    "murmur-error-streaming-think-test-"
   );
   const originalFetch = globalThis.fetch;
   t.after(() => {
@@ -539,7 +539,7 @@ test("tool-enabled streaming rejects instead of flushing buffered text after a s
 test("self-hosted streaming preserves think tags when thinking is enabled", async (t) => {
   const { reasoningService } = await loadReasoningService(
     t,
-    "openwhispr-enabled-streaming-think-test-"
+    "murmur-enabled-streaming-think-test-"
   );
   const originalFetch = globalThis.fetch;
   t.after(() => {
@@ -565,7 +565,7 @@ test("self-hosted streaming preserves think tags when thinking is enabled", asyn
 test("non-local streaming remains unfiltered", async (t) => {
   const { reasoningService } = await loadReasoningService(
     t,
-    "openwhispr-cloud-streaming-think-test-",
+    "murmur-cloud-streaming-think-test-",
     { window: { electronAPI: { getGroqKey: async () => "test-key" } } }
   );
   const originalFetch = globalThis.fetch;
@@ -588,7 +588,7 @@ test("non-local streaming remains unfiltered", async (t) => {
 test("chat cancellation leaves single-shot reasoning alive until all requests are cancelled", async (t) => {
   const { reasoningService } = await loadReasoningService(
     t,
-    "openwhispr-non-streaming-reason-cancel-test-",
+    "murmur-non-streaming-reason-cancel-test-",
     { window: { electronAPI: { getGroqKey: async () => "test-key" } } }
   );
   const originalFetch = globalThis.fetch;
@@ -633,7 +633,7 @@ test("cloud agent streaming correlates events to the initiating request", async 
   const bridge = createAgentStreamBridge();
   const { reasoningService } = await loadReasoningService(
     t,
-    "openwhispr-cloud-agent-correlation-test-",
+    "murmur-cloud-agent-correlation-test-",
     { window: { electronAPI: bridge.electronAPI } }
   );
   const stream = reasoningService.processTextStreamingCloud([{ role: "user", content: "hello" }], {
@@ -675,7 +675,7 @@ test("cancelling a cloud agent stream aborts main and ends the local generator",
   const bridge = createAgentStreamBridge();
   const { reasoningService } = await loadReasoningService(
     t,
-    "openwhispr-cloud-agent-cancel-test-",
+    "murmur-cloud-agent-cancel-test-",
     { window: { electronAPI: bridge.electronAPI } }
   );
   const stream = reasoningService.processTextStreamingCloud([{ role: "user", content: "hello" }], {
@@ -696,7 +696,7 @@ test("cancelling a cloud stream before its first next prevents the request", asy
   const bridge = createAgentStreamBridge();
   const { reasoningService } = await loadReasoningService(
     t,
-    "openwhispr-cloud-agent-pre-next-cancel-test-",
+    "murmur-cloud-agent-pre-next-cancel-test-",
     { window: { electronAPI: bridge.electronAPI } }
   );
   const stream = reasoningService.processTextStreamingCloud([{ role: "user", content: "hello" }], {
@@ -717,7 +717,7 @@ test("cancelling a cloud agent stream drops chunks already queued locally", asyn
   const bridge = createAgentStreamBridge();
   const { reasoningService } = await loadReasoningService(
     t,
-    "openwhispr-cloud-agent-queued-cancel-test-",
+    "murmur-cloud-agent-queued-cancel-test-",
     { window: { electronAPI: bridge.electronAPI } }
   );
   const stream = reasoningService.processTextStreamingCloud([{ role: "user", content: "hello" }], {
@@ -742,7 +742,7 @@ test("cancelling during a cloud tool execution prevents results and later model 
   const bridge = createAgentStreamBridge();
   const { reasoningService } = await loadReasoningService(
     t,
-    "openwhispr-cloud-agent-tool-cancel-test-",
+    "murmur-cloud-agent-tool-cancel-test-",
     { window: { electronAPI: bridge.electronAPI } }
   );
   let resolveTool;
@@ -790,7 +790,7 @@ test("cancelling during a cloud tool execution prevents results and later model 
 test("a provider error part rejects the agent stream instead of ending it silently", async (t) => {
   const { reasoningService, vite } = await loadReasoningService(
     t,
-    "openwhispr-stream-error-part-test-"
+    "murmur-stream-error-part-test-"
   );
   const { ToolRegistry } = await vite.ssrLoadModule("/services/tools/ToolRegistry.ts");
   const registry = new ToolRegistry();

@@ -151,7 +151,7 @@ function resolveProviderRequest(config) {
 
   if (provider === "openai") {
     const override = normalizeBaseUrl(
-      process.env.OPENWHISPR_OPENAI_BASE_URL || process.env.OPENAI_BASE_URL
+      process.env.MURMUR_OPENAI_BASE_URL || process.env.OPENAI_BASE_URL
     );
     if (override) endpoints = buildModelEndpoints(override);
   }

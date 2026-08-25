@@ -320,7 +320,7 @@ static int paste_via_portal(paste_mode_t mode, const char *restore_token, int co
     g_variant_builder_add(&opts, "{sv}", "handle_token",
                           g_variant_new_string("createsession"));
     g_variant_builder_add(&opts, "{sv}", "session_handle_token",
-                          g_variant_new_string("openwhispr"));
+                          g_variant_new_string("murmur"));
 
     g_dbus_connection_call_sync(app.conn, PORTAL_BUS, PORTAL_PATH,
         PORTAL_IFACE, "CreateSession",
@@ -647,7 +647,7 @@ static int paste_via_uinput(paste_mode_t mode, int copy_mode) {
     usetup.id.bustype = BUS_USB;
     usetup.id.vendor  = 0x1234;
     usetup.id.product = 0x5678;
-    snprintf(usetup.name, UINPUT_MAX_NAME_SIZE, "openwhispr-paste");
+    snprintf(usetup.name, UINPUT_MAX_NAME_SIZE, "murmur-paste");
 
     if (ioctl(fd, UI_DEV_SETUP, &usetup) < 0 ||
         ioctl(fd, UI_DEV_CREATE) < 0) {
@@ -701,7 +701,7 @@ static int send_media_play_pause(void) {
             usetup.id.bustype = BUS_USB;
             usetup.id.vendor  = 0x1234;
             usetup.id.product = 0x5678;
-            snprintf(usetup.name, UINPUT_MAX_NAME_SIZE, "openwhispr-media");
+            snprintf(usetup.name, UINPUT_MAX_NAME_SIZE, "murmur-media");
 
             if (ioctl(fd, UI_DEV_SETUP, &usetup) >= 0 &&
                 ioctl(fd, UI_DEV_CREATE) >= 0) {

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Post-install script for OpenWhispr (deb/rpm)
+# Post-install script for Murmur (deb/rpm)
 # Sets up chrome-sandbox permissions and ydotool daemon prerequisites.
 # Best-effort: nothing here may fail the package install.
 
@@ -10,7 +10,7 @@ set -uo pipefail
 CHROME_SANDBOX=$(dpkg -L open-whispr 2>/dev/null | grep chrome-sandbox || echo "")
 if [ -z "$CHROME_SANDBOX" ]; then
   # Fallback: conventional electron-builder install path
-  CHROME_SANDBOX="/opt/OpenWhispr/chrome-sandbox"
+  CHROME_SANDBOX="/opt/Murmur/chrome-sandbox"
 fi
 if [ -f "$CHROME_SANDBOX" ]; then
   chown root:root "$CHROME_SANDBOX" 2>/dev/null || true

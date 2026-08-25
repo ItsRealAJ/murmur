@@ -1,5 +1,13 @@
 # Changelog
 
+> **Note:** Murmur forked from OpenWhispr v1.8.3 (commit `fa11ddc9`). Everything below
+> this line is OpenWhispr's release history, retained for provenance. Entries describe
+> features Murmur may no longer ship — meetings, calendars, notes, semantic search, teams,
+> and the hosted subscription tier were all removed at the fork point.
+
+---
+
+
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),

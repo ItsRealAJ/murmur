@@ -3,9 +3,9 @@
  *
  * Captures system audio for meeting transcription via WASAPI process
  * loopback (VAD\Process_Loopback, Windows 10 2004+). Runs in EXCLUDE mode
- * against OpenWhispr's own process tree, so it hears every application on
+ * against Murmur's own process tree, so it hears every application on
  * every render endpoint — independent of the default output device — while
- * never re-capturing OpenWhispr's own sounds.
+ * never re-capturing Murmur's own sounds.
  *
  * Commands:
  *   windows-system-audio-helper.exe probe

@@ -25,7 +25,7 @@ test("the Vite dev module graph exposes the shared renderer geometry exports", a
   }
 
   const { createServer } = await import("vite");
-  const cacheDir = fs.mkdtempSync(path.join(os.tmpdir(), "openwhispr-vite-geometry-test-"));
+  const cacheDir = fs.mkdtempSync(path.join(os.tmpdir(), "murmur-vite-geometry-test-"));
   const vite = await createServer({
     root: SRC_ROOT,
     cacheDir,

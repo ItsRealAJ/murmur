@@ -1,6 +1,6 @@
 // Single source of truth for batch speech-to-text routing across dictation,
 // retry, and upload. Callers resolve their scope's settings into the flat base
-// names and handle the OpenWhispr-cloud pipeline upstream; streaming provider
+// names and handle the Murmur-cloud pipeline upstream; streaming provider
 // selection is a live-recorder concern and stays in audioManager.
 //
 // Loaded by the renderer and the main process alike (main uses dynamic import):
@@ -65,7 +65,7 @@ export type TranscriptionRoute =
   | { transport: "local" }
   | {
       transport: "proxied";
-      provider: "tinfoil" | "mistral" | "xai" | "corti";
+      provider: "tinfoil" | "mistral" | "xai";
       model: string | null;
       language?: string;
       sizeCapBytes: number;
@@ -123,14 +123,12 @@ export function resolveByokModel(provider: string, configuredModel?: string): st
     const matchesProvider =
       (provider === "groq" && trimmed.startsWith("whisper-large-v3")) ||
       (provider === "openai" && (trimmed.startsWith("gpt-4o") || trimmed === "whisper-1")) ||
-      (provider === "mistral" && trimmed.startsWith("voxtral-")) ||
-      (provider === "corti" && trimmed.startsWith("corti-"));
+      (provider === "mistral" && trimmed.startsWith("voxtral-"));
     if (matchesProvider) return trimmed;
   }
   if (provider === "groq") return "whisper-large-v3-turbo";
   if (provider === "xai") return "grok-stt";
   if (provider === "mistral") return "voxtral-mini-latest";
-  if (provider === "corti") return "corti-transcribe";
   return "gpt-4o-mini-transcribe";
 }
 
@@ -242,19 +240,6 @@ export function resolveTranscriptionRoute({
       sizeCapBytes: BYOK_FILE_SIZE_LIMIT,
     };
   }
-  if (provider === "corti") {
-    return {
-      transport: "proxied",
-      provider,
-      model,
-      // Corti requires a concrete primaryLanguage; default to English when auto-detecting
-      language: language || "en",
-      sizeCapBytes: BYOK_FILE_SIZE_LIMIT,
-      cortiEnvironment: s.cortiEnvironment || "us",
-      cortiTenant: (s.cortiTenant || "").trim() || "base",
-    };
-  }
-
   if (provider === "custom") {
     const rawUrl = (s.cloudTranscriptionBaseUrl || "").trim();
     const base = normalizeBaseUrl(rawUrl);

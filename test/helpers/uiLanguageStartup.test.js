@@ -66,7 +66,7 @@ test("fresh Chinese browser locale survives settings hydration", async (t) => {
     },
   });
   const vite = await createRendererServer(t, {
-    cachePrefix: "openwhispr-ui-language-startup-test-",
+    cachePrefix: "murmur-ui-language-startup-test-",
   });
 
   const { default: i18n } = await vite.ssrLoadModule("/i18n.ts");
@@ -97,7 +97,7 @@ test("fresh Chinese browser locale survives settings hydration", async (t) => {
 });
 
 test("main locale fallback remains implicit and yields to an explicit preference", (t) => {
-  const userDataDirectory = fs.mkdtempSync(path.join(os.tmpdir(), "openwhispr-ui-language-"));
+  const userDataDirectory = fs.mkdtempSync(path.join(os.tmpdir(), "murmur-ui-language-"));
   const originalEnvironment = { ...process.env };
   const originalResourcesPath = process.resourcesPath;
   process.resourcesPath = userDataDirectory;

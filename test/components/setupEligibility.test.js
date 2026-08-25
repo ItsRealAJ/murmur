@@ -114,7 +114,7 @@ test("dictation-only policies ignore LLM availability when the agent is disabled
 
   const result = await availability(policy, { agentAllowed: false });
   assert.deepEqual(result, {
-    cloud: true,
+    cloud: false,
     local: true,
     byok: true,
     selfHosted: true,

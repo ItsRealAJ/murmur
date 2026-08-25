@@ -22,7 +22,7 @@ test("Prompt Studio labels dictation-agent runs for policy enforcement", async (
   globalThis.__promptStudioReasoningCalls = calls;
 
   const { createServer } = await import("vite");
-  const cacheDir = fs.mkdtempSync(path.join(os.tmpdir(), "openwhispr-prompt-studio-test-"));
+  const cacheDir = fs.mkdtempSync(path.join(os.tmpdir(), "murmur-prompt-studio-test-"));
   const vite = await createServer({
     root: path.resolve(__dirname, "../../src"),
     cacheDir,

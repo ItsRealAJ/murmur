@@ -15,7 +15,7 @@ const INACTIVE_RESET_MS = 60 * 1000;
 const EXEC_OPTS = { timeout: 5000, encoding: "utf8" };
 
 class AudioActivityDetector extends EventEmitter {
-  // `getExcludedProcessIds` lists every pid whose mic use is OpenWhispr's own:
+  // `getExcludedProcessIds` lists every pid whose mic use is Murmur's own:
   // the Electron process tree by default, plus any live capture helpers when
   // main.js composes them in (see electronProcessIds.js).
   constructor(getExcludedProcessIds = () => [...getOwnProcessPids()]) {

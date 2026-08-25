@@ -1,7 +1,7 @@
 import assistantPreview from "../../assets/onboarding-assistant-preview.webp";
 
 /**
- * The OpenWhispr Assistant illustration on the assistant-hotkey step.
+ * The Murmur Assistant illustration on the assistant-hotkey step.
  *
  * A single exported image rather than a DOM composition: the artwork (grass
  * backdrop, prompt bubble, mail window, dictation pill) ships as one 2x export,

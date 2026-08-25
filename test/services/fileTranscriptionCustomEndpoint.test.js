@@ -21,7 +21,7 @@ function customConfig(baseUrl) {
 test("file transcription enforces Custom endpoint security before IPC", async (t) => {
   const { window } = installBrowserGlobals(t);
   const vite = await createRendererServer(t, {
-    cachePrefix: "openwhispr-file-custom-endpoint-test-",
+    cachePrefix: "murmur-file-custom-endpoint-test-",
     mockModules: {
       "/lib/auth": "export const withSessionRefresh = (fn) => fn();",
     },
@@ -90,7 +90,7 @@ test("file transcription enforces Custom endpoint security before IPC", async (t
 test("self-hosted file transcription bypasses stale Custom endpoint validation", async (t) => {
   const { window } = installBrowserGlobals(t);
   const vite = await createRendererServer(t, {
-    cachePrefix: "openwhispr-file-self-hosted-endpoint-test-",
+    cachePrefix: "murmur-file-self-hosted-endpoint-test-",
     mockModules: {
       "/lib/auth": "export const withSessionRefresh = (fn) => fn();",
     },

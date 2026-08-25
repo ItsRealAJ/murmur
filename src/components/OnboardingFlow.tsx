@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AlertCircle } from "lucide-react";
-import { CompactAuthenticationFlow } from "./CompactAuthenticationFlow";
 import UseCaseStep from "./onboarding/UseCaseStep";
 import { hasUseCaseIntent } from "./onboarding/useCases";
 import OnboardingShell, { OnboardingStepHeader } from "./onboarding/OnboardingShell";
@@ -10,7 +9,6 @@ import LanguageSelectionStep from "./onboarding/LanguageSelectionStep";
 import ShortcutSetupStep from "./onboarding/ShortcutSetupStep";
 import AssistantHotkeyPreview from "./onboarding/AssistantHotkeyPreview";
 import DemoStep from "./onboarding/DemoStep";
-import CalendarConnectionsStep from "./onboarding/CalendarConnectionsStep";
 import SetupChoiceStep from "./onboarding/SetupChoiceStep";
 import { ByokProviderStep, LocalModelSetupStep } from "./onboarding/ProviderSetupStep";
 import { AlertDialog } from "./ui/dialog";
@@ -22,7 +20,6 @@ import { useSettings } from "../hooks/useSettings";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { useHotkeyRegistration } from "../hooks/useHotkeyRegistration";
 import { useHotkeyModeInfo } from "../hooks/useHotkeyModeInfo";
-import { useWorkspace } from "../hooks/useWorkspace";
 import { usePolicyStore } from "../stores/policyStore";
 import { isAgentAllowed } from "../stores/policyRules";
 import { useSettingsStore } from "../stores/settingsStore";
@@ -32,7 +29,6 @@ import { getValidationMessage } from "../utils/hotkeyValidator";
 import { validateHotkeyForSlot } from "../utils/hotkeyValidation";
 import { getPlatform } from "../utils/platform";
 import { ACCESSIBILITY_SKIPPED_KEY, areRequiredPermissionsMet } from "../utils/permissions";
-import { cloudPost } from "../services/cloudApi";
 import logger from "../utils/logger";
 import {
   COMPACT_STEPS,
@@ -127,12 +123,10 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
   // This hook also starts the membership fetch for already-authenticated users;
   // relying on the login transition alone would leave resumed onboarding stuck
   // waiting for workspace resolution after an app restart.
-  const {
-    active: activeWorkspace,
-    workspaces,
-    loaded: workspacesLoaded,
-    setActive: setActiveWorkspace,
-  } = useWorkspace();
+  const activeWorkspace = null;
+  const workspaces: never[] = [];
+  const workspacesLoaded = true;
+  const setActiveWorkspace = (_id: string | null): void => {};
   const enterpriseWorkspace = useMemo(
     () => resolveEnterpriseWorkspaceForOnboarding(activeWorkspace, workspaces),
     [activeWorkspace, workspaces]
@@ -283,11 +277,7 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
 
   const syncUseCases = useCallback(() => {
     if (!isSignedIn || session.authPath === "guest") return;
-    cloudPost("/api/onboarding-intent", {
-      useCases: settings.onboardingUseCases,
-      note: settings.onboardingUseCaseNote || undefined,
-      spokenLanguages: settings.spokenLanguages,
-    }).catch((error) => logger.warn("Failed to sync onboarding intent", { error }, "onboarding"));
+    // Upstream posted onboarding intent to its analytics backend. Mumur does not.
   }, [
     isSignedIn,
     session.authPath,
@@ -562,25 +552,6 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
 
   const renderStep = () => {
     switch (currentStepId) {
-      case "auth":
-        return (
-          <div className="min-h-full w-full">
-            <CompactAuthenticationFlow
-              onContinueWithoutAccount={() => {
-                // Guests continue onto their route's permissions step — jumping
-                // straight to setup-choice would skip the permission grants and
-                // hotkey the guest route exists to guarantee (see flow.ts).
-                setAuthPath("guest");
-                goTo("permissions");
-              }}
-              onAuthComplete={() => {
-                setAuthPath("account");
-                goTo(session.setupMode === "cloud" ? "setup-choice" : "permissions");
-              }}
-            />
-          </div>
-        );
-
       case "permissions":
         return (
           <CompactPermissionsStep
@@ -826,7 +797,6 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
                 so the content scrolls here instead — px-1/pb-1 keeps focus rings
                 off the clip edge. */}
             <div className="onboarding-shell-scroll min-h-0 w-full flex-1 overflow-y-auto px-1 pb-1">
-              <CalendarConnectionsStep />
             </div>
           </div>
         );

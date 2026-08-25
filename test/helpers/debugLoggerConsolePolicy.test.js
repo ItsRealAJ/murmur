@@ -15,14 +15,14 @@ function withRuntime({ platform, argv = [], env = {}, electron }, loadModule) {
   const previousEnvironment = {
     LOG_LEVEL: process.env.LOG_LEVEL,
     NODE_ENV: process.env.NODE_ENV,
-    OPENWHISPR_LOG_LEVEL: process.env.OPENWHISPR_LOG_LEVEL,
+    MURMUR_LOG_LEVEL: process.env.MURMUR_LOG_LEVEL,
   };
 
   Object.defineProperty(process, "platform", { value: platform, configurable: true });
   process.argv = ["node", "main.js", ...argv];
   delete process.env.LOG_LEVEL;
   delete process.env.NODE_ENV;
-  delete process.env.OPENWHISPR_LOG_LEVEL;
+  delete process.env.MURMUR_LOG_LEVEL;
   Object.assign(process.env, env);
 
   Module._load = function loadWithElectronMock(request, parent, isMain) {
@@ -38,7 +38,7 @@ function withRuntime({ platform, argv = [], env = {}, electron }, loadModule) {
     process.argv = previousArgv;
     delete process.env.LOG_LEVEL;
     delete process.env.NODE_ENV;
-    delete process.env.OPENWHISPR_LOG_LEVEL;
+    delete process.env.MURMUR_LOG_LEVEL;
     for (const [name, value] of Object.entries(previousEnvironment)) {
       if (value !== undefined) process.env[name] = value;
     }
@@ -128,12 +128,12 @@ test("log-level settings never opt a packaged Windows build into console logging
   const cases = [
     { name: "--log-level", argv: ["--log-level=debug"] },
     {
-      name: "OPENWHISPR_LOG_LEVEL=debug",
-      env: { OPENWHISPR_LOG_LEVEL: "debug" },
+      name: "MURMUR_LOG_LEVEL=debug",
+      env: { MURMUR_LOG_LEVEL: "debug" },
     },
     {
-      name: "OPENWHISPR_LOG_LEVEL=info",
-      env: { OPENWHISPR_LOG_LEVEL: "info" },
+      name: "MURMUR_LOG_LEVEL=info",
+      env: { MURMUR_LOG_LEVEL: "info" },
     },
     { name: "LOG_LEVEL", env: { LOG_LEVEL: "debug" } },
   ];
@@ -187,11 +187,11 @@ test("development and non-Windows packaged builds preserve console logging", asy
 test(
   "packaged Windows retains debug logs in the file sink while suppressing the console",
   async () => {
-    const userDataPath = fs.mkdtempSync(path.join(os.tmpdir(), "openwhispr-debug-logger-"));
+    const userDataPath = fs.mkdtempSync(path.join(os.tmpdir(), "murmur-debug-logger-"));
     const logger = loadLogger({
       platform: "win32",
       isPackaged: true,
-      env: { OPENWHISPR_LOG_LEVEL: "debug" },
+      env: { MURMUR_LOG_LEVEL: "debug" },
       isReady: true,
       userDataPath,
     });

@@ -8,7 +8,7 @@ const enTranslations = require("../../src/locales/en/translation.json");
 test("reasoning policy asserts throw messages localized to the active UI language", async (t) => {
   installBrowserGlobals(t);
   const vite = await createRendererServer(t, {
-    cachePrefix: "openwhispr-reasoning-policy-test-",
+    cachePrefix: "murmur-reasoning-policy-test-",
   });
 
   const { assertAgentAllowedByPolicy, assertReasoningAllowedByPolicy } = await vite.ssrLoadModule(

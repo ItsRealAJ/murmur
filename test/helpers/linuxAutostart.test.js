@@ -19,7 +19,7 @@ function setEnv(name, value) {
 
 function withTmpXdgDirs(fn) {
   return async () => {
-    const root = fs.mkdtempSync(path.join(os.tmpdir(), "openwhispr-autostart-test-"));
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "murmur-autostart-test-"));
     const saved = Object.fromEntries(MANAGED_ENV.map((name) => [name, process.env[name]]));
     MANAGED_ENV.forEach((name) => setEnv(name, undefined));
     process.env.XDG_CONFIG_HOME = path.join(root, "config");

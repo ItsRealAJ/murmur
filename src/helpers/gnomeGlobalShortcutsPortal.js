@@ -327,7 +327,7 @@ class GnomeGlobalShortcutsPortal {
   }
 
   _newToken() {
-    return `openwhispr_${crypto.randomUUID().replace(/-/g, "_")}`;
+    return `murmur_${crypto.randomUUID().replace(/-/g, "_")}`;
   }
 
   _requestPath(token) {

@@ -42,7 +42,7 @@ test("self-hosted routes to the configured server and wins over stale flags", as
 });
 
 test("self-hosted mode without a URL fails closed unless the provider is custom", async () => {
-  for (const provider of ["openai", "groq", "mistral", "xai", "corti", "tinfoil"]) {
+  for (const provider of ["openai", "groq", "mistral", "xai", "tinfoil"]) {
     const route = await resolve({
       transcriptionMode: "self-hosted",
       remoteTranscriptionUrl: "",
@@ -110,11 +110,6 @@ test("proxied providers carry their quirks as route data", async () => {
   });
   assert.equal(xaiUnsupported.language, undefined, "outside the xAI ITN allowlist");
 
-  const corti = await resolve({ cloudTranscriptionProvider: "corti", cortiTenant: " acme " });
-  assert.equal(corti.model, "corti-transcribe");
-  assert.equal(corti.language, "en", "Corti needs a concrete language even on auto");
-  assert.equal(corti.cortiEnvironment, "us");
-  assert.equal(corti.cortiTenant, "acme");
 });
 
 test("custom requires a configured secure endpoint (empty, sentinel, garbage all fail)", async () => {

@@ -674,7 +674,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
     (callback) => (_event, state) => callback(state)
   ),
 
-  // OpenWhispr Cloud API
+  // Murmur Cloud API
   cloudHealthCheck: () => ipcRenderer.invoke("cloud-health-check"),
   cloudTranscribe: (audioBuffer, opts) => ipcRenderer.invoke("cloud-transcribe", audioBuffer, opts),
   cancelCloudTranscription: () => ipcRenderer.send("cloud-transcribe-cancel"),

@@ -14,7 +14,7 @@ test("provider migrations classify every registry local provider as local", asyn
 
   const { storage } = installBrowserGlobals(t);
   const vite = await createRendererServer(t, {
-    cachePrefix: "openwhispr-local-provider-migration-test-",
+    cachePrefix: "murmur-local-provider-migration-test-",
   });
 
   for (const providerId of localProviderIds) {

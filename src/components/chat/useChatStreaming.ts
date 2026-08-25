@@ -275,13 +275,7 @@ export function useChatStreaming({
         if (toolRegistryRef.current?.key === cacheKey) {
           registry = toolRegistryRef.current.registry;
         } else {
-          registry = createToolRegistry({
-            isSignedIn: settings.isSignedIn,
-            calendarConnected,
-            cloudBackupEnabled: settings.cloudBackupEnabled,
-            searchScope: scope,
-            webSearchEnabled,
-          });
+          registry = createToolRegistry({ webSearchEnabled });
           toolRegistryRef.current = { key: cacheKey, registry };
         }
       }
@@ -335,7 +329,7 @@ export function useChatStreaming({
       if (attachment) {
         // The screenshot needs its grounding instruction, exactly like the
         // dictation path pairs the suffix with an attached image. Restore it
-        // for cloud context once openwhispr-api#157 vision-routes that field.
+        // for cloud context once murmur-api#157 vision-routes that field.
         systemPrompt = appendScreenContextSuffix(systemPrompt, settings.uiLanguage);
       }
       if (attachment) {

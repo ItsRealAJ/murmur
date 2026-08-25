@@ -1,4 +1,5 @@
 import React from "react";
+import { DOCS, DISCORD, ISSUES } from "../../config/projectLinks";
 import { useTranslation } from "react-i18next";
 import { Button } from "./button";
 import { HelpCircle, Mail, Bug, BookOpen } from "lucide-react";
@@ -54,27 +55,16 @@ export default function SupportDropdown({ className, trigger }: SupportDropdownP
         )}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => openExternal("https://docs.openwhispr.com")}>
+        <DropdownMenuItem onClick={() => openExternal(DOCS)}>
           <BookOpen className="mr-2 h-4 w-4" />
           {t("support.documentation")}
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => openExternal("https://discord.gg/yZWC9WTtX7")}>
+        <DropdownMenuItem onClick={() => openExternal(DISCORD)}>
           <DiscordIcon className="mr-2 h-4 w-4" />
           {t("support.joinDiscord")}
         </DropdownMenuItem>
         <DropdownMenuItem
-          onClick={async () => {
-            const result = await window.electronAPI?.openExternal("mailto:support@openwhispr.com");
-            if (!result?.success) {
-              openExternal("https://mail.google.com/mail/?view=cm&to=support@openwhispr.com");
-            }
-          }}
-        >
-          <Mail className="mr-2 h-4 w-4" />
-          {t("support.contactSupport")}
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={() => openExternal("https://github.com/OpenWhispr/openwhispr/issues")}
+          onClick={() => openExternal(ISSUES)}
         >
           <Bug className="mr-2 h-4 w-4" />
           {t("support.submitBug")}

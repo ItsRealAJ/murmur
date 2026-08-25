@@ -16,7 +16,7 @@ test("KDE removes the retired Agent shortcut with its exact persisted action ID"
 
   await manager.removeRetiredAgentKeybinding();
 
-  assert.deepEqual(actionIds, [["openwhispr", "agent", "OpenWhispr", "OpenWhispr agent"]]);
+  assert.deepEqual(actionIds, [["murmur", "agent", "Murmur", "Murmur agent"]]);
 });
 
 test("a KDE retired-shortcut cleanup error is logged and absorbed", async (t) => {

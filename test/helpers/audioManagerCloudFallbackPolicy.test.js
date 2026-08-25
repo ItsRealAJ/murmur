@@ -75,7 +75,7 @@ function buildManagedPolicy(allowedTranscriptionModes) {
 
 test("cloud->local fallback under org policy", async (t) => {
   const { window, vite, setSettings, createManager } = await loadAudioManager(t, {
-    cachePrefix: "openwhispr-cloud-fallback-test-",
+    cachePrefix: "murmur-cloud-fallback-test-",
     settingsKey: "__cloudFallbackSettings",
   });
   const { usePolicyStore } = await vite.ssrLoadModule("/stores/policyStore.ts");
@@ -146,7 +146,7 @@ test("cloud->local fallback under org policy", async (t) => {
 
 test("managed custom transcription never falls through to OpenAI", async (t) => {
   const { vite, setSettings, createManager } = await loadAudioManager(t, {
-    cachePrefix: "openwhispr-managed-custom-endpoint-test-",
+    cachePrefix: "murmur-managed-custom-endpoint-test-",
     settingsKey: "__managedCustomSettings",
   });
   const { usePolicyStore } = await vite.ssrLoadModule("/stores/policyStore.ts");
@@ -192,7 +192,7 @@ test("managed custom transcription never falls through to OpenAI", async (t) => 
 
 test("unmanaged custom transcription fails closed instead of defaulting to OpenAI", async (t) => {
   const { vite, setSettings, createManager } = await loadAudioManager(t, {
-    cachePrefix: "openwhispr-custom-endpoint-guard-test-",
+    cachePrefix: "murmur-custom-endpoint-guard-test-",
     settingsKey: "__customGuardSettings",
   });
   const { API_ENDPOINTS } = await vite.ssrLoadModule("/config/constants.ts");
@@ -282,7 +282,7 @@ test("unmanaged custom transcription fails closed instead of defaulting to OpenA
 
 test("self-hosted mode is never hijacked by a leftover proxied provider", async (t) => {
   const { window, setSettings, createManager } = await loadAudioManager(t, {
-    cachePrefix: "openwhispr-selfhosted-hijack-test-",
+    cachePrefix: "murmur-selfhosted-hijack-test-",
     settingsKey: "__hijackSettings",
   });
 
@@ -329,7 +329,7 @@ test("self-hosted mode is never hijacked by a leftover proxied provider", async 
 // and copies their base URL across.
 test("self-hosted Azure endpoints keep their deployment URL", async (t) => {
   const { setSettings, createManager } = await loadAudioManager(t, {
-    cachePrefix: "openwhispr-selfhosted-azure-test-",
+    cachePrefix: "murmur-selfhosted-azure-test-",
     settingsKey: "__selfHostedAzureSettings",
   });
   const fetched = captureFetch(t, okJson({ text: "azure text" }));
@@ -375,7 +375,7 @@ test("self-hosted Azure endpoints keep their deployment URL", async (t) => {
 
 test("corti without a preload bridge throws instead of falling through to OpenAI", async (t) => {
   const { window, setSettings, createManager } = await loadAudioManager(t, {
-    cachePrefix: "openwhispr-corti-preload-test-",
+    cachePrefix: "murmur-corti-preload-test-",
     settingsKey: "__cortiPreloadSettings",
   });
   delete window.electronAPI.proxyCortiTranscription;
@@ -401,7 +401,7 @@ test("corti without a preload bridge throws instead of falling through to OpenAI
 
 test("proxied providers dispatch through the registry", async (t) => {
   const { window, setSettings, createManager } = await loadAudioManager(t, {
-    cachePrefix: "openwhispr-proxy-registry-test-",
+    cachePrefix: "murmur-proxy-registry-test-",
     settingsKey: "__proxyRegistrySettings",
   });
   const fetched = captureFetch(
@@ -502,7 +502,7 @@ test("proxied providers dispatch through the registry", async (t) => {
 
 test("config-error code survives a failed local fallback", async (t) => {
   const { window, setSettings, createManager } = await loadAudioManager(t, {
-    cachePrefix: "openwhispr-fallback-wrap-test-",
+    cachePrefix: "murmur-fallback-wrap-test-",
     settingsKey: "__fallbackWrapSettings",
   });
   window.electronAPI.transcribeLocalWhisper = async () => {

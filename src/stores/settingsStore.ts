@@ -71,20 +71,20 @@ export const LLM_POLICY_PROVIDER_IDS = [
 export const LLM_ENTERPRISE_POLICY_PROVIDER_IDS = ["bedrock"] as const;
 
 const TRANSCRIPTION_POLICY_CATALOG = {
-  modes: ["openwhispr", "providers", "local", "self-hosted"] as const,
+  modes: ["providers", "local", "self-hosted"] as const,
   byokProviders: TRANSCRIPTION_POLICY_PROVIDER_IDS,
 };
 
 const MEETING_TRANSCRIPTION_POLICY_CATALOG = {
   // Self-hosted realtime is not implemented for Note Recording.
-  modes: ["openwhispr", "providers", "local"] as const,
+  modes: ["providers", "local"] as const,
   byokProviders: modelRegistryData.transcriptionProviders
     .filter((provider) => provider.models.some((model) => model.streaming))
     .map((provider) => provider.id),
 };
 
 const LLM_POLICY_CATALOG = {
-  modes: ["openwhispr", "providers", "local", "self-hosted", "enterprise"] as const,
+  modes: ["providers", "local", "self-hosted"] as const,
   byokProviders: LLM_POLICY_PROVIDER_IDS,
   enterpriseProviders: LLM_ENTERPRISE_POLICY_PROVIDER_IDS,
 };
@@ -422,7 +422,7 @@ migrateProviderSettings();
 // persists is available to copy. Before this context existed the upload page
 // used the base dictation settings, so copy each value the user actually set
 // into the matching `upload*` key. Fresh installs have no base keys persisted,
-// so nothing is copied and the upload context falls through to its OpenWhispr
+// so nothing is copied and the upload context falls through to its Murmur
 // Cloud defaults.
 const UPLOAD_TRANSCRIPTION_PAIRS: ReadonlyArray<[string, string]> = [
   ["useLocalWhisper", "uploadUseLocalWhisper"],
@@ -1194,18 +1194,16 @@ function createSecretSetter(
 
 export const MAX_TRANSLATION_TARGETS = 5;
 
-// Kick the matching cloud push once a local write has landed in SQLite.
-function syncAfterLocalWrite(method: "syncDictionaryNow" | "syncSnippetsNow"): void {
-  void import("../services/SyncService.js").then(({ syncService }) => {
-    if (syncService.canSync()) void syncService[method]();
-  });
-}
+// Mumur stores dictionary and snippets only in local SQLite; upstream pushed
+// each write to its sync service, which this fork does not have.
+function syncAfterLocalWrite(_method: "syncDictionaryNow" | "syncSnippetsNow"): void {}
 
 export const useSettingsStore = create<SettingsState>()((set, get) => ({
   uiLanguage: normalizeUiLanguage(
     isBrowser ? localStorage.getItem("uiLanguage") || i18n.language : null
   ),
-  useLocalWhisper: readBoolean("useLocalWhisper", false),
+  // Mumur defaults to on-device transcription: no key, no bill, no network hop.
+  useLocalWhisper: readBoolean("useLocalWhisper", true),
   whisperModel: readString("whisperModel", "base"),
   localTranscriptionProvider: (readString("localTranscriptionProvider", "whisper") === "nvidia"
     ? "nvidia"
@@ -1228,8 +1226,9 @@ export const useSettingsStore = create<SettingsState>()((set, get) => ({
   reasoningModelByProvider: readModelMemory("reasoningModelByProvider"),
   // Secrets aren't hydrated yet at construction; the BYOK default is set
   // post-hydration in initializeSettings.
-  cloudTranscriptionMode: readString("cloudTranscriptionMode", "openwhispr"),
-  cleanupCloudMode: readString("cleanupCloudMode", "openwhispr"),
+  // "openwhispr" was the hosted plan; this fork only ever has the user's own key.
+  cloudTranscriptionMode: readString("cloudTranscriptionMode", "byok"),
+  cleanupCloudMode: readString("cleanupCloudMode", "byok"),
   cleanupCloudBaseUrl: readString("cleanupCloudBaseUrl", API_ENDPOINTS.OPENAI_BASE),
   cortiEnvironment: readString("cortiEnvironment", "us"),
   cortiTenant: readString("cortiTenant", "base"),
@@ -1398,9 +1397,9 @@ export const useSettingsStore = create<SettingsState>()((set, get) => ({
   isSignedIn: readBoolean("isSignedIn", false),
 
   transcriptionMode: (() => {
-    const v = readString("transcriptionMode", "openwhispr");
-    if (v === "openwhispr" || v === "providers" || v === "local" || v === "self-hosted") return v;
-    return "openwhispr" as InferenceMode;
+    const v = readString("transcriptionMode", "local");
+    if (v === "providers" || v === "local" || v === "self-hosted") return v;
+    return "providers" as InferenceMode;
   })(),
   remoteTranscriptionType: (() => {
     const v = readString("remoteTranscriptionType", "lan");
@@ -1409,23 +1408,22 @@ export const useSettingsStore = create<SettingsState>()((set, get) => ({
   remoteTranscriptionUrl: readString("remoteTranscriptionUrl", ""),
   remoteTranscriptionModel: readString("remoteTranscriptionModel", ""),
   cleanupMode: (() => {
-    const v = readString("cleanupMode", "openwhispr");
+    const v = readString("cleanupMode", "providers");
     if (
-      v === "openwhispr" ||
       v === "providers" ||
       v === "local" ||
       v === "self-hosted" ||
       v === "enterprise"
     )
       return v;
-    return "openwhispr" as InferenceMode;
+    return "providers" as InferenceMode;
   })(),
   cleanupRemoteUrl: readString("cleanupRemoteUrl", ""),
 
   meetingTranscriptionMode: (() => {
-    const v = readString("meetingTranscriptionMode", "openwhispr");
-    if (v === "openwhispr" || v === "providers" || v === "local" || v === "self-hosted") return v;
-    return "openwhispr" as InferenceMode;
+    const v = readString("meetingTranscriptionMode", "local");
+    if (v === "providers" || v === "local" || v === "self-hosted") return v;
+    return "providers" as InferenceMode;
   })(),
   meetingUseLocalWhisper: readBoolean("meetingUseLocalWhisper", false),
   meetingWhisperModel: readString("meetingWhisperModel", ""),
@@ -1445,9 +1443,9 @@ export const useSettingsStore = create<SettingsState>()((set, get) => ({
   meetingRemoteTranscriptionUrl: readString("meetingRemoteTranscriptionUrl", ""),
 
   uploadTranscriptionMode: (() => {
-    const v = readString("uploadTranscriptionMode", "openwhispr");
-    if (v === "openwhispr" || v === "providers" || v === "local" || v === "self-hosted") return v;
-    return "openwhispr" as InferenceMode;
+    const v = readString("uploadTranscriptionMode", "local");
+    if (v === "providers" || v === "local" || v === "self-hosted") return v;
+    return "providers" as InferenceMode;
   })(),
   uploadUseLocalWhisper: readBoolean("uploadUseLocalWhisper", false),
   uploadWhisperModel: readString("uploadWhisperModel", ""),
@@ -1462,16 +1460,15 @@ export const useSettingsStore = create<SettingsState>()((set, get) => ({
   uploadCloudTranscriptionMode: readString("uploadCloudTranscriptionMode", ""),
 
   noteFormattingMode: (() => {
-    const v = readString("noteFormattingMode", "openwhispr");
+    const v = readString("noteFormattingMode", "providers");
     if (
-      v === "openwhispr" ||
       v === "providers" ||
       v === "local" ||
       v === "self-hosted" ||
       v === "enterprise"
     )
       return v;
-    return "openwhispr" as InferenceMode;
+    return "providers" as InferenceMode;
   })(),
   noteFormattingProvider: readString("noteFormattingProvider", ""),
   noteFormattingModel: readString("noteFormattingModel", ""),
@@ -1481,20 +1478,19 @@ export const useSettingsStore = create<SettingsState>()((set, get) => ({
   noteFormattingCustomApiKey: readString("noteFormattingCustomApiKey", ""),
 
   translationMode: (() => {
-    const v = readString("translationMode", "openwhispr");
+    const v = readString("translationMode", "providers");
     if (
-      v === "openwhispr" ||
       v === "providers" ||
       v === "local" ||
       v === "self-hosted" ||
       v === "enterprise"
     )
       return v;
-    return "openwhispr" as InferenceMode;
+    return "providers" as InferenceMode;
   })(),
   translationProvider: readString("translationProvider", ""),
   translationModel: readString("translationModel", ""),
-  translationCloudMode: readString("translationCloudMode", "openwhispr"),
+  translationCloudMode: readString("translationCloudMode", "providers"),
   translationCloudBaseUrl: readString("translationCloudBaseUrl", ""),
   translationRemoteUrl: readString("translationRemoteUrl", ""),
   translationCustomApiKey: readString("translationCustomApiKey", ""),
@@ -1590,38 +1586,36 @@ export const useSettingsStore = create<SettingsState>()((set, get) => ({
 
   chatAgentModel: readString("chatAgentModel", "openai/gpt-oss-120b"),
   chatAgentProvider: readString("chatAgentProvider", "groq"),
-  chatAgentCloudMode: readString("chatAgentCloudMode", "openwhispr"),
+  chatAgentCloudMode: readString("chatAgentCloudMode", "providers"),
   chatAgentMode: (() => {
-    const v = readString("chatAgentMode", "openwhispr");
+    const v = readString("chatAgentMode", "providers");
     if (
-      v === "openwhispr" ||
       v === "providers" ||
       v === "local" ||
       v === "self-hosted" ||
       v === "enterprise"
     )
       return v;
-    return "openwhispr" as InferenceMode;
+    return "providers" as InferenceMode;
   })(),
   chatAgentRemoteUrl: readString("chatAgentRemoteUrl", ""),
   chatAgentCloudBaseUrl: readString("chatAgentCloudBaseUrl", ""),
   chatAgentCustomApiKey: readString("chatAgentCustomApiKey", ""),
 
   dictationAgentMode: (() => {
-    const v = readString("dictationAgentMode", "openwhispr");
+    const v = readString("dictationAgentMode", "providers");
     if (
-      v === "openwhispr" ||
       v === "providers" ||
       v === "local" ||
       v === "self-hosted" ||
       v === "enterprise"
     )
       return v;
-    return "openwhispr" as InferenceMode;
+    return "providers" as InferenceMode;
   })(),
   dictationAgentProvider: readString("dictationAgentProvider", ""),
   dictationAgentModel: readString("dictationAgentModel", ""),
-  dictationAgentCloudMode: readString("dictationAgentCloudMode", "openwhispr"),
+  dictationAgentCloudMode: readString("dictationAgentCloudMode", "providers"),
   dictationAgentCloudBaseUrl: readString("dictationAgentCloudBaseUrl", ""),
   dictationAgentRemoteUrl: readString("dictationAgentRemoteUrl", ""),
   dictationAgentCustomApiKey: readString("dictationAgentCustomApiKey", ""),
@@ -1629,13 +1623,13 @@ export const useSettingsStore = create<SettingsState>()((set, get) => ({
   voiceAgentScreenContext: readBoolean("voiceAgentScreenContext", false),
   useDictationAgentVisionModel: readBoolean("useDictationAgentVisionModel", false),
   dictationAgentVisionMode: (() => {
-    const v = readString("dictationAgentVisionMode", "openwhispr");
-    if (v === "openwhispr" || v === "providers") return v as InferenceMode;
-    return "openwhispr" as InferenceMode;
+    const v = readString("dictationAgentVisionMode", "providers");
+    if (v === "providers") return v as InferenceMode;
+    return "providers" as InferenceMode;
   })(),
   dictationAgentVisionProvider: readString("dictationAgentVisionProvider", ""),
   dictationAgentVisionModel: readString("dictationAgentVisionModel", ""),
-  dictationAgentVisionCloudMode: readString("dictationAgentVisionCloudMode", "openwhispr"),
+  dictationAgentVisionCloudMode: readString("dictationAgentVisionCloudMode", "providers"),
   dictationAgentVisionCloudBaseUrl: readString("dictationAgentVisionCloudBaseUrl", ""),
   dictationAgentVisionCustomApiKey: readString("dictationAgentVisionCustomApiKey", ""),
 
@@ -2295,7 +2289,7 @@ export const useSettingsStore = create<SettingsState>()((set, get) => ({
       cloudTranscriptionModel,
     } = useSettingsStore.getState();
     // Each Settings tab selects on its InferenceMode field, so set it for every
-    // scope — otherwise the UI keeps showing the previous mode (e.g. OpenWhispr
+    // scope — otherwise the UI keeps showing the previous mode (e.g. Murmur
     // Cloud) even though the cloud routing now points at the new provider.
     const mode = deriveTranscriptionMode(
       useLocalWhisper,
@@ -3189,21 +3183,6 @@ export async function initializeSettings(): Promise<void> {
       );
     }
 
-    // Audio detection is derived from the meeting-notification toggle in
-    // sync-notification-preferences, so it is not sent here.
-    try {
-      const currentState = useSettingsStore.getState();
-      await window.electronAPI.meetingDetectionSetPreferences?.({
-        processDetection: currentState.meetingProcessDetection,
-      });
-    } catch (err) {
-      logger.warn(
-        "Failed to sync meeting detection preferences on startup",
-        { error: (err as Error).message },
-        "settings"
-      );
-    }
-
     try {
       const currentState = useSettingsStore.getState();
       await window.electronAPI.syncNotificationPreferences?.({
@@ -3215,55 +3194,6 @@ export async function initializeSettings(): Promise<void> {
     } catch (err) {
       logger.warn(
         "Failed to sync notification preferences on startup",
-        { error: (err as Error).message },
-        "settings"
-      );
-    }
-
-    // The main-process DB is the source of truth for the Apple Calendar connection
-    try {
-      const status = await window.electronAPI.acalGetConnectionStatus?.();
-      if (status) {
-        useSettingsStore.getState().setAppleCalendarConnected(status.connected);
-      }
-    } catch (err) {
-      logger.warn(
-        "Failed to hydrate Apple Calendar connection status",
-        { error: (err as Error).message },
-        "settings"
-      );
-    }
-
-    try {
-      const currentState = useSettingsStore.getState();
-      await window.electronAPI.gcalSetPrimaryOnly?.(currentState.gcalPrimaryOnly);
-    } catch (err) {
-      logger.warn(
-        "Failed to sync gcal primary-only on startup",
-        { error: (err as Error).message },
-        "settings"
-      );
-    }
-
-    try {
-      const currentState = useSettingsStore.getState();
-      await window.electronAPI.mcalSetPrimaryOnly?.(currentState.mcalPrimaryOnly);
-    } catch (err) {
-      logger.warn(
-        "Failed to sync mcal primary-only on startup",
-        { error: (err as Error).message },
-        "settings"
-      );
-    }
-
-    try {
-      const currentState = useSettingsStore.getState();
-      await window.electronAPI.setSpeakerDiarizationEnabled?.(
-        currentState.speakerDiarizationEnabled
-      );
-    } catch (err) {
-      logger.warn(
-        "Failed to sync speaker diarization preference on startup",
         { error: (err as Error).message },
         "settings"
       );

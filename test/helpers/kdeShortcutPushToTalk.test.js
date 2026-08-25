@@ -61,6 +61,6 @@ test("KDE release events use the same friendly-name fallback as press events", a
   manager.callbacks.set("dictation", (_hotkey, phase) => phases.push(phase));
 
   assert.equal(await manager._listenForComponent(), true);
-  component.emit("globalShortcutReleased", "openwhispr", "OpenWhispr dictation");
+  component.emit("globalShortcutReleased", "murmur", "Murmur dictation");
   assert.deepEqual(phases, ["up"]);
 });

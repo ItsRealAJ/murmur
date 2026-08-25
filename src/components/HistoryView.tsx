@@ -6,8 +6,6 @@ import TranscriptionItem from "./ui/TranscriptionItem";
 import type { TranscriptionItem as TranscriptionItemType } from "../types/electron";
 import { formatHotkeyLabel, parseHotkeyList } from "../utils/hotkeys";
 import { formatDateGroup } from "../utils/dateFormatting";
-import { useUpcomingEvents } from "../hooks/useUpcomingEvents";
-import UpcomingMeetings from "./UpcomingMeetings";
 import { useSettingsStore } from "../stores/settingsStore";
 import { effectiveLocalHistoryEnabled } from "../stores/policyRules";
 import { usePolicyStore } from "../stores/policyStore";
@@ -25,7 +23,6 @@ interface HistoryViewProps {
   deleteTranscription: (id: number) => void;
   clearAllTranscriptions: () => void;
   onOpenSettings: (section?: string) => void;
-  onOpenIntegrations: () => void;
   onShowAudioInFolder: (id: number) => void;
   onRetryTranscription: (id: number, options?: { isRecover?: boolean }) => Promise<void>;
   showDiscarded: boolean;
@@ -45,7 +42,6 @@ export default function HistoryView({
   deleteTranscription,
   clearAllTranscriptions,
   onOpenSettings,
-  onOpenIntegrations,
   onShowAudioInFolder,
   onRetryTranscription,
   showDiscarded,
@@ -56,7 +52,6 @@ export default function HistoryView({
   const dataRetentionEnabled = usePolicyStore((policyState) =>
     effectiveLocalHistoryEnabled(policyState, personalDataRetentionEnabled)
   );
-  const { events, isLoading: eventsLoading, isConnected } = useUpcomingEvents();
 
   const groupedHistory = useMemo(() => {
     if (history.length === 0) return [];
@@ -337,17 +332,6 @@ export default function HistoryView({
                 ))}
               </div>
             )}
-          </div>
-
-          <div className="w-64 shrink-0 hidden sm:block">
-            <div className="sticky top-4">
-              <UpcomingMeetings
-                events={events}
-                isLoading={eventsLoading}
-                isConnected={isConnected}
-                onConnectCalendar={onOpenIntegrations}
-              />
-            </div>
           </div>
         </div>
       </div>
