@@ -54,6 +54,7 @@ export const useAudioRecording = (toast, options = {}) => {
   const lastStartOptionsRef = useRef({
     voiceAgentRequested: false,
     translationRequested: false,
+    verbatimRequested: false,
   });
   const {
     onToggle,
@@ -85,9 +86,17 @@ export const useAudioRecording = (toast, options = {}) => {
   });
 
   const performStartRecording = useCallback(
-    async ({ voiceAgentRequested = false, translationRequested = false } = {}) => {
+    async ({
+      voiceAgentRequested = false,
+      translationRequested = false,
+      verbatimRequested = false,
+    } = {}) => {
       if (startLockRef.current) return false;
-      lastStartOptionsRef.current = { voiceAgentRequested, translationRequested };
+      lastStartOptionsRef.current = {
+        voiceAgentRequested,
+        translationRequested,
+        verbatimRequested,
+      };
       startLockRef.current = true;
       stopRequestedDuringStartRef.current = false;
       let recordingStarted = false;
@@ -602,7 +611,11 @@ export const useAudioRecording = (toast, options = {}) => {
       if (startLockRef.current || currentState.isRecording) {
         await performStopRecording();
       } else if (canStartDictation(currentState)) {
-        await performStartRecording({ voiceAgentRequested, translationRequested });
+        await performStartRecording({
+          voiceAgentRequested,
+          translationRequested,
+          verbatimRequested,
+        });
       }
     };
 
@@ -723,9 +736,10 @@ export const useAudioRecording = (toast, options = {}) => {
   const toggleListening = async ({
     voiceAgentRequested = false,
     translationRequested = false,
+    verbatimRequested = false,
   } = {}) => {
     if (!isRecording && !isProcessing) {
-      await performStartRecording({ voiceAgentRequested, translationRequested });
+      await performStartRecording({ voiceAgentRequested, translationRequested, verbatimRequested });
     } else if (isRecording) {
       await performStopRecording();
     }

@@ -63,9 +63,7 @@ export default function SupportDropdown({ className, trigger }: SupportDropdownP
           <DiscordIcon className="mr-2 h-4 w-4" />
           {t("support.joinDiscord")}
         </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={() => openExternal(ISSUES)}
-        >
+        <DropdownMenuItem onClick={() => openExternal(ISSUES)}>
           <Bug className="mr-2 h-4 w-4" />
           {t("support.submitBug")}
         </DropdownMenuItem>

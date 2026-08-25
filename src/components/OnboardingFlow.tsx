@@ -123,14 +123,9 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
   // This hook also starts the membership fetch for already-authenticated users;
   // relying on the login transition alone would leave resumed onboarding stuck
   // waiting for workspace resolution after an app restart.
-  const activeWorkspace = null;
-  const workspaces: never[] = [];
-  const workspacesLoaded = true;
-  const setActiveWorkspace = (_id: string | null): void => {};
-  const enterpriseWorkspace = useMemo(
-    () => resolveEnterpriseWorkspaceForOnboarding(activeWorkspace, workspaces),
-    [activeWorkspace, workspaces]
-  );
+  // Murmur has no workspaces, so there is never an enterprise workspace to
+  // resolve, adopt, or wait for.
+  const enterpriseWorkspace = null;
   const skipSetupChoiceForEnterprise = shouldSkipOnboardingSetupChoice({
     isSignedIn,
     authPath: session.authPath,
@@ -138,28 +133,7 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
     activeWorkspace: enterpriseWorkspace,
   });
 
-  useEffect(() => {
-    if (
-      workspacesLoaded &&
-      !activeWorkspace &&
-      skipSetupChoiceForEnterprise &&
-      enterpriseWorkspace
-    ) {
-      setActiveWorkspace(enterpriseWorkspace.id);
-    }
-  }, [
-    activeWorkspace,
-    enterpriseWorkspace,
-    setActiveWorkspace,
-    skipSetupChoiceForEnterprise,
-    workspacesLoaded,
-  ]);
-
-  const workspaceResolutionPending =
-    isSignedIn &&
-    session.authPath === "account" &&
-    (!workspacesLoaded ||
-      (!activeWorkspace && skipSetupChoiceForEnterprise && Boolean(enterpriseWorkspace)));
+  const workspaceResolutionPending = false;
 
   const route = useMemo(
     () =>
@@ -274,17 +248,6 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
     },
     [settings, t]
   );
-
-  const syncUseCases = useCallback(() => {
-    if (!isSignedIn || session.authPath === "guest") return;
-    // Upstream posted onboarding intent to its analytics backend. Mumur does not.
-  }, [
-    isSignedIn,
-    session.authPath,
-    settings.onboardingUseCaseNote,
-    settings.onboardingUseCases,
-    settings.spokenLanguages,
-  ]);
 
   const finalizeOnboarding = useCallback(
     async (mode: OnboardingCompletionMode, options: { localPending?: boolean } = {}) => {
@@ -435,8 +398,6 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
       settings.setPreferredLanguage(
         settings.spokenLanguages.length === 1 ? settings.spokenLanguages[0] : "auto"
       );
-    } else if (currentStepId === "use-cases") {
-      syncUseCases();
     } else if (currentStepId === "dictation-hotkey") {
       const registered = await registerHotkey(withExtraDictationHotkeys(dictationHotkey));
       if (!registered) {
@@ -505,7 +466,6 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
     setAccessibilitySkipped,
     settings,
     settingsStore,
-    syncUseCases,
     t,
     withExtraDictationHotkeys,
     workspaceResolutionPending,
@@ -796,8 +756,7 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
                 a short window they run past the footer. The shell never scrolls,
                 so the content scrolls here instead — px-1/pb-1 keeps focus rings
                 off the clip edge. */}
-            <div className="onboarding-shell-scroll min-h-0 w-full flex-1 overflow-y-auto px-1 pb-1">
-            </div>
+            <div className="onboarding-shell-scroll min-h-0 w-full flex-1 overflow-y-auto px-1 pb-1"></div>
           </div>
         );
 

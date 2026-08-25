@@ -390,7 +390,6 @@ export function CompactOnboardingFrame({
       <div className="relative z-10 mx-auto flex w-full max-w-[30rem] flex-1 flex-col">
         {children}
       </div>
-
     </section>
   );
 }
