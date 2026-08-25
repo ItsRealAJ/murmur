@@ -954,7 +954,12 @@ declare global {
       }>;
       hideWindow: () => Promise<void>;
       showDictationPanel: () => Promise<void>;
-      captureDictationTarget?: () => Promise<{ success: boolean; pid: number | null }>;
+      captureDictationTarget?: () => Promise<{
+        success: boolean;
+        pid: number | null;
+        /** Bundle id (macOS) or exe name (Windows) of the app receiving the text. */
+        appId?: string | null;
+      }>;
       onToggleDictation: (callback: () => void) => () => void;
       onToggleVoiceAgent?: (callback: () => void) => () => void;
       onToggleTranslation?: (callback: () => void) => () => void;

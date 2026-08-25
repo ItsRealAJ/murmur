@@ -127,7 +127,11 @@ export const useAudioRecording = (toast, options = {}) => {
         // started from the panel itself as well as from global hotkeys; otherwise
         // paste can reactivate a stale target from the preceding dictation.
         try {
-          await window.electronAPI.captureDictationTarget?.();
+          const target = await window.electronAPI.captureDictationTarget?.();
+          // Remember which app will receive the text so cleanup can match its
+          // tone. Captured now, because by paste time Murmur's own overlay may
+          // be frontmost.
+          audioManagerRef.current?.setTargetAppId?.(target?.appId ?? null);
         } catch (error) {
           logger.warn("Failed to refresh dictation target", { error: error?.message });
         }

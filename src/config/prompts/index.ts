@@ -1,3 +1,4 @@
+import { toneInstruction } from "../../helpers/appToneProfiles.js";
 import i18n, { normalizeUiLanguage } from "../../i18n";
 import { useSettingsStore } from "../../stores/settingsStore";
 import { en as enPrompts } from "../../locales/prompts";
@@ -12,6 +13,8 @@ export interface ResolvePromptOptions {
   language?: string;
   customDictionary?: string[];
   targetLanguageLabel?: string;
+  /** Tone profile for the app receiving the text — see helpers/appToneProfiles. */
+  toneProfile?: string;
 }
 
 export function resolvePrompt(kind: PromptKind, opts: ResolvePromptOptions): string {
@@ -61,6 +64,11 @@ export function appendDictionarySuffix(
 function applySubstitutions(template: string, opts: ResolvePromptOptions): string {
   const name = opts.agentName?.trim() || "Assistant";
   let prompt = template.replace(/\{\{agentName\}\}/g, name);
+
+  // Tone goes in before the dictionary suffix so the dictionary stays last,
+  // closest to the transcript, where models weight it most.
+  const tone = toneInstruction(opts.toneProfile ?? "default");
+  if (tone) prompt += tone;
 
   if (opts.targetLanguageLabel) {
     prompt = prompt.replace(/\{\{targetLanguage\}\}/g, opts.targetLanguageLabel);

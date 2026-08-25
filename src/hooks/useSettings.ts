@@ -35,6 +35,8 @@ export interface TranscriptionSettings {
   customDictionary: string[];
   /** Remote word lists the user subscribes to; merged with customDictionary. */
   dictionaryPacks: DictionaryPackSubscription[];
+  /** appId substring -> tone profile, overriding the built-in mapping. */
+  appToneOverrides: Record<string, string>;
   snippets: Snippet[];
   assemblyAiStreaming: boolean;
   showTranscriptionPreview: boolean;

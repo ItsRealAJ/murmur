@@ -714,7 +714,15 @@ class IPCHandlers {
     ipcMain.handle("capture-dictation-target", async () => {
       const pid = (await this.textEditMonitor?.captureTargetPid?.()) ?? null;
       await this.selectionManager?.captureTarget?.();
-      return { success: true, pid };
+      // Captured here rather than at paste time: by then Murmur's own overlay
+      // may be frontmost. Best-effort — null just means no tone instruction.
+      let appId = null;
+      try {
+        appId = (await this.textEditMonitor?.readFrontmostAppId?.()) ?? null;
+      } catch {
+        appId = null;
+      }
+      return { success: true, pid, appId };
     });
 
     ipcMain.handle("force-stop-dictation", () => {

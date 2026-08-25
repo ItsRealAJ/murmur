@@ -180,6 +180,19 @@ function snapMicWarmHold(value: number): number {
   return (MIC_WARM_HOLD_CHOICES as readonly number[]).includes(value) ? value : 0;
 }
 
+/** Reads a persisted plain object (e.g. the per-app tone overrides map). */
+function readJsonObject<T>(key: string, fallback: Record<string, T>): Record<string, T> {
+  if (!isBrowser) return fallback;
+  const stored = localStorage.getItem(key);
+  if (stored === null) return fallback;
+  try {
+    const parsed = JSON.parse(stored);
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 /** Like readStringArray but for arrays of objects (dictionary pack subscriptions). */
 function persistDictionaryPacks(
   set: (partial: Partial<SettingsState>) => void,
@@ -852,6 +865,7 @@ export interface SettingsState
   setCleanupCloudMode: (value: string) => void;
   setCleanupCloudBaseUrl: (value: string) => void;
   setCustomDictionary: (words: string[]) => void;
+  setAppToneOverride: (appMatch: string, profile: string | null) => void;
   addDictionaryPack: (url: string) => Promise<{ success: boolean; error?: string }>;
   removeDictionaryPack: (url: string) => void;
   setDictionaryPackEnabled: (url: string, enabled: boolean) => void;
@@ -1261,6 +1275,7 @@ export const useSettingsStore = create<SettingsState>()((set, get) => ({
   cortiTenant: readString("cortiTenant", "base"),
   customDictionary: readStringArray("customDictionary", []),
   dictionaryPacks: readJsonArray("dictionaryPacks", []),
+  appToneOverrides: readJsonObject("appToneOverrides", {}),
   snippets: (() => {
     try {
       const parsed = JSON.parse(readString("snippets", "[]"));
@@ -1767,6 +1782,17 @@ export const useSettingsStore = create<SettingsState>()((set, get) => ({
   setUseDictationAgent: createBooleanSetter("useDictationAgent"),
   setCleanupProvider: createStringSetter("cleanupProvider"),
   setCleanupModel: createStringSetter("cleanupModel"),
+
+  /** Passing null clears an override, restoring the built-in mapping. */
+  setAppToneOverride: (appMatch: string, profile: string | null) => {
+    const key = appMatch.trim().toLowerCase();
+    if (!key) return;
+    const next = { ...get().appToneOverrides };
+    if (profile) next[key] = profile;
+    else delete next[key];
+    if (isBrowser) localStorage.setItem("appToneOverrides", JSON.stringify(next));
+    set({ appToneOverrides: next });
+  },
 
   addDictionaryPack: async (url: string) => {
     const result = await window.electronAPI?.fetchDictionaryPack?.(url);

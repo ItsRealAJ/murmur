@@ -1,4 +1,6 @@
 import { getCleanupSystemPrompt } from "../config/prompts";
+import { resolveToneProfile } from "../helpers/appToneProfiles.js";
+import { getTargetAppId } from "../helpers/dictationTarget.js";
 import { getSettings } from "../stores/settingsStore";
 import { resolveCleanupLanguage } from "../utils/chineseScript";
 import { getDictionaryHintWords } from "../utils/snippets";
@@ -48,7 +50,10 @@ export abstract class BaseReasoningService {
       agentName,
       this.getCustomDictionary(),
       this.getPreferredLanguage(),
-      this.getUiLanguage()
+      this.getUiLanguage(),
+      // A chat message and a terminal command want different cleanup; the app
+      // that will receive the text decides which.
+      resolveToneProfile(getTargetAppId(), getSettings().appToneOverrides)
     );
   }
 

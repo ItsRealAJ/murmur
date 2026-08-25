@@ -186,6 +186,50 @@ class TextEditMonitor extends EventEmitter {
   }
 
   /**
+   * Identity of the app that will receive the dictation, used to pick a tone
+   * profile. Returns a bundle identifier on macOS and an executable name on
+   * Windows — both stable, unlike the window title.
+   *
+   * Best-effort by design: tone is a refinement, so any failure resolves to
+   * null and the cleanup prompt simply carries no tone instruction.
+   */
+  readFrontmostAppId() {
+    return new Promise((resolve) => {
+      if (process.platform === "darwin") {
+        const script =
+          'ObjC.import("AppKit"); ' +
+          "$.NSWorkspace.sharedWorkspace.frontmostApplication.bundleIdentifier.js";
+        execFile("osascript", ["-l", "JavaScript", "-e", script], { timeout: 2000 }, (err, out) => {
+          const id = err ? "" : String(out || "").trim();
+          resolve(id && id !== "undefined" ? id : null);
+        });
+        return;
+      }
+
+      if (process.platform === "win32") {
+        // GetForegroundWindow -> owning process -> executable name.
+        const ps = [
+          "-NoProfile",
+          "-Command",
+          "Add-Type -Namespace W -Name A -MemberDefinition '" +
+            '[DllImport("user32.dll")] public static extern System.IntPtr GetForegroundWindow(); ' +
+            '[DllImport("user32.dll")] public static extern int GetWindowThreadProcessId(System.IntPtr h, out int p);' +
+            "'; " +
+            "$p = 0; [void][W.A]::GetWindowThreadProcessId([W.A]::GetForegroundWindow(), [ref]$p); " +
+            "(Get-Process -Id $p).MainModule.ModuleName",
+        ];
+        execFile("powershell.exe", ps, { timeout: 3000, windowsHide: true }, (err, out) => {
+          const name = err ? "" : String(out || "").trim();
+          resolve(name || null);
+        });
+        return;
+      }
+
+      resolve(null);
+    });
+  }
+
+  /**
    * macOS: request activation of the app with the given PID, bringing all its
    * windows forward (AllWindows|IgnoringOtherApps) so one becomes key. Scans
    * runningApplications because NSRunningApplication's PID lookup returns nil under JXA.

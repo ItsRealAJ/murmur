@@ -87,6 +87,7 @@ import {
   matchesDictionaryPrompt,
 } from "../utils/dictionaryEchoFilter.js";
 import { getDictionaryHintWords } from "../utils/snippets";
+import { setTargetAppId } from "./dictationTarget.js";
 import { normalizeAgentSelectionContext } from "../utils/agentSelectionContext";
 import { shouldDisplayDictationPreview } from "../utils/transcriptionPreview";
 import {
@@ -720,6 +721,11 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
         (largest, segment) => (segment.size > (largest?.size || 0) ? segment : largest),
         null
       );
+  }
+
+  /** Records which app will receive this dictation, for per-app tone. */
+  setTargetAppId(appId) {
+    setTargetAppId(appId);
   }
 
   setVoiceAgentRequested(requested) {
@@ -4496,11 +4502,7 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
     if (!finalText && durationSeconds > 2 && fallbackBlob?.size > 0) {
       const target = resolveStreamingFallbackTarget(getSettings());
       if (target === "skip") {
-        logger.warn(
-          "Skipping batch fallback: Murmur Cloud session signed out",
-          {},
-          "streaming"
-        );
+        logger.warn("Skipping batch fallback: Murmur Cloud session signed out", {}, "streaming");
       } else {
         logger.info(
           "Streaming produced no text, falling back to batch transcription",

@@ -14,9 +14,16 @@ export function getCleanupSystemPrompt(
   agentName: string | null,
   customDictionary?: string[],
   language?: string,
-  uiLanguage?: string
+  uiLanguage?: string,
+  toneProfile?: string
 ): string {
-  return resolvePrompt("cleanup", { agentName, language, customDictionary, uiLanguage });
+  return resolvePrompt("cleanup", {
+    agentName,
+    language,
+    customDictionary,
+    uiLanguage,
+    toneProfile,
+  });
 }
 
 export function getWordBoost(customDictionary?: string[]): string[] {
