@@ -477,6 +477,25 @@ async function startApp() {
     }
   }
 
+  // Set up verbatim hotkey (dictation pasted exactly as transcribed, with no
+  // cleanup model and no agent, for when the literal words matter)
+  const verbatimHotkeyCallback = () => {
+    windowManager.sendToggleVerbatim();
+  };
+  windowManager._verbatimHotkeyCallback = verbatimHotkeyCallback;
+
+  const savedVerbatimKey = environmentManager.getVerbatimKey?.() || "";
+  if (savedVerbatimKey) {
+    const result = await hotkeyManager.registerSlot(
+      "verbatim",
+      savedVerbatimKey,
+      verbatimHotkeyCallback
+    );
+    if (!result.success) {
+      debugLogger.warn("Failed to restore verbatim hotkey", { hotkey: savedVerbatimKey }, "hotkey");
+    }
+  }
+
   // Set up translation hotkey (dictation cleaned up and translated into the
   // configured target language before pasting)
   const translationHotkeyCallback = () => {

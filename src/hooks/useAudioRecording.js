@@ -140,6 +140,7 @@ export const useAudioRecording = (toast, options = {}) => {
         audioManagerRef.current.setVoiceAgentRequested(voiceAgentRequested);
         audioManagerRef.current.setAssistantSelectionContext(assistantSelectionContext);
         audioManagerRef.current.setTranslationRequested(translationRequested);
+        audioManagerRef.current.setVerbatimRequested(verbatimRequested);
         if (voiceAgentRequested) {
           logger.info(
             "Voice agent recording start",
@@ -591,6 +592,7 @@ export const useAudioRecording = (toast, options = {}) => {
     const handleToggle = async ({
       voiceAgentRequested = false,
       translationRequested = false,
+      verbatimRequested = false,
     } = {}) => {
       if (!audioManagerRef.current) return;
       const currentState = audioManagerRef.current.getState();
@@ -624,6 +626,11 @@ export const useAudioRecording = (toast, options = {}) => {
 
     const disposeTranslationToggle = window.electronAPI.onToggleTranslation?.(() => {
       handleToggle({ translationRequested: true });
+      onToggle?.();
+    });
+
+    const disposeVerbatimToggle = window.electronAPI.onToggleVerbatim?.(() => {
+      handleToggle({ verbatimRequested: true });
       onToggle?.();
     });
 
@@ -661,6 +668,7 @@ export const useAudioRecording = (toast, options = {}) => {
       disposeToggle?.();
       disposeVoiceAgentToggle?.();
       disposeTranslationToggle?.();
+      disposeVerbatimToggle?.();
       disposeStart?.();
       disposePrepare?.();
       disposeCancelPreparation?.();

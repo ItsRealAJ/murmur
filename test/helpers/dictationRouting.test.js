@@ -698,17 +698,17 @@ test("an override toggled on but never configured falls back to the base rules",
 test("wake-word language follows the dictation language when it is explicit", async () => {
   const { resolveWakeWordLanguage } = await load();
 
-  assert.equal(
-    resolveWakeWordLanguage({ preferredLanguage: "it", uiLanguage: "en" }, "fr"),
-    "it"
-  );
+  assert.equal(resolveWakeWordLanguage({ preferredLanguage: "it", uiLanguage: "en" }, "fr"), "it");
   assert.equal(resolveWakeWordLanguage({ preferredLanguage: "zh-CN", uiLanguage: "en" }), "zh-CN");
 });
 
 test("wake-word language uses detected speech before the UI language on auto", async () => {
   const { resolveWakeWordLanguage } = await load();
 
-  assert.equal(resolveWakeWordLanguage({ preferredLanguage: "auto", uiLanguage: "it" }, "en"), "en");
+  assert.equal(
+    resolveWakeWordLanguage({ preferredLanguage: "auto", uiLanguage: "it" }, "en"),
+    "en"
+  );
   assert.equal(resolveWakeWordLanguage({ preferredLanguage: "", uiLanguage: "en" }, "it"), "it");
 });
 
@@ -729,4 +729,39 @@ test("wake-word language is undefined when no usable hint exists", async () => {
     undefined
   );
   assert.equal(resolveWakeWordLanguage({}), undefined);
+});
+
+// Verbatim dictation is implemented in audioManager's resolveReasoningRoute by
+// forcing cleanupReachable and agentInvoked to false. What actually delivers the
+// feature is this routing contract, so pin both halves of it.
+test("verbatim: nothing reachable pastes the raw transcript", async () => {
+  const { resolveDictationRouteKind } = await load();
+  assert.equal(
+    resolveDictationRouteKind({
+      cleanupReachable: false,
+      agentReachable: true,
+      agentInvoked: false,
+      voiceAgentRequested: false,
+      translationRequested: false,
+      translationReachable: false,
+    }),
+    "skip",
+    "a raw paste is what verbatim means"
+  );
+});
+
+test("verbatim: suppressing agentInvoked is what stops the wake word hijacking it", async () => {
+  const { resolveDictationRouteKind } = await load();
+  // Same inputs except agentInvoked. If verbatim did NOT force it false, a
+  // transcript that happens to open with the agent name would be sent to the
+  // agent instead of pasted literally -- which is the bug this guards.
+  const base = {
+    cleanupReachable: false,
+    agentReachable: true,
+    voiceAgentRequested: false,
+    translationRequested: false,
+    translationReachable: false,
+  };
+  assert.equal(resolveDictationRouteKind({ ...base, agentInvoked: true }), "agent");
+  assert.equal(resolveDictationRouteKind({ ...base, agentInvoked: false }), "skip");
 });

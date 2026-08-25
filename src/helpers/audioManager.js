@@ -153,11 +153,16 @@ function resolveReasoningRoute(
   voiceAgentRequested,
   translationRequested,
   screenContext,
-  detectedLanguage
+  detectedLanguage,
+  verbatimRequested = false
 ) {
   const cleanup = selectResolvedLLMConfig(settings, "dictationCleanup");
+  // Verbatim means exactly what was said: no cleanup model, and no agent even
+  // if the transcript happens to open with the wake word.
   const cleanupReachable =
-    !!settings.useCleanupModel && (!!cleanup.model?.trim() || isCloudCleanupMode());
+    !verbatimRequested &&
+    !!settings.useCleanupModel &&
+    (!!cleanup.model?.trim() || isCloudCleanupMode());
   const agent = resolveDictationAgentInference(settings, {
     isCloudAgent: isCloudDictationAgentMode(),
   });
@@ -171,6 +176,7 @@ function resolveReasoningRoute(
     agentReachable: agent.reachable,
     // A translation recording never routes to the agent, so skip the scan.
     agentInvoked:
+      !verbatimRequested &&
       !translationRequested &&
       !!agentName &&
       detectAgentName(text, agentName, resolveWakeWordLanguage(settings, detectedLanguage)),
@@ -495,6 +501,7 @@ class AudioManager {
     this.streamingFallbackChunks = [];
     this.voiceAgentRequested = false;
     this.translationRequested = false;
+    this.verbatimRequested = false;
     this.translationApplied = false;
     this.pendingSelectionEdit = null;
     this.pendingAssistantConversation = null;
@@ -721,6 +728,11 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
         (largest, segment) => (segment.size > (largest?.size || 0) ? segment : largest),
         null
       );
+  }
+
+  /** Skip the cleanup model for this dictation and paste the raw transcript. */
+  setVerbatimRequested(requested) {
+    this.verbatimRequested = !!requested;
   }
 
   /** Records which app will receive this dictation, for per-app tone. */
@@ -2697,7 +2709,9 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
           agentName,
           this.voiceAgentRequested,
           this.translationRequested,
-          screenContext
+          screenContext,
+          undefined,
+          this.verbatimRequested
         );
         if (this.translationRequested && route.kind !== "translation") {
           this.notifyTranslationFallback("unreachable");
@@ -4417,7 +4431,9 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
         agentName,
         this.voiceAgentRequested,
         this.translationRequested,
-        screenContext
+        screenContext,
+        undefined,
+        this.verbatimRequested
       );
       if (this.translationRequested && route.kind !== "translation") {
         this.notifyTranslationFallback("unreachable");

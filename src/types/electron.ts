@@ -963,6 +963,10 @@ declare global {
       onToggleDictation: (callback: () => void) => () => void;
       onToggleVoiceAgent?: (callback: () => void) => () => void;
       onToggleTranslation?: (callback: () => void) => () => void;
+      /** Dictation pasted exactly as transcribed — no cleanup model, no agent. */
+      onToggleVerbatim?: (callback: () => void) => () => void;
+      updateVerbatimHotkey?: (hotkey: string) => Promise<{ success: boolean; message: string }>;
+      getVerbatimKey?: () => Promise<string>;
       onStartDictation?: (callback: () => void) => () => void;
       onStopDictation?: (callback: () => void) => () => void;
       onPrepareDictation?: (callback: () => void) => () => void;

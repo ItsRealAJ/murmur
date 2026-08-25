@@ -844,6 +844,10 @@ class WindowManager {
     this._sendDictationToggle("toggle-translation", "translation");
   }
 
+  sendToggleVerbatim() {
+    this._sendDictationToggle("toggle-verbatim", "verbatim");
+  }
+
   sendStartDictation() {
     if (!this._isOnboardingInputAllowed("dictation")) return;
     if (

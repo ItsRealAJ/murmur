@@ -82,6 +82,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   onToggleDictation: registerListener("toggle-dictation", (callback) => () => callback()),
   onToggleVoiceAgent: registerListener("toggle-voice-agent", (callback) => () => callback()),
   onToggleTranslation: registerListener("toggle-translation", (callback) => () => callback()),
+  onToggleVerbatim: registerListener("toggle-verbatim", (callback) => () => callback()),
   onStartDictation: registerListener("start-dictation", (callback) => () => callback()),
   onStopDictation: registerListener("stop-dictation", (callback) => () => callback()),
   onPrepareDictation: registerListener("prepare-dictation", (callback) => () => callback()),
@@ -934,6 +935,8 @@ contextBridge.exposeInMainWorld("electronAPI", {
   updateVoiceAgentHotkey: (hotkey) => ipcRenderer.invoke("update-voice-agent-hotkey", hotkey),
   getVoiceAgentKey: () => ipcRenderer.invoke("get-voice-agent-key"),
   updateTranslationHotkey: (hotkey) => ipcRenderer.invoke("update-translation-hotkey", hotkey),
+  updateVerbatimHotkey: (hotkey) => ipcRenderer.invoke("update-verbatim-hotkey", hotkey),
+  getVerbatimKey: () => ipcRenderer.invoke("get-verbatim-key"),
   getTranslationKey: () => ipcRenderer.invoke("get-translation-key"),
   onPreviewText: registerListener("preview-text", (callback) => (_event, text) => callback(text)),
   onPreviewAppend: registerListener(

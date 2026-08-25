@@ -420,6 +420,16 @@ class EnvironmentManager {
     return result;
   }
 
+  getVerbatimKey() {
+    return this._getKey("VERBATIM_KEY");
+  }
+
+  saveVerbatimKey(key) {
+    const result = this._saveKey("VERBATIM_KEY", key);
+    this.saveAllKeysToEnvFile().catch(() => {});
+    return result;
+  }
+
   getTranslationKey() {
     return this._getKey("TRANSLATION_KEY");
   }

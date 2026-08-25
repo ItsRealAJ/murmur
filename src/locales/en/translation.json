@@ -2271,6 +2271,10 @@
       "translationHotkey": {
         "title": "Translation Hotkey",
         "description": "Dictate in any language — the pasted text comes out translated"
+      },
+      "verbatimHotkey": {
+        "title": "Verbatim hotkey",
+        "description": "Dictate with no cleanup. Pastes exactly what was transcribed — useful for code, commands, and anything where the literal words matter."
       }
     },
     "permissions": {

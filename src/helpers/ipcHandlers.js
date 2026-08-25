@@ -4748,6 +4748,41 @@ class IPCHandlers {
       };
     });
 
+    ipcMain.handle("update-verbatim-hotkey", async (_event, hotkey) => {
+      const hotkeyManager = this.windowManager.hotkeyManager;
+      const verbatimCallback = this.windowManager._verbatimHotkeyCallback;
+      if (!verbatimCallback) {
+        return { success: false, message: "Verbatim hotkey callback not initialized" };
+      }
+
+      if (!hotkey) {
+        hotkeyManager.unregisterSlot("verbatim");
+        this.environmentManager.saveVerbatimKey?.("");
+        this.windowManager.reconcileNativeKeyListeners();
+        this._notifyHotkeyChanged("");
+        return { success: true, message: "Verbatim hotkey cleared" };
+      }
+
+      const result = await hotkeyManager.registerSlot("verbatim", hotkey, verbatimCallback, {
+        atomic: true,
+      });
+      this.windowManager.reconcileNativeKeyListeners();
+      if (result.success) {
+        this.environmentManager.saveVerbatimKey?.(hotkey);
+        this._notifyHotkeyChanged(hotkey);
+        return { success: true, message: `Verbatim hotkey updated to: ${hotkey}` };
+      }
+
+      return {
+        success: false,
+        message: result.error || `Failed to update verbatim hotkey to: ${hotkey}`,
+      };
+    });
+
+    ipcMain.handle("get-verbatim-key", async () => {
+      return this.environmentManager.getVerbatimKey?.() || "";
+    });
+
     ipcMain.handle("get-translation-key", async () => {
       return this.environmentManager.getTranslationKey?.() || "";
     });

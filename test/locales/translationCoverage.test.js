@@ -99,7 +99,11 @@ test("every model registry descriptionKey resolves in en", () => {
 // locales, so features added after the fork are English-only until someone
 // contributes a translation. They are listed explicitly rather than exempting
 // everything, so accidental drift in the inherited strings is still caught.
-const EN_ONLY_PREFIXES = ["dictionaryPacks.", "dictionary.tabPacks"];
+const EN_ONLY_PREFIXES = [
+  "dictionaryPacks.",
+  "dictionary.tabPacks",
+  "settingsPage.general.verbatimHotkey.",
+];
 
 test("every en key is present in every other language", () => {
   for (const namespace of NAMESPACES) {

@@ -938,7 +938,10 @@ export interface SettingsState
   setMeetingKey: (key: string) => void;
   setVoiceAgentKey: (key: string) => Promise<boolean>;
   translationKey: string;
+  /** Hotkey that dictates with no cleanup model and no agent. */
+  verbatimKey: string;
   setTranslationKey: (key: string) => Promise<boolean>;
+  setVerbatimKey: (key: string) => Promise<boolean>;
   setMeetingHotkeyLayoutMode: (mode: "side-panel" | "full-width") => void;
   setOnboardingUseCases: (useCases: string[]) => void;
   setOnboardingUseCaseNote: (note: string) => void;
@@ -1056,7 +1059,7 @@ function createNumberSetter(key: string) {
 // being persisted. Rolls back to the previous key if registration fails.
 // Resolves to false on failure so optimistic UIs (HotkeyListInput) can revert.
 function createRegisteredHotkeySetter(
-  key: "voiceAgentKey" | "translationKey",
+  key: "voiceAgentKey" | "translationKey" | "verbatimKey",
   label: string,
   getRegisterFn: () =>
     ((hotkey: string) => Promise<{ success: boolean; message: string }>) | undefined,
@@ -1333,6 +1336,7 @@ export const useSettingsStore = create<SettingsState>()((set, get) => ({
   meetingKey: readString("meetingKey", ""),
   voiceAgentKey: readString("voiceAgentKey", ""),
   translationKey: readString("translationKey", ""),
+  verbatimKey: readString("verbatimKey", ""),
   onboardingUseCases: readStringArray("onboardingUseCases", []),
   onboardingUseCaseNote: readString("onboardingUseCaseNote", ""),
   spokenLanguages: readStringArray("spokenLanguages", []),
@@ -2085,6 +2089,11 @@ export const useSettingsStore = create<SettingsState>()((set, get) => ({
     "translationKey",
     "translation hotkey",
     () => window.electronAPI?.updateTranslationHotkey
+  ),
+  setVerbatimKey: createRegisteredHotkeySetter(
+    "verbatimKey",
+    "verbatim hotkey",
+    () => window.electronAPI?.updateVerbatimHotkey
   ),
 
   setMeetingHotkeyLayoutMode: (mode: "side-panel" | "full-width") => {
@@ -3174,6 +3183,20 @@ export async function initializeSettings(): Promise<void> {
     } catch (err) {
       logger.warn(
         "Failed to sync translation hotkey on startup",
+        { error: (err as Error).message },
+        "settings"
+      );
+    }
+
+    // Sync verbatim hotkey from main process
+    try {
+      const envKey = await window.electronAPI.getVerbatimKey?.();
+      if (envKey && envKey !== state.verbatimKey) {
+        createStringSetter("verbatimKey")(envKey);
+      }
+    } catch (err) {
+      logger.warn(
+        "Failed to sync verbatim hotkey on startup",
         { error: (err as Error).message },
         "settings"
       );

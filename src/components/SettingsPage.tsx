@@ -128,12 +128,7 @@ import { getTranscriptionProvider } from "../models/ModelRegistry";
 import { supportsLiveTranscriptionPreview } from "../utils/transcriptionPreview";
 
 export type SettingsSectionType =
-  | "general"
-  | "hotkeys"
-  | "speechToText"
-  | "llms"
-  | "privacyData"
-  | "system";
+  "general" | "hotkeys" | "speechToText" | "llms" | "privacyData" | "system";
 
 interface SettingsPageProps {
   activeSection?: SettingsSectionType;
@@ -854,7 +849,9 @@ export default function SettingsPage({
   const voiceAgentKey = useSettingsStore((s) => s.voiceAgentKey);
   const setVoiceAgentKey = useSettingsStore((s) => s.setVoiceAgentKey);
   const translationKey = useSettingsStore((s) => s.translationKey);
+  const verbatimKey = useSettingsStore((s) => s.verbatimKey);
   const setTranslationKey = useSettingsStore((s) => s.setTranslationKey);
+  const setVerbatimKey = useSettingsStore((s) => s.setVerbatimKey);
 
   const settingsPolicyState = usePolicySnapshot();
   const agentAllowedByPolicy = isAgentAllowed(settingsPolicyState);
@@ -1095,6 +1092,20 @@ export default function SettingsPage({
         t
       ),
     [dictationKey, meetingKey, translationKey, t]
+  );
+
+  const validateVerbatimHotkey = useCallback(
+    (hotkey: string) =>
+      validateHotkeyForSlot(
+        hotkey,
+        {
+          "settingsPage.general.hotkey.title": dictationKey,
+          "settingsPage.general.voiceAgentHotkey.title": voiceAgentKey,
+          "settingsPage.general.translationHotkey.title": translationKey,
+        },
+        t
+      ),
+    [dictationKey, voiceAgentKey, translationKey, t]
   );
 
   const validateTranslationHotkey = useCallback(
@@ -2520,54 +2531,22 @@ EOF`,
               </SettingsPanel>
             </div>
 
-            {/* Meeting Mode Hotkey */}
+            {/* Verbatim Hotkey */}
             <div>
               <SectionHeader
-                title={t("settingsPage.general.meetingHotkey.title")}
-                description={t("settingsPage.general.meetingHotkey.description")}
+                title={t("settingsPage.general.verbatimHotkey.title")}
+                description={t("settingsPage.general.verbatimHotkey.description")}
               />
               <SettingsPanel>
                 <SettingsPanelRow>
                   <HotkeyListInput
-                    value={meetingKey}
-                    onChange={(list) => registerMeetingHotkey(list)}
-                    onClear={async () => {
-                      await window.electronAPI?.registerMeetingHotkey?.("");
-                      setMeetingKey("");
-                    }}
-                    validate={validateMeetingHotkey}
-                    disabled={isMeetingHotkeyRegistering}
+                    value={verbatimKey}
+                    onChange={(list) => commitAgentHotkey(setVerbatimKey, list)}
+                    onClear={() => commitAgentHotkey(setVerbatimKey, "")}
+                    validate={validateVerbatimHotkey}
+                    disabled={isAgentHotkeyCommitting}
                     maxHotkeys={isUsingNativeShortcut ? 1 : undefined}
                   />
-                </SettingsPanelRow>
-                <SettingsPanelRow className="flex items-center justify-between gap-3 border-t border-border/40 dark:border-white/5">
-                  <span className="text-xs text-muted-foreground/80">
-                    {t("settingsPage.general.meetingHotkey.layoutLabel")}
-                  </span>
-                  <Select
-                    value={meetingHotkeyLayoutMode}
-                    onValueChange={(value) =>
-                      setMeetingHotkeyLayoutMode(value as "side-panel" | "full-width")
-                    }
-                  >
-                    <SelectTrigger className="h-7 w-36 text-xs rounded-lg px-2.5 [&>svg]:h-3 [&>svg]:w-3">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem
-                        value="full-width"
-                        className="text-xs py-1.5 pl-2.5 pr-7 rounded-md"
-                      >
-                        {t("settingsPage.general.meetingHotkey.layoutFullWidth")}
-                      </SelectItem>
-                      <SelectItem
-                        value="side-panel"
-                        className="text-xs py-1.5 pl-2.5 pr-7 rounded-md"
-                      >
-                        {t("settingsPage.general.meetingHotkey.layoutSidePanel")}
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
                 </SettingsPanelRow>
               </SettingsPanel>
             </div>
