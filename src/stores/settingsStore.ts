@@ -47,6 +47,7 @@ import type {
   PrivacySettings,
   ThemeSettings,
   ChatAgentSettings,
+  DictionaryPackSubscription,
 } from "../hooks/useSettings";
 import type { Snippet } from "../utils/snippets";
 import type { EnterpriseSetupMode } from "../types/enterpriseIdentity";
@@ -179,6 +180,27 @@ function snapMicWarmHold(value: number): number {
   return (MIC_WARM_HOLD_CHOICES as readonly number[]).includes(value) ? value : 0;
 }
 
+/** Like readStringArray but for arrays of objects (dictionary pack subscriptions). */
+function persistDictionaryPacks(
+  set: (partial: Partial<SettingsState>) => void,
+  packs: DictionaryPackSubscription[]
+): void {
+  if (isBrowser) localStorage.setItem("dictionaryPacks", JSON.stringify(packs));
+  set({ dictionaryPacks: packs });
+}
+
+function readJsonArray<T>(key: string, fallback: T[]): T[] {
+  if (!isBrowser) return fallback;
+  const stored = localStorage.getItem(key);
+  if (stored === null) return fallback;
+  try {
+    const parsed = JSON.parse(stored);
+    return Array.isArray(parsed) ? (parsed as T[]) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 function readStringArray(key: string, fallback: string[]): string[] {
   if (!isBrowser) return fallback;
   const stored = localStorage.getItem(key);
@@ -307,6 +329,7 @@ const BOOLEAN_SETTINGS = new Set([
 
 const ARRAY_SETTINGS = new Set([
   "customDictionary",
+  "dictionaryPacks",
   "snippets",
   "gcalAccounts",
   "mcalAccounts",
@@ -829,6 +852,10 @@ export interface SettingsState
   setCleanupCloudMode: (value: string) => void;
   setCleanupCloudBaseUrl: (value: string) => void;
   setCustomDictionary: (words: string[]) => void;
+  addDictionaryPack: (url: string) => Promise<{ success: boolean; error?: string }>;
+  removeDictionaryPack: (url: string) => void;
+  setDictionaryPackEnabled: (url: string, enabled: boolean) => void;
+  refreshDictionaryPacks: () => Promise<void>;
   updateCustomDictionary: (changes: { add?: string[]; remove?: string[] }) => void;
   applyCustomDictionaryFromExternal: (words: string[]) => void;
   setSnippets: (snippets: Snippet[]) => void;
@@ -1233,6 +1260,7 @@ export const useSettingsStore = create<SettingsState>()((set, get) => ({
   cortiEnvironment: readString("cortiEnvironment", "us"),
   cortiTenant: readString("cortiTenant", "base"),
   customDictionary: readStringArray("customDictionary", []),
+  dictionaryPacks: readJsonArray("dictionaryPacks", []),
   snippets: (() => {
     try {
       const parsed = JSON.parse(readString("snippets", "[]"));
@@ -1409,13 +1437,7 @@ export const useSettingsStore = create<SettingsState>()((set, get) => ({
   remoteTranscriptionModel: readString("remoteTranscriptionModel", ""),
   cleanupMode: (() => {
     const v = readString("cleanupMode", "providers");
-    if (
-      v === "providers" ||
-      v === "local" ||
-      v === "self-hosted" ||
-      v === "enterprise"
-    )
-      return v;
+    if (v === "providers" || v === "local" || v === "self-hosted" || v === "enterprise") return v;
     return "providers" as InferenceMode;
   })(),
   cleanupRemoteUrl: readString("cleanupRemoteUrl", ""),
@@ -1461,13 +1483,7 @@ export const useSettingsStore = create<SettingsState>()((set, get) => ({
 
   noteFormattingMode: (() => {
     const v = readString("noteFormattingMode", "providers");
-    if (
-      v === "providers" ||
-      v === "local" ||
-      v === "self-hosted" ||
-      v === "enterprise"
-    )
-      return v;
+    if (v === "providers" || v === "local" || v === "self-hosted" || v === "enterprise") return v;
     return "providers" as InferenceMode;
   })(),
   noteFormattingProvider: readString("noteFormattingProvider", ""),
@@ -1479,13 +1495,7 @@ export const useSettingsStore = create<SettingsState>()((set, get) => ({
 
   translationMode: (() => {
     const v = readString("translationMode", "providers");
-    if (
-      v === "providers" ||
-      v === "local" ||
-      v === "self-hosted" ||
-      v === "enterprise"
-    )
-      return v;
+    if (v === "providers" || v === "local" || v === "self-hosted" || v === "enterprise") return v;
     return "providers" as InferenceMode;
   })(),
   translationProvider: readString("translationProvider", ""),
@@ -1589,13 +1599,7 @@ export const useSettingsStore = create<SettingsState>()((set, get) => ({
   chatAgentCloudMode: readString("chatAgentCloudMode", "providers"),
   chatAgentMode: (() => {
     const v = readString("chatAgentMode", "providers");
-    if (
-      v === "providers" ||
-      v === "local" ||
-      v === "self-hosted" ||
-      v === "enterprise"
-    )
-      return v;
+    if (v === "providers" || v === "local" || v === "self-hosted" || v === "enterprise") return v;
     return "providers" as InferenceMode;
   })(),
   chatAgentRemoteUrl: readString("chatAgentRemoteUrl", ""),
@@ -1604,13 +1608,7 @@ export const useSettingsStore = create<SettingsState>()((set, get) => ({
 
   dictationAgentMode: (() => {
     const v = readString("dictationAgentMode", "providers");
-    if (
-      v === "providers" ||
-      v === "local" ||
-      v === "self-hosted" ||
-      v === "enterprise"
-    )
-      return v;
+    if (v === "providers" || v === "local" || v === "self-hosted" || v === "enterprise") return v;
     return "providers" as InferenceMode;
   })(),
   dictationAgentProvider: readString("dictationAgentProvider", ""),
@@ -1769,6 +1767,64 @@ export const useSettingsStore = create<SettingsState>()((set, get) => ({
   setUseDictationAgent: createBooleanSetter("useDictationAgent"),
   setCleanupProvider: createStringSetter("cleanupProvider"),
   setCleanupModel: createStringSetter("cleanupModel"),
+
+  addDictionaryPack: async (url: string) => {
+    const result = await window.electronAPI?.fetchDictionaryPack?.(url);
+    if (!result?.success) {
+      return { success: false, error: result?.error || "Dictionary packs are unavailable." };
+    }
+    const packUrl = result.url || url;
+    const packs = get().dictionaryPacks.filter((p) => p.url !== packUrl);
+    packs.push({
+      url: packUrl,
+      name: result.name ?? null,
+      words: result.words || [],
+      lastFetched: new Date().toISOString(),
+      lastError: null,
+      enabled: true,
+    });
+    persistDictionaryPacks(set, packs);
+    return { success: true };
+  },
+
+  removeDictionaryPack: (url: string) => {
+    persistDictionaryPacks(
+      set,
+      get().dictionaryPacks.filter((p) => p.url !== url)
+    );
+  },
+
+  setDictionaryPackEnabled: (url: string, enabled: boolean) => {
+    persistDictionaryPacks(
+      set,
+      get().dictionaryPacks.map((p) => (p.url === url ? { ...p, enabled } : p))
+    );
+  },
+
+  /**
+   * Re-fetch every subscription. A pack that fails keeps the words from its last
+   * good fetch — a flaky network should not silently shrink the dictionary.
+   */
+  refreshDictionaryPacks: async () => {
+    const current = get().dictionaryPacks;
+    if (!current.length) return;
+    const refreshed = await Promise.all(
+      current.map(async (pack) => {
+        const result = await window.electronAPI?.fetchDictionaryPack?.(pack.url);
+        if (!result?.success) {
+          return { ...pack, lastError: result?.error || "Refresh failed." };
+        }
+        return {
+          ...pack,
+          name: result.name ?? pack.name,
+          words: result.words || [],
+          lastFetched: new Date().toISOString(),
+          lastError: null,
+        };
+      })
+    );
+    persistDictionaryPacks(set, refreshed);
+  },
 
   // Replaces the whole dictionary: anything absent from `words` is deleted.
   // Editing specific words wants updateCustomDictionary instead (#1295).
@@ -3219,6 +3275,20 @@ export async function initializeSettings(): Promise<void> {
         "settings"
       );
     }
+
+    // Refresh subscribed dictionary packs in the background. Deliberately not
+    // awaited: a slow or unreachable pack host must never delay startup, and a
+    // failed refresh keeps the words from the last good fetch.
+    void useSettingsStore
+      .getState()
+      .refreshDictionaryPacks()
+      .catch((err) =>
+        logger.warn(
+          "Dictionary pack refresh failed on startup",
+          { error: (err as Error).message },
+          "settings"
+        )
+      );
 
     reconcileRetiredCloudModelSelections();
 

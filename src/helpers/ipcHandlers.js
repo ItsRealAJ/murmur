@@ -960,6 +960,61 @@ class IPCHandlers {
       return this.databaseManager.setDictionary(words);
     });
 
+    /**
+     * Fetch a shared dictionary pack.
+     *
+     * Done in the main process so the renderer never issues the request itself,
+     * and so the URL, response size, and content are validated in one place
+     * before any of it reaches a transcription or cleanup prompt.
+     */
+    ipcMain.handle("fetch-dictionary-pack", async (_event, rawUrl) => {
+      const { validatePackUrl, parsePack, MAX_PACK_BYTES } = await import("./dictionaryPacks.js");
+
+      const checked = validatePackUrl(rawUrl);
+      if (!checked.ok) return { success: false, error: checked.error };
+
+      let response;
+      try {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 15000);
+        try {
+          response = await net.fetch(checked.url, {
+            method: "GET",
+            redirect: "error", // a redirect could leave the vetted https origin
+            useSessionCookies: false,
+            headers: { Accept: "application/json" },
+            signal: controller.signal,
+          });
+        } finally {
+          clearTimeout(timer);
+        }
+      } catch (error) {
+        return { success: false, error: `Could not reach the pack: ${error.message}` };
+      }
+
+      if (!response.ok) {
+        return { success: false, error: `Pack server returned ${response.status}.` };
+      }
+
+      const declared = Number(response.headers.get("content-length") || 0);
+      if (declared > MAX_PACK_BYTES) {
+        return { success: false, error: "Pack is too large." };
+      }
+
+      const text = await response.text();
+      const parsed = parsePack(text);
+      if (!parsed.ok) return { success: false, error: parsed.error };
+
+      return {
+        success: true,
+        url: checked.url,
+        name: parsed.name,
+        description: parsed.description,
+        words: parsed.words,
+        dropped: parsed.dropped,
+      };
+    });
+
     ipcMain.handle("db-apply-dictionary-changes", async (_event, changes) => {
       const { add, remove } = changes ?? {};
       if (add !== undefined && !Array.isArray(add)) {

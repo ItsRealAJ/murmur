@@ -33,9 +33,22 @@ export interface TranscriptionSettings {
   remoteTranscriptionUrl: string;
   remoteTranscriptionModel: string;
   customDictionary: string[];
+  /** Remote word lists the user subscribes to; merged with customDictionary. */
+  dictionaryPacks: DictionaryPackSubscription[];
   snippets: Snippet[];
   assemblyAiStreaming: boolean;
   showTranscriptionPreview: boolean;
+}
+
+/** A shared dictionary pack the user subscribes to by URL. */
+export interface DictionaryPackSubscription {
+  url: string;
+  name: string | null;
+  /** Words from the last successful fetch. Kept apart from the user's own list. */
+  words: string[];
+  lastFetched: string | null;
+  lastError: string | null;
+  enabled: boolean;
 }
 
 export interface CleanupSettings {
@@ -266,6 +279,7 @@ function useSettingsInternal() {
     cleanupMode: store.cleanupMode,
     cleanupRemoteUrl: store.cleanupRemoteUrl,
     customDictionary: store.customDictionary,
+    dictionaryPacks: store.dictionaryPacks,
     snippets: store.snippets,
     setSnippets: store.setSnippets,
     assemblyAiStreaming: store.assemblyAiStreaming,
@@ -314,6 +328,10 @@ function useSettingsInternal() {
     setCleanupRemoteUrl: store.setCleanupRemoteUrl,
     setCustomDictionary: store.setCustomDictionary,
     updateCustomDictionary: store.updateCustomDictionary,
+    addDictionaryPack: store.addDictionaryPack,
+    removeDictionaryPack: store.removeDictionaryPack,
+    setDictionaryPackEnabled: store.setDictionaryPackEnabled,
+    refreshDictionaryPacks: store.refreshDictionaryPacks,
     setUseCleanupModel: store.setUseCleanupModel,
     setUseDictationAgent: store.setUseDictationAgent,
     setCleanupModel: store.setCleanupModel,

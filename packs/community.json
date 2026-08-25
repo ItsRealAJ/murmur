@@ -1,0 +1,24 @@
+{
+  "name": "Murmur community",
+  "description": "Words the Murmur Discord uses that speech models get wrong. Add yours in a PR.",
+  "words": [
+    "Murmur",
+    "Whisper",
+    "Parakeet",
+    "whisper.cpp",
+    "llama.cpp",
+    "BYOK",
+    "Ollama",
+    "LM Studio",
+    "OpenRouter",
+    "Anthropic",
+    "Groq",
+    "Electron",
+    "Homebrew",
+    "Scoop",
+    "dictation",
+    "transcription",
+    "hotkey",
+    "changelog"
+  ]
+}

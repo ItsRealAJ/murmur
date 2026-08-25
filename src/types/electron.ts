@@ -1103,6 +1103,22 @@ declare global {
         remove?: string[];
       }) => Promise<{ success: boolean; added: number; removed: number }>;
       onDictionaryUpdated?: (callback: (words: string[]) => void) => () => void;
+      /**
+       * Fetch and validate a shared dictionary pack from an https URL.
+       * Flat optional shape (not a discriminated union) because this project
+       * compiles with `strict: false`, where union narrowing on a boolean
+       * literal does not hold.
+       */
+      fetchDictionaryPack?: (url: string) => Promise<{
+        success: boolean;
+        url?: string;
+        name?: string | null;
+        description?: string | null;
+        words?: string[];
+        /** Entries rejected by the sanitiser or trimmed by the size cap. */
+        dropped?: number;
+        error?: string;
+      }>;
       getSnippets?: () => Promise<Array<{ trigger: string; replacement: string }>>;
       setSnippets?: (
         snippets: Array<{ trigger: string; replacement: string }>

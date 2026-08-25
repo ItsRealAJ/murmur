@@ -3292,7 +3292,8 @@
     "emptyDescription": "Add words {{agentName}} should always get right: names, tools, acronyms.",
     "addFirstWord": "Add your first word",
     "importList": "Import a list",
-    "agentDefault": "Added by default"
+    "agentDefault": "Added by default",
+    "tabPacks": "Shared packs"
   },
   "support": {
     "documentation": "Documentation",
@@ -3762,5 +3763,20 @@
       },
       "keep": "Keep recording"
     }
+  },
+  "dictionaryPacks": {
+    "subscribe": "Subscribe",
+    "urlPlaceholder": "https://example.com/pack.json",
+    "help": "Subscribe to a word list your community maintains. Everyone who subscribes gets the same names, jargon, and handles recognised.",
+    "empty": "No shared packs yet. Paste the URL of a pack to have its words recognised alongside your own.",
+    "added": "Pack subscribed",
+    "addFailed": "Could not subscribe",
+    "refresh": "Refresh",
+    "refreshed": "Packs refreshed",
+    "remove": "Unsubscribe",
+    "untitled": "Untitled pack",
+    "wordCount": "{{count}} words",
+    "activeWords": "{{count}} words from shared packs",
+    "stale": "Last refresh failed ({{error}}) — still using the previous words."
   }
 }

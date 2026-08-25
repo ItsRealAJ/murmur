@@ -121,6 +121,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   getDictionary: () => ipcRenderer.invoke("db-get-dictionary"),
   setDictionary: (words) => ipcRenderer.invoke("db-set-dictionary", words),
   applyDictionaryChanges: (changes) => ipcRenderer.invoke("db-apply-dictionary-changes", changes),
+  fetchDictionaryPack: (url) => ipcRenderer.invoke("fetch-dictionary-pack", url),
   onDictionaryUpdated: (callback) => {
     const listener = (_event, words) => callback?.(words);
     ipcRenderer.on("dictionary-updated", listener);

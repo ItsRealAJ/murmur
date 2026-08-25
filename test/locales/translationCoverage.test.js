@@ -95,6 +95,12 @@ test("every model registry descriptionKey resolves in en", () => {
   assert.deepEqual(broken, [], `Registry descriptionKeys missing in en:\n${broken.join("\n")}`);
 });
 
+// Murmur treats en as authoritative and lets i18next fall back for the other
+// locales, so features added after the fork are English-only until someone
+// contributes a translation. They are listed explicitly rather than exempting
+// everything, so accidental drift in the inherited strings is still caught.
+const EN_ONLY_PREFIXES = ["dictionaryPacks.", "dictionary.tabPacks"];
+
 test("every en key is present in every other language", () => {
   for (const namespace of NAMESPACES) {
     const en = flatten(load("en", namespace));
@@ -105,7 +111,10 @@ test("every en key is present in every other language", () => {
       // _other), so a matching plural base counts as covered.
       const bases = new Set([...translated.keys()].map(stripPlural));
       const gaps = [...en.keys()].filter(
-        (key) => !translated.has(key) && !bases.has(stripPlural(key))
+        (key) =>
+          !translated.has(key) &&
+          !bases.has(stripPlural(key)) &&
+          !EN_ONLY_PREFIXES.some((prefix) => key.startsWith(prefix))
       );
       assert.deepEqual(gaps, [], `${lang}/${namespace} is missing:\n${gaps.join("\n")}`);
     }

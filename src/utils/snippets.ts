@@ -1,3 +1,5 @@
+import { mergeDictionary } from "../helpers/dictionaryPacks.js";
+
 export interface Snippet {
   trigger: string;
   replacement: string;
@@ -79,10 +81,16 @@ export function expandSnippets(text: string, snippets?: Snippet[] | null): strin
 export function getDictionaryHintWords(
   settings?: {
     customDictionary?: string[] | null;
+    dictionaryPacks?: Array<{ words?: string[]; enabled?: boolean }> | null;
     snippets?: Snippet[] | null;
   } | null
 ): string[] {
-  const dictionary = Array.isArray(settings?.customDictionary) ? settings.customDictionary : [];
+  // Every surface that boosts recognition — transcription, cleanup, command
+  // mode — funnels through here, so merging subscribed packs at this one point
+  // is what makes a shared pack take effect everywhere.
+  const own = Array.isArray(settings?.customDictionary) ? settings.customDictionary : [];
+  const packs = Array.isArray(settings?.dictionaryPacks) ? settings.dictionaryPacks : [];
+  const dictionary = mergeDictionary(own, packs);
   const snippets = Array.isArray(settings?.snippets) ? settings.snippets : [];
   if (snippets.length === 0) return [...dictionary];
 
