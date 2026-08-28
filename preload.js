@@ -937,6 +937,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   updateTranslationHotkey: (hotkey) => ipcRenderer.invoke("update-translation-hotkey", hotkey),
   updateVerbatimHotkey: (hotkey) => ipcRenderer.invoke("update-verbatim-hotkey", hotkey),
   getVerbatimKey: () => ipcRenderer.invoke("get-verbatim-key"),
+  getMachineProfile: () => ipcRenderer.invoke("get-machine-profile"),
   getTranslationKey: () => ipcRenderer.invoke("get-translation-key"),
   onPreviewText: registerListener("preview-text", (callback) => (_event, text) => callback(text)),
   onPreviewAppend: registerListener(

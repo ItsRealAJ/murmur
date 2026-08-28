@@ -103,6 +103,7 @@ const EN_ONLY_PREFIXES = [
   "dictionaryPacks.",
   "dictionary.tabPacks",
   "settingsPage.general.verbatimHotkey.",
+  "onboarding.rehaul.provider.recommended",
 ];
 
 test("every en key is present in every other language", () => {

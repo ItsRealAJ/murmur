@@ -967,6 +967,12 @@ declare global {
       onToggleVerbatim?: (callback: () => void) => () => void;
       updateVerbatimHotkey?: (hotkey: string) => Promise<{ success: boolean; message: string }>;
       getVerbatimKey?: () => Promise<string>;
+      /** Hardware facts used to pre-select a local model during onboarding. */
+      getMachineProfile?: () => Promise<{
+        totalMemoryGb: number;
+        platform: string;
+        arch: string;
+      }>;
       onStartDictation?: (callback: () => void) => () => void;
       onStopDictation?: (callback: () => void) => () => void;
       onPrepareDictation?: (callback: () => void) => () => void;

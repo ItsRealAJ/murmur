@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { AudioLines, Check, CircleCheck, Download, MousePointer2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { recommendLocalModel } from "../../helpers/recommendLocalModel.js";
 import ProviderConnectionTest from "./ProviderConnectionTest";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -580,6 +581,37 @@ export function LocalModelSetupStep({
   const assistant = stepId === "local-assistant";
   const [selectedProvider, setSelectedProvider] = useState(assistant ? "qwen" : "whisper");
   const [selectedModel, setSelectedModel] = useState("");
+  const [recommendedModel, setRecommendedModel] = useState<string | null>(null);
+
+  // Pre-select a model that fits this machine. The full list stays available,
+  // but finishing setup no longer requires the user to trade accuracy against
+  // RAM before they have heard the app work once. Best-effort: if the probe
+  // fails, the step behaves exactly as it did before.
+  useEffect(() => {
+    if (assistant) return;
+    let cancelled = false;
+    void (async () => {
+      try {
+        const profile = await window.electronAPI?.getMachineProfile?.();
+        if (cancelled || !profile) return;
+        const pick = recommendLocalModel({
+          totalMemoryGb: profile.totalMemoryGb,
+          platform: profile.platform,
+          arch: profile.arch,
+          language: store.preferredLanguage || "auto",
+        });
+        if (cancelled) return;
+        setRecommendedModel(pick.model);
+        setSelectedProvider(pick.provider === "nvidia" ? "nvidia" : "whisper");
+        setSelectedModel((current) => current || pick.model);
+      } catch {
+        // A machine that cannot report itself still gets the unchanged picker.
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [assistant, store.preferredLanguage]);
   const [downloadedWhisper, setDownloadedWhisper] = useState<Set<string>>(new Set());
   const [downloadedParakeet, setDownloadedParakeet] = useState<Set<string>>(new Set());
   const [downloadedLlm, setDownloadedLlm] = useState<Set<string>>(new Set());
@@ -828,6 +860,11 @@ export function LocalModelSetupStep({
               >
                 <span className="block truncate text-sm font-medium text-[var(--onboarding-text-primary)]">
                   {model.name}
+                  {model.id === recommendedModel && (
+                    <span className="ml-2 rounded-full border border-primary/40 px-1.5 py-px align-middle text-[10px] font-normal text-primary">
+                      {t("onboarding.rehaul.provider.recommended")}
+                    </span>
+                  )}
                 </span>
                 <span className="mt-0.5 block truncate text-xs text-[var(--onboarding-text-secondary)]">
                   {model.size}

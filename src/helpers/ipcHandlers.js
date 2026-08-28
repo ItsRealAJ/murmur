@@ -4779,6 +4779,19 @@ class IPCHandlers {
       };
     });
 
+    /**
+     * Hardware facts onboarding uses to pre-select a local model, so the user
+     * is not asked to trade accuracy against RAM before hearing the app work.
+     */
+    ipcMain.handle("get-machine-profile", async () => {
+      const os = require("os");
+      return {
+        totalMemoryGb: Math.round((os.totalmem() / 1024 ** 3) * 10) / 10,
+        platform: process.platform,
+        arch: process.arch,
+      };
+    });
+
     ipcMain.handle("get-verbatim-key", async () => {
       return this.environmentManager.getVerbatimKey?.() || "";
     });
