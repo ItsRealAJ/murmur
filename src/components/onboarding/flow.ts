@@ -5,7 +5,6 @@ export const ONBOARDING_FLOW_VERSION = 2;
 type OnboardingStorage = Pick<Storage, "setItem" | "removeItem">;
 
 export type OnboardingStepId =
-  | "auth"
   | "permissions"
   | "languages"
   | "use-cases"
@@ -14,7 +13,6 @@ export type OnboardingStepId =
   | "dictation-demo"
   | "assistant-hotkey"
   | "assistant-demo"
-  | "notes"
   | "setup-choice"
   | "byok-dictation"
   | "byok-assistant"
@@ -41,8 +39,7 @@ export interface OnboardingRouteContext {
   skipSetupChoice?: boolean;
 }
 
-const ACCOUNT_ROUTE: OnboardingStepId[] = [
-  "auth",
+const CORE_ROUTE: OnboardingStepId[] = [
   "permissions",
   "languages",
   "use-cases",
@@ -59,7 +56,6 @@ const SETUP_ROUTES: Record<Exclude<OnboardingSetupMode, null | "cloud">, Onboard
 // Canonical flow order, independent of any one route. reconcileStepWithRoute uses
 // it to clamp backwards instead of jumping to the end of the route.
 const STEP_ORDER: OnboardingStepId[] = [
-  "auth",
   "permissions",
   "languages",
   "use-cases",
@@ -68,7 +64,6 @@ const STEP_ORDER: OnboardingStepId[] = [
   "dictation-demo",
   "assistant-hotkey",
   "assistant-demo",
-  "notes",
   "setup-choice",
   "byok-dictation",
   "byok-assistant",
@@ -85,12 +80,11 @@ const KNOWN_STEPS = new Set<OnboardingStepId>(STEP_ORDER);
  * counter on.
  */
 export const COMPACT_STEPS: ReadonlySet<OnboardingStepId> = new Set<OnboardingStepId>([
-  "auth",
   "permissions",
 ]);
 
 const LEGACY_STEP_MAP: OnboardingStepId[] = [
-  "auth",
+  "permissions",
   // The old flow put permissions after these two indexes, so a save at 1-2
   // means the grants were never shown; the new route puts permissions first,
   // and resuming past it would skip the mic/accessibility prompts entirely.
@@ -99,14 +93,13 @@ const LEGACY_STEP_MAP: OnboardingStepId[] = [
   "permissions",
   "dictation-hotkey",
   "assistant-hotkey",
-  "notes",
   "setup-choice",
 ];
 
 export function createOnboardingSession(): OnboardingSession {
   return {
     version: ONBOARDING_FLOW_VERSION,
-    currentStepId: "auth",
+    currentStepId: "permissions",
     history: [],
     authPath: null,
     setupMode: null,
@@ -125,31 +118,17 @@ export function resetOnboardingProgress(storage: OnboardingStorage): void {
 }
 
 export function getOnboardingRoute(context: OnboardingRouteContext): OnboardingStepId[] {
-  if (context.authPath === null) return ["auth"];
-
+  // One route for everyone: Murmur has no accounts, so there is no sign-in step
+  // and no account/guest fork. Permissions come first because a user who never
+  // grants the microphone and never sees their hotkey has not been onboarded,
+  // whatever else they clicked through.
   const setupChoice = context.skipSetupChoice ? [] : (["setup-choice"] as OnboardingStepId[]);
 
-  const route =
-    context.authPath === "guest"
-      ? // Guests still need the permission grants and a hotkey they have seen:
-        // finalizeOnboarding registers dictationHotkey either way, and skipping
-        // these steps shipped users who neither granted the mic nor knew their
-        // trigger key.
-        ([
-          "auth",
-          "permissions",
-          "dictation-hotkey",
-          "activation-mode",
-          "setup-choice",
-        ] as OnboardingStepId[])
-      : [
-          ...ACCOUNT_ROUTE,
-          ...(context.agentAllowed
-            ? (["assistant-hotkey", "assistant-demo"] as OnboardingStepId[])
-            : []),
-          "notes" as const,
-          ...setupChoice,
-        ];
+  const route: OnboardingStepId[] = [
+    ...CORE_ROUTE,
+    ...(context.agentAllowed ? (["assistant-hotkey", "assistant-demo"] as OnboardingStepId[]) : []),
+    ...setupChoice,
+  ];
 
   if (context.setupMode && context.setupMode !== "cloud") {
     route.push(
@@ -211,12 +190,12 @@ export function parseOnboardingSession(value: string | null): OnboardingSession 
 }
 
 export function migrateLegacyOnboardingStep(value: string | null): OnboardingStepId {
-  if (!value) return "auth";
+  if (!value) return "permissions";
   if (isOnboardingStepId(value)) return value;
 
   const index = Number.parseInt(value, 10);
-  if (!Number.isFinite(index) || index < 0) return "auth";
-  return LEGACY_STEP_MAP[Math.min(index, LEGACY_STEP_MAP.length - 1)] ?? "auth";
+  if (!Number.isFinite(index) || index < 0) return "permissions";
+  return LEGACY_STEP_MAP[Math.min(index, LEGACY_STEP_MAP.length - 1)] ?? "permissions";
 }
 
 /**
@@ -235,7 +214,7 @@ export function reconcileStepWithRoute(
 ): OnboardingStepId {
   if (route.includes(stepId)) return stepId;
   const target = STEP_ORDER.indexOf(stepId);
-  if (target === -1 || route.length === 0) return route[0] ?? "auth";
+  if (target === -1 || route.length === 0) return route[0] ?? "permissions";
   return route.reduce((best, candidate) => {
     const bestDistance = Math.abs(STEP_ORDER.indexOf(best) - target);
     const candidateDistance = Math.abs(STEP_ORDER.indexOf(candidate) - target);

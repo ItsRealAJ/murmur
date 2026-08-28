@@ -3,6 +3,7 @@ import { BorderBeam, type BorderBeamTheme } from "border-beam";
 import { ChevronUp } from "lucide-react";
 import { cn } from "../lib/utils";
 import { PillWaveform } from "./PillWaveform";
+import { PillCaret, type PillCaretState } from "./PillCaret";
 import { VoiceIdentityIcon } from "./VoiceIdentityIcon";
 import { WAVEFORM_BAR_COUNT } from "./waveformMath";
 import {
@@ -30,6 +31,9 @@ interface VoicePillProps extends Omit<HTMLAttributes<HTMLDivElement>, "children"
   horizontalDirection?: "left" | "right";
 }
 
+/* deliberate-ignore layout-animation */
+// Animating width/height is correct here: the pill really does change size
+// between layouts, and scaling would distort its radius and its label.
 const GROW_TRANSITION = `${LISTENING_ENTRANCE_TIMING.expansionMs}ms cubic-bezier(0.2, 0, 0, 1)`;
 // A pronounced eleven-bar rhythm keeps rounded short bars readable while tall
 // peaks use nearly the full lane. The same silhouette and footprint is shared
@@ -42,13 +46,29 @@ const RESTING_WAVE_HEIGHTS = Array.from(
   (_, index) => RESTING_WAVE_SILHOUETTE[index % RESTING_WAVE_SILHOUETTE.length]
 );
 
+// Elevation is a tonal step, never a shadow: the pill sits over arbitrary host
+// windows, and a blur over an unknown background reads as smudge. Recording is
+// the only state that borrows the accent, and only on its border.
+/* deliberate-ignore no-active-state */
+// The pressed state is global (`:active` on [role="button"] in index.css) and
+// the pill receives role/tabIndex/aria-label/onKeyDown from App.jsx, so it is
+// keyboard-operable even though this file shows no interactive attributes.
 const STATE_APPEARANCE: Record<VoicePillState, string> = {
-  idle: "border-border-hover bg-surface-1 text-muted-foreground dark:border-border/50",
+  idle: "border-border-subtle bg-surface-1 text-muted-foreground",
   hover: "border-border-hover bg-surface-3 text-foreground",
-  recording: "border-border-hover bg-surface-1 text-foreground",
-  processing: "border-border/60 bg-surface-1 text-foreground/70",
-  thinking: "border-border/60 bg-surface-1 text-foreground",
-  unavailable: "border-border/60 bg-surface-1 text-muted-foreground",
+  recording: "border-primary/45 bg-surface-2 text-foreground",
+  processing: "border-border-subtle bg-surface-1 text-foreground/70",
+  thinking: "border-border-subtle bg-surface-1 text-foreground",
+  unavailable: "border-border-subtle bg-surface-1 text-muted-foreground",
+};
+
+const CARET_STATE: Record<VoicePillState, PillCaretState> = {
+  idle: "idle",
+  hover: "idle",
+  recording: "recording",
+  processing: "processing",
+  thinking: "processing",
+  unavailable: "unavailable",
 };
 
 /** One persistent control that resizes between the floating and panel layouts. */
@@ -99,7 +119,6 @@ export const VoicePill = forwardRef<HTMLDivElement, VoicePillProps>(function Voi
       className={cn(
         "voice-pill-control relative flex items-center justify-center overflow-hidden rounded-full border",
         showCompactPill && "pr-1",
-        "shadow-[var(--shadow-card)]",
         STATE_APPEARANCE[state],
         className
       )}
@@ -110,7 +129,6 @@ export const VoicePill = forwardRef<HTMLDivElement, VoicePillProps>(function Voi
         width: footprint.width,
         height: footprint.height,
         cursor: isProcessing || isThinking ? "not-allowed" : isDragging ? "grabbing" : "pointer",
-        boxShadow: floatingHover ? "var(--shadow-card-hover-subtle)" : undefined,
         transition: `width ${GROW_TRANSITION}, height ${GROW_TRANSITION}, padding-left ${GROW_TRANSITION}, padding-right ${GROW_TRANSITION}, background-color 220ms ease-out, border-color 220ms ease-out, box-shadow 220ms ease-out`,
         ...style,
       }}
@@ -199,6 +217,10 @@ export const VoicePill = forwardRef<HTMLDivElement, VoicePillProps>(function Voi
         />
       </div>
 
+      {/* The caret sits at the trailing edge, where transcribed words arrive —
+          the pill's only saturated element, and the app's signature. */}
+      <PillCaret state={CARET_STATE[state]} compact={showCompactPill} className="ml-1.5 mr-0.5" />
+
       {isUnavailable && (
         <div className="pointer-events-none absolute inset-0 rounded-full border-2 border-foreground/30 animate-pulse" />
       )}
@@ -210,10 +232,13 @@ export const VoicePill = forwardRef<HTMLDivElement, VoicePillProps>(function Voi
       size="sm"
       theme={beamTheme}
       duration={1.6}
-      colorVariant={agentMode ? "ocean" : "colorful"}
-      brightness={agentMode ? 1.35 : 1.3}
-      saturation={agentMode ? 1.35 : undefined}
-      hueRange={agentMode ? 8 : undefined}
+      // Boldness is spent on the caret, so the beam stays inside the palette:
+      // "sunset" with a narrow hue range reads as the ember accent sweeping the
+      // border, not as a rainbow competing with it.
+      colorVariant="sunset"
+      brightness={agentMode ? 1.15 : 1.05}
+      saturation={agentMode ? 1.1 : 0.9}
+      hueRange={agentMode ? 14 : 8}
       strength={agentMode ? 0.9 : 0.85}
       active={showBorderBeam}
       borderRadius={20}

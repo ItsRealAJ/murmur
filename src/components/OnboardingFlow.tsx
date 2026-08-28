@@ -389,7 +389,6 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
   const continueFromCurrentStep = useCallback(async () => {
     // A banner from an earlier failed attempt must not outlive the retry.
     setFatalError(null);
-    if (currentStepId === "notes" && workspaceResolutionPending) return;
     if (currentStepId === "permissions") {
       if (getPlatform() === "darwin" && !permissions.accessibilityPermissionGranted) {
         setAccessibilitySkipped(true);
@@ -498,8 +497,6 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
         return assistantHotkeyConfirmed;
       case "assistant-demo":
         return assistantDemoSuccess;
-      case "notes":
-        return !workspaceResolutionPending;
       case "byok-dictation":
       case "byok-assistant":
       case "local-dictation":
@@ -733,33 +730,6 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
         );
       }
 
-      case "notes":
-        return (
-          // Compact centred column; the calendar body owns short-window scrolling.
-          <div className="flex h-full min-h-0 w-full flex-col items-center gap-5 pt-1">
-            <header className="flex w-full shrink-0 flex-col items-center gap-3 text-center">
-              <h1 className="onboarding-display-title text-[var(--onboarding-text-primary)]">
-                <span className="block">{t("onboarding.rehaul.notes.titleLineOne")}</span>
-                <span className="block">
-                  {t("onboarding.rehaul.notes.titleLineTwoPrefix")}{" "}
-                  {/* Caveat sits at the same 40px as the Inter run, per the spec. */}
-                  <span className="brand-script">
-                    {t("onboarding.rehaul.notes.titleLineTwoBrand")}
-                  </span>
-                </span>
-              </h1>
-              <p className="w-full max-w-xs text-sm leading-[1.5] text-[var(--onboarding-text-secondary)]">
-                {t("onboarding.rehaul.notes.description")}
-              </p>
-            </header>
-            {/* The hero panel and the connector list are both fixed-height, so on
-                a short window they run past the footer. The shell never scrolls,
-                so the content scrolls here instead — px-1/pb-1 keeps focus rings
-                off the clip edge. */}
-            <div className="onboarding-shell-scroll min-h-0 w-full flex-1 overflow-y-auto px-1 pb-1"></div>
-          </div>
-        );
-
       case "setup-choice":
         return (
           <div className="h-full w-full pt-2">
@@ -775,11 +745,6 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
               isSignedIn={isSignedIn}
               agentAllowed={agentAllowed}
               onSelect={(mode, options) => void handleSetupSelection(mode, options)}
-              onRequestAuthentication={() => {
-                setSetupMode("cloud");
-                setAuthPath(null);
-                goTo("auth");
-              }}
             />
           </div>
         );
@@ -873,9 +838,7 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
         }
         skipLabel={t("common.skip")}
         continueDisabled={!canContinue}
-        continueLoading={
-          isFinishing || isRegistering || (currentStepId === "notes" && workspaceResolutionPending)
-        }
+        continueLoading={isFinishing || isRegistering}
         progress={getOnboardingProgress(currentStepId, route)}
         // Label Back only when it is the sole footer action. Unlike the source
         // commit, this branch also has demo Skip, so Back stays icon-only there.

@@ -7,28 +7,28 @@
 @theme {
   /* Murmur Theme — registers color tokens with Tailwind v4.
      These are the light-mode defaults; .dark overrides them below. */
-  --color-primary: #2563eb;
-  --color-primary-foreground: #ffffff;
-  --color-secondary: #f5f5f5;
-  --color-secondary-foreground: #171717;
-  --color-muted: #f5f5f5;
-  --color-muted-foreground: #525252;
-  --color-accent: oklch(0.55 0.22 285);
-  --color-accent-foreground: #ffffff;
+  --color-primary: #bc381e;
+  --color-primary-foreground: #fffcf7;
+  --color-secondary: #f2ede5;
+  --color-secondary-foreground: #1a1613;
+  --color-muted: #f2ede5;
+  --color-muted-foreground: #6b625a;
+  --color-accent: #bc381e;
+  --color-accent-foreground: #fffcf7;
   /* Agent Mode identity, sourced from the supplied sparkle/leaf mark. */
-  --color-agent-brand: #8787ff;
+  --color-agent-brand: #a8724f;
   --color-destructive: #dc2626;
   --color-destructive-foreground: #ffffff;
-  --color-border: #e5e5e5;
-  --color-input: #f9f6f1;
-  --color-ring: #2563eb;
-  --color-background: #ffffff;
-  --color-foreground: #171717;
-  --color-card: #ffffff;
-  --color-card-foreground: #171717;
-  --color-popover: #ffffff;
-  --color-popover-foreground: #171717;
-  --color-link: #2563eb;
+  --color-border: #e4dcd1;
+  --color-input: #fffcf7;
+  --color-ring: #bc381e;
+  --color-background: #f7f3ed;
+  --color-foreground: #1a1613;
+  --color-card: #fffcf7;
+  --color-card-foreground: #1a1613;
+  --color-popover: #fffcf7;
+  --color-popover-foreground: #1a1613;
+  --color-link: #a8482a;
   --color-success: #16a34a;
   --color-success-foreground: #ffffff;
   --color-warning: #d97706;
@@ -37,16 +37,32 @@
   --color-info-foreground: #ffffff;
 
   /* Surface hierarchy — light mode equivalents */
-  --color-surface-0: #ffffff;
-  --color-surface-1: #fafafa;
-  --color-surface-2: #ffffff;
-  --color-surface-3: #f5f5f5;
-  --color-surface-raised: #f0f0f0;
+  --color-surface-0: #fffcf7;
+  --color-surface-1: #f2ede5;
+  --color-surface-2: #fffcf7;
+  --color-surface-3: #ede6dc;
+  --color-surface-raised: #e7dfd3;
 
   /* Border states — light mode equivalents */
-  --color-border-subtle: #e5e5e5;
-  --color-border-hover: #d4d4d4;
-  --color-border-active: #2563eb;
+  --color-border-subtle: #e4dcd1;
+  --color-border-hover: #d5cabb;
+  --color-border-active: #bc381e;
+  /* Type roles — see docs/DESIGN.md. Transcript text is data, not prose, so it
+     is set in the host OS's mono: same promise the verbatim hotkey makes, and
+     zero bytes to ship. */
+  --font-family-transcript:
+    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+  /* Two spacing registers, deliberately different numbers. Intra-component
+     values live inside a control; rhythm values separate page regions. */
+  --space-tight: 6px;
+  --space-snug: 10px;
+  --space-cosy: 14px;
+  --rhythm-section: 28px;
+  --rhythm-region: 44px;
+
+  /* One radius for panels; the dictation pill stays a capsule. */
+  --radius-panel: 10px;
 }
 
 :root {
@@ -101,25 +117,26 @@
   /* Dark mode — charcoal surfaces with clear elevation hierarchy
      Base L=0.22 (charcoal) with 0.05 steps between layers.
      Hue 260 (neutral blue) with minimal chroma for sophistication. */
-  --color-background: oklch(0.22 0.006 260);
-  --color-foreground: oklch(0.93 0 0);
-  --color-card: oklch(0.27 0.008 260);
-  --color-card-foreground: oklch(0.93 0 0);
-  --color-popover: oklch(0.29 0.009 260);
-  --color-popover-foreground: oklch(0.93 0 0);
-  --color-primary: oklch(0.65 0.2 260);
-  --color-primary-foreground: oklch(0.99 0 0);
-  --color-secondary: oklch(0.28 0.007 260);
-  --color-secondary-foreground: oklch(0.9 0 0);
-  --color-muted: oklch(0.24 0.006 260);
-  --color-muted-foreground: oklch(0.65 0 0);
-  --color-accent: oklch(0.68 0.18 285);
-  --color-accent-foreground: oklch(0.99 0 0);
+  --color-background: #15120f;
+  --color-foreground: #efe9e1;
+  --color-card: #1c1815;
+  --color-card-foreground: #efe9e1;
+  --color-popover: #1c1815;
+  --color-popover-foreground: #efe9e1;
+  --color-primary: #d96f4b;
+  --color-primary-foreground: #15120f;
+  --color-secondary: #1f1b17;
+  --color-secondary-foreground: #efe9e1;
+  --color-muted: #1f1b17;
+  --color-muted-foreground: #9a9086;
+  --color-accent: #d96f4b;
+  --color-accent-foreground: #15120f;
+  --color-agent-brand: #c68a6a;
   --color-destructive: oklch(0.62 0.22 25);
   --color-destructive-foreground: oklch(0.99 0 0);
-  --color-border: oklch(0.35 0.007 260);
-  --color-input: oklch(0.19 0.005 260);
-  --color-ring: oklch(0.65 0.2 260);
+  --color-border: #2a2420;
+  --color-input: #1c1815;
+  --color-ring: #d96f4b;
   --color-success: oklch(0.7 0.18 145);
   --color-success-foreground: oklch(0.99 0 0);
   --color-warning: oklch(0.75 0.15 70);
@@ -128,17 +145,17 @@
   --color-info-foreground: oklch(0.99 0 0);
 
   /* Surface hierarchy — charcoal depth system (0.22 → 0.33) */
-  --color-surface-0: oklch(0.22 0.006 260);
-  --color-surface-1: oklch(0.25 0.007 260);
-  --color-surface-2: oklch(0.27 0.008 260);
-  --color-surface-3: oklch(0.3 0.009 260);
-  --color-surface-raised: oklch(0.33 0.01 260);
+  --color-surface-0: #1c1815;
+  --color-surface-1: #1f1b17;
+  --color-surface-2: #1c1815;
+  --color-surface-3: #262019;
+  --color-surface-raised: #2e2720;
 
   /* Border states */
-  --color-border-subtle: oklch(0.33 0.006 260);
-  --color-border-hover: oklch(0.42 0.01 260);
-  --color-border-active: oklch(0.5 0.15 260);
-  --color-link: oklch(0.67 0.1 250);
+  --color-border-subtle: #2a2420;
+  --color-border-hover: #3a322b;
+  --color-border-active: #d96f4b;
+  --color-link: #e08a6a;
 
   /* Card depth shadows — softer for charcoal, with top highlight for premium depth */
   --shadow-card: 0 1px 3px oklch(0 0 0 / 0.2), inset 0 1px 0 oklch(1 0 0 / 0.03);
@@ -1763,4 +1780,86 @@ a:hover {
 
 .dark .rich-text-editor-content p.is-editor-empty:first-child::before {
   color: oklch(0.7 0 0 / 0.2);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Interaction states.
+
+   An interface with no pressed state, no focus ring, and an inherited
+   selection colour reads as one nobody actually used. These are global
+   defaults; components override where they need to.
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* Selection and caret are set rather than inherited from the UA. The caret is
+   Murmur's signature element — every dictation ends at one. */
+::selection {
+  background-color: color-mix(in oklab, var(--color-primary) 26%, transparent);
+  color: var(--color-foreground);
+}
+
+:root {
+  caret-color: var(--color-primary);
+  accent-color: var(--color-primary);
+}
+
+/* One focus treatment app-wide, keyboard-only. Offset so the ring reads
+   against both the control and the surface behind it. */
+:where(a, button, input, select, textarea, [role="button"], [tabindex]):focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: inherit;
+}
+
+/* A pressed state that is actually felt. Scale rather than colour, so it works
+   on controls whose colour already means something (e.g. the live pill). */
+:where(button, [role="button"]):not(:disabled):active {
+  transform: translateY(0.5px);
+}
+
+:where(button, input, select, textarea, [role="button"]):disabled,
+:where([aria-disabled="true"]) {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Scrollbars are part of the surface, not the browser's. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-hover) transparent;
+}
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background-color: var(--color-border-hover);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-muted-foreground);
+}
+
+/* Transcript text is what was actually heard — set as data, not prose. */
+.transcript-text {
+  font-family: var(--font-family-transcript);
+  font-variant-ligatures: none;
+  letter-spacing: -0.005em;
+}
+
+/* Honour the OS preference. For the live waveform this means holding a steady
+   bar rather than freezing mid-animation, which would read as a hang. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

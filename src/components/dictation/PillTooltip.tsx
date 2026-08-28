@@ -36,7 +36,7 @@ export function PillTooltip({
       </div>
       {isVisible && !disabled && (
         <div
-          className={`absolute bottom-full ${alignClass} mb-2 px-1.5 py-1 text-[10px] text-popover-foreground bg-popover border border-border rounded-full z-10 shadow-lg transition-opacity duration-150 whitespace-nowrap`}
+          className={`absolute bottom-full ${alignClass} mb-2 px-1.5 py-1 text-[10px] text-popover-foreground bg-surface-2 border border-border-hover rounded-full z-10 transition-opacity duration-150 whitespace-nowrap`}
         >
           {emoji && <span className="mr-1">{emoji}</span>}
           {content}

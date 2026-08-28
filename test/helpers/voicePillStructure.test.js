@@ -169,7 +169,8 @@ test("the collapsed Live Transcript pill transitions its logo into an expand che
 test("the idle pill keeps the logo at normal foreground strength", async () => {
   const idle = await renderPill("idle", false);
 
-  assert.match(idle, /border-border-hover[^"\n]*dark:border-border\/50/);
+  // Idle sits one tonal step below hover; see docs/DESIGN.md.
+  assert.match(idle, /border-border-subtle bg-surface-1 text-muted-foreground/);
   assert.match(
     idle,
     /voice-identity-icon relative inline-block shrink-0 transition-\[width,height\] duration-200 text-foreground/
@@ -181,7 +182,9 @@ test("the floating hover pill changes surface treatment without zooming", async 
   const hovered = await renderPill("hover", false);
 
   assert.match(hovered, /border-border-hover bg-surface-3 text-foreground/);
-  assert.match(hovered, /box-shadow:var\(--shadow-card-hover-subtle\)/);
+  // Elevation is a tonal step, never a shadow: the pill floats over arbitrary
+  // host windows, where a blur over an unknown background reads as smudge.
+  assert.doesNotMatch(hovered, /box-shadow:var\(--shadow-card/);
   assert.doesNotMatch(hovered, /style="[^"]*transform:/);
   assert.match(hovered, footprint.idle);
   assert.match(hovered, /<svg width="22" height="22"/);
@@ -310,4 +313,19 @@ test("the voice identity performs an actual SVG geometry morph", async () => {
   assert.ok(midpoint.sparkOpacity > 0);
   assert.equal(agent.agentOpacity, 1);
   assert.equal(agent.constructionOpacity, 0);
+});
+
+// The caret is Murmur's signature element (docs/DESIGN.md): every dictation ends
+// at a text cursor in another window, so the pill carries one of its own. It
+// reports pipeline state by rhythm, which is why the state attribute matters.
+test("the pill carries a caret that tracks the pipeline state", async () => {
+  const idle = await renderPill("idle", false);
+  assert.match(idle, /class="murmur-caret[^"]*"/);
+  assert.match(idle, /data-caret-state="idle"/);
+
+  const recording = await renderPill("recording", true);
+  assert.match(recording, /data-caret-state="recording"/);
+
+  const processing = await renderPill("processing", true);
+  assert.match(processing, /data-caret-state="processing"/);
 });

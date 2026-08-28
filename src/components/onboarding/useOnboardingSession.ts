@@ -21,15 +21,9 @@ function readInitialSession(): OnboardingSession {
   session.currentStepId = migrateLegacyOnboardingStep(
     localStorage.getItem(LEGACY_ONBOARDING_STEP_KEY)
   );
-  if (localStorage.getItem("authenticationSkipped") === "true") {
-    session.authPath = "guest";
-  } else if (session.currentStepId !== "auth") {
-    // A legacy save mid-flow means the auth step was already behind the user.
-    // Left null, getOnboardingRoute returns ["auth"] and the reconcile clamp
-    // overwrites the migrated step before anything can restore it — the one
-    // group the legacy map exists for would always restart from scratch.
-    session.authPath = "account";
-  }
+  // There is no sign-in step any more, so every resumed session walks the one
+  // route. authPath is kept on the session only so old saves still parse.
+  session.authPath = "guest";
   return session;
 }
 
