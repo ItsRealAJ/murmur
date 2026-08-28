@@ -2,7 +2,7 @@ import { create } from "zustand";
 import type { PolicyDecisionSnapshot } from "./policyRules";
 
 /**
- * Mumur is never centrally managed.
+ * Murmur is never centrally managed.
  *
  * Upstream fetched an org policy from its backend to let administrators lock
  * providers, retention, and features for enterprise seats. A local-only fork has

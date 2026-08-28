@@ -68,6 +68,15 @@ for the live state. This costs something real: success is also green, so
 success states are carried by icon and copy, and the accent never doubles as
 "that worked".
 
+**The one stated exception.** "Accent only while audio is live" governs the
+dictation panel — the always-on-top surface where the colour *is* the state
+readout. Onboarding is a different surface with different rules: it is seen
+once, it contains no live audio, and holding the line there produced a first
+screen whose only colour came from three macOS system icons while Murmur's own
+primary action sat in inert grey and read as already-disabled. So in onboarding
+the accent marks the primary action. Nothing is diluted, because the two
+surfaces are never on screen together.
+
 ## Type
 
 | Role           | Face              | Why                                                                                                                                                                                                                                                                              |

@@ -1,5 +1,5 @@
 /**
- * Mumur has no accounts.
+ * Murmur has no accounts.
  *
  * Upstream (OpenWhispr) is open-core for a hosted service, so this hook talked
  * to auth.openwhispr.com and drove sign-in, team membership, and account-scoped

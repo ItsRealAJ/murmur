@@ -580,7 +580,7 @@ export function AccountAvatar({ image, name }: { image?: string | null; name: st
 }
 
 /**
- * Mumur only transcribes dictation, so this renders that one panel directly.
+ * Murmur only transcribes dictation, so this renders that one panel directly.
  * Upstream also had "note recording" (meetings) and "upload" tabs; with those
  * gone a tab bar with a single tab would be noise.
  */

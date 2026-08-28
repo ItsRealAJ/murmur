@@ -86,10 +86,14 @@
      name and silently retimes every `ease-out` utility app-wide. */
   --onboarding-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
 
-  /* Typography */
+  /* Typography. Schibsted Grotesk leads the stack app-wide, not just in
+     onboarding — the pill, settings and history are where the face is actually
+     seen. It is prepended rather than replacing the stack because the woff2
+     files are subset by unicode-range and carry no CJK, so zh/ja glyphs fall
+     through to Noto Sans behind it. */
   --font-family-sans:
-    "Noto Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial,
-    sans-serif;
+    "Schibsted Grotesk Variable", "Noto Sans", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
 
   /* Opacities */
   --opacity-subtle: 0.1;
@@ -295,13 +299,8 @@
    tokens are shared — the canvas keeps its own painted background below. */
 .onboarding-canvas,
 body:has(.onboarding-canvas) {
-  /* Schibsted Grotesk is prepended rather than replacing the stack: the woff2 files are
-     subset by unicode-range and carry no CJK, so zh-CN/zh-TW/ja glyphs must still
-     fall through to the original fonts. Overriding the variable as well covers
-     descendants that re-declare font-family from it. */
-  --font-family-sans:
-    "Schibsted Grotesk Variable", "Noto Sans", -apple-system, BlinkMacSystemFont, "Segoe UI",
-    Roboto, "Helvetica Neue", Arial, sans-serif;
+  /* The face comes from the root stack; this only has to apply it, because the
+     onboarding canvas is also rendered standalone in the compact window. */
   font-family: var(--font-family-sans);
   font-optical-sizing: auto;
 
@@ -365,9 +364,9 @@ body:has(.onboarding-canvas) {
 .dark .onboarding-canvas,
 .dark:has(.onboarding-canvas),
 body.dark:has(.onboarding-canvas) {
-  /* Lifted off #4079ED: the Figma accent is tuned against white and goes muddy on
-     a near-black surface, so dark takes the same hue a few steps brighter to hold
-     the 4.5:1 it has in light. */
+  /* The light accent is tuned against a near-white ground and goes muddy on a
+     near-black one, so dark takes the same hue several steps brighter — 8.28:1
+     here against 6.40:1 in light. */
   --onboarding-accent: #4fbf6e;
   /* White, same as light: a filled brand CTA reads as the brand in both themes,
      and flipping its label to near-black made the dark-mode buttons look like a

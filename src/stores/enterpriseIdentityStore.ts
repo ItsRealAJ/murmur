@@ -5,11 +5,11 @@ import type {
 import type { InferenceScope } from "../config/inferenceScopes";
 
 /**
- * Mumur has no managed enterprise identity.
+ * Murmur has no managed enterprise identity.
  *
  * Upstream let an administrator pin the inference provider and model per scope
  * via a managed config fetched from its backend (with a fail-closed mode that
- * blocks inference when that config cannot be read). Mumur has no administrator
+ * blocks inference when that config cannot be read). Murmur has no administrator
  * and no backend, so every scope resolves to `"manual"` — the user configures
  * their own provider, which is the only mode this fork ships.
  *

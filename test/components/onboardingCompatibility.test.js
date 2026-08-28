@@ -22,9 +22,6 @@ async function createOnboardingRenderer(t) {
       `,
       "onboarding-hero-dither.png": `export default "hero-light.png";`,
       "onboarding-hero-dither-dark.png": `export default "hero-dark.png";`,
-      "onboarding-permission-microphone.webp": `export default "microphone.webp";`,
-      "onboarding-permission-accessibility.webp": `export default "accessibility.webp";`,
-      "onboarding-permission-system-audio.webp": `export default "system-audio.webp";`,
       "/utils/platform": `
         export function getPlatform() { return "linux"; }
         export function getCachedPlatform() { return "linux"; }

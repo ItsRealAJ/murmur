@@ -20,7 +20,6 @@ import { useUpdater } from "../hooks/useUpdater";
 import { useSettings } from "../hooks/useSettings";
 import { useAuth } from "../hooks/useAuth";
 import { useUsage } from "../hooks/useUsage";
-import { decideUpsell } from "../lib/upsell";
 import { useCollapsibleSidebar } from "../hooks/useCollapsibleSidebar";
 import {
   useTranscriptions,
@@ -97,7 +96,6 @@ export default function ControlPanel({ initialSettingsSection }: ControlPanelPro
   const [aiCTADismissed, setAiCTADismissed] = useState(
     () => localStorage.getItem("aiCTADismissed") === "true"
   );
-  const [showReferrals, setShowReferrals] = useState(false);
   const [invitationToken, setInvitationToken] = useState<string | null>(null);
   const [invitationNotesEntry, setInvitationNotesEntry] = useState<{
     workspaceId: string;
@@ -131,13 +129,6 @@ export default function ControlPanel({ initialSettingsSection }: ControlPanelPro
   const { useCleanupModel, setUseLocalWhisper, setCloudTranscriptionMode } = useSettings();
   const { isSignedIn, isLoaded: authLoaded, user } = useAuth();
   const usage = useUsage();
-  const upsell = decideUpsell({
-    authLoaded,
-    isSignedIn,
-    hasPaidAccess: usage?.hasPaidAccess ?? null,
-    isPastDue: usage?.isPastDue ?? false,
-  });
-
   const {
     status: updateStatus,
     downloadProgress,
@@ -851,18 +842,11 @@ export default function ControlPanel({ initialSettingsSection }: ControlPanelPro
               setSettingsSection(undefined);
               setShowSettings(true);
             }}
-            onOpenReferrals={() => setShowReferrals(true)}
-            onUpgrade={() => {
-              setSettingsSection("plansBilling");
-              setShowSettings(true);
-            }}
-            isOverLimit={usage?.isOverLimit ?? false}
             userName={user?.name}
             userEmail={user?.email}
             userImage={user?.image}
             isSignedIn={isSignedIn}
             authLoaded={authLoaded}
-            upsell={upsell}
             updateAction={
               !updateStatus.isDevelopment &&
               (updateStatus.updateAvailable ||

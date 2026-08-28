@@ -816,7 +816,7 @@ class ReasoningService extends BaseReasoningService {
     // exemption below can't apply — honor the toggle directly.
     const openrouterDisableThinking = provider === "openrouter" && config.disableThinking === true;
     // Resolving a Tinfoil model refreshes the registry, so read model config after it.
-    // Mumur has no managed-enterprise route (getManagedScopeResolution is always
+    // Murmur has no managed-enterprise route (getManagedScopeResolution is always
     // "manual"), so model resolution is always the BYOK/local path.
     const aiModel = await getAIModel(aiProvider, model, apiKey, baseURL, {
       disableThinking: openrouterDisableThinking,

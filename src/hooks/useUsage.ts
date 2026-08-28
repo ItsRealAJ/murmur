@@ -1,5 +1,5 @@
 /**
- * Mumur has no plans, quotas, or billing.
+ * Murmur has no plans, quotas, or billing.
  *
  * Upstream metered dictation against a hosted subscription (free tier capped at
  * 2,000 words/week) and this hook fetched that entitlement. A local-only fork
@@ -54,7 +54,7 @@ export interface UseUsageResult {
 }
 
 const noop = async (): Promise<void> => {};
-const unavailable = async () => ({ success: false, error: "Mumur has no billing." });
+const unavailable = async () => ({ success: false, error: "Murmur has no billing." });
 
 const UNLIMITED: UseUsageResult = {
   status: "success",

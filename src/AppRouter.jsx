@@ -29,7 +29,7 @@ export default function AppRouter() {
 }
 
 /**
- * Mumur has no accounts, no managed org policy, and no cloud sync, so routing
+ * Murmur has no accounts, no managed org policy, and no cloud sync, so routing
  * depends only on which window this is and whether onboarding has finished.
  * Upstream additionally gated every branch on session resolution, policy fetch,
  * and a reauthentication screen.

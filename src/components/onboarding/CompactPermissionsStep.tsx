@@ -1,13 +1,10 @@
 import { useState, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
-import { CircleCheck } from "lucide-react";
+import { CircleCheck, ClipboardPaste, Mic, Volume2, type LucideIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 // Imported (not referenced by path) so Vite fingerprints them and they resolve
 // under the packaged app's file:// origin. Authored at 88px = 2x the 44px slot,
 // with their rounded corners baked in as transparency.
-import microphoneIcon from "@/assets/onboarding-permission-microphone.webp";
-import accessibilityIcon from "@/assets/onboarding-permission-accessibility.webp";
-import systemAudioIcon from "@/assets/onboarding-permission-system-audio.webp";
 import type { UsePermissionsReturn } from "../../hooks/usePermissions";
 import type { SystemAudioAccessResult } from "../../types/electron";
 import { canManageSystemAudioInApp } from "../../utils/systemAudioAccess";
@@ -34,7 +31,7 @@ interface PermissionRowProps {
   granted: boolean;
   busy: boolean;
   disabled?: boolean;
-  iconSrc: string;
+  icon: LucideIcon;
   onRequest: () => Promise<void>;
 }
 
@@ -44,7 +41,7 @@ function PermissionRow({
   granted,
   busy,
   disabled = false,
-  iconSrc,
+  icon: Icon,
   onRequest,
 }: PermissionRowProps) {
   const { t } = useTranslation();
@@ -53,17 +50,19 @@ function PermissionRow({
     <div className="flex h-[5.25rem] items-center gap-3.5">
       {/* Decorative: the adjacent title and description already name the
           permission, so announcing the icon too would just duplicate it. The
-          icon stays put once granted — the button carries the state. */}
-      <img
-        src={iconSrc}
-        alt=""
+          icon stays put once granted — the button carries the state.
+
+          These were the macOS System Settings icons, in Apple's blue and red.
+          Three saturated foreign brand colours made them the loudest thing on
+          Murmur's first screen, and they were wrong on Windows besides. The
+          row's own title already does the wayfinding ("Microphone"), so the
+          glyph only has to mark the row — it does that in the app's ink. */}
+      <span
         aria-hidden="true"
-        width={44}
-        height={44}
-        decoding="async"
-        draggable={false}
-        className="size-11 shrink-0 select-none"
-      />
+        className="grid size-11 shrink-0 place-items-center rounded-xl bg-[var(--onboarding-surface-tertiary)] text-[var(--onboarding-text-secondary)]"
+      >
+        <Icon className="size-5" strokeWidth={1.75} />
+      </span>
 
       <div className="min-w-0 flex-1 text-left">
         <p className="text-base font-medium leading-5 text-[var(--onboarding-text-primary)]">
@@ -83,7 +82,10 @@ function PermissionRow({
             ? // Granted rows are disabled, so the disabled: variants have to
               // restate the tint or it falls back to the neutral grey below.
               "bg-[color-mix(in_srgb,var(--onboarding-accent)_12%,transparent)] text-[var(--onboarding-accent)] disabled:bg-[color-mix(in_srgb,var(--onboarding-accent)_12%,transparent)] disabled:text-[var(--onboarding-accent)]"
-            : "bg-[var(--onboarding-surface-tertiary)] text-[var(--onboarding-text-secondary)] hover:bg-[var(--onboarding-surface-tertiary-hover)] disabled:bg-[var(--onboarding-surface-tertiary)] disabled:text-[var(--onboarding-text-secondary)]"
+            : // The one action on this screen, so it carries the accent. Neutral
+              // grey here left the primary control looking already-disabled
+              // next to a genuinely disabled sibling.
+              "bg-[var(--onboarding-accent)] text-[var(--onboarding-accent-foreground)] hover:brightness-110 active:brightness-95 disabled:bg-[var(--onboarding-surface-tertiary)] disabled:text-[var(--onboarding-text-secondary)]"
         }`}
       >
         {granted && !busy && <CircleCheck className="size-4 shrink-0" aria-hidden="true" />}
@@ -166,7 +168,7 @@ export default function CompactPermissionsStep({
             description={t("onboarding.rehaul.permissions.microphoneDescription")}
             granted={permissions.micPermissionGranted}
             busy={busyPermission === "microphone"}
-            iconSrc={microphoneIcon}
+            icon={Mic}
             onRequest={() => request("microphone", permissions.requestMicPermission)}
           />
           {showAccessibility && (
@@ -177,7 +179,7 @@ export default function CompactPermissionsStep({
                 description={t("onboarding.rehaul.permissions.accessibilityDescription")}
                 granted={permissions.accessibilityPermissionGranted}
                 busy={busyPermission === "accessibility"}
-                iconSrc={accessibilityIcon}
+                icon={ClipboardPaste}
                 onRequest={() =>
                   request("accessibility", permissions.requestAccessibilityPermission)
                 }
@@ -193,7 +195,7 @@ export default function CompactPermissionsStep({
                 granted={systemAudio.granted}
                 busy={busyPermission === "system-audio"}
                 disabled={!canRequestSystemAudio}
-                iconSrc={systemAudioIcon}
+                icon={Volume2}
                 onRequest={() => request("system-audio", systemAudio.request)}
               />
             </>

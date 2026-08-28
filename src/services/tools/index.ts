@@ -6,7 +6,7 @@ export { ToolRegistry } from "./ToolRegistry";
 export type { ToolDefinition, ToolResult } from "./ToolRegistry";
 
 /**
- * Mumur's assistant has a deliberately small tool surface.
+ * Murmur's assistant has a deliberately small tool surface.
  *
  * Upstream also registered note CRUD, folder listing, semantic note search, and
  * calendar lookup. Those backed the notes and meetings features this fork does

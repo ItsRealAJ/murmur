@@ -1238,7 +1238,7 @@ function createSecretSetter(
 
 export const MAX_TRANSLATION_TARGETS = 5;
 
-// Mumur stores dictionary and snippets only in local SQLite; upstream pushed
+// Murmur stores dictionary and snippets only in local SQLite; upstream pushed
 // each write to its sync service, which this fork does not have.
 function syncAfterLocalWrite(_method: "syncDictionaryNow" | "syncSnippetsNow"): void {}
 
@@ -1246,7 +1246,7 @@ export const useSettingsStore = create<SettingsState>()((set, get) => ({
   uiLanguage: normalizeUiLanguage(
     isBrowser ? localStorage.getItem("uiLanguage") || i18n.language : null
   ),
-  // Mumur defaults to on-device transcription: no key, no bill, no network hop.
+  // Murmur defaults to on-device transcription: no key, no bill, no network hop.
   useLocalWhisper: readBoolean("useLocalWhisper", true),
   whisperModel: readString("whisperModel", "base"),
   localTranscriptionProvider: (readString("localTranscriptionProvider", "whisper") === "nvidia"

@@ -860,7 +860,7 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
   }
 
   getStreamingProvider() {
-    // No cloud realtime WS providers ship in Mumur — see shouldUseStreaming().
+    // No cloud realtime WS providers ship in Murmur — see shouldUseStreaming().
     // Teardown paths still call this during cleanup, so it must return null
     // rather than a provider whose IPC channels no longer have a handler.
     return null;
@@ -3554,7 +3554,7 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
   }
 
   shouldUseStreaming(_isSignedInOverride) {
-    // Mumur ships no cloud realtime WS streaming. The dictation-realtime-*
+    // Murmur ships no cloud realtime WS streaming. The dictation-realtime-*
     // IPC surface (OpenAI Realtime / Tinfoil Realtime) was removed with the
     // hosted-cloud strip, so there is no main-process peer to stream to.
     // Dictation is batch — local whisper/parakeet by default, BYOK HTTP
