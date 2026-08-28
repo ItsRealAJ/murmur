@@ -205,7 +205,12 @@
         "title": "Murmur Assistant を設定",
         "titleLineOne": "セットアップ",
         "titleLineTwo": "Murmur Assistant",
-        "description": "話しかけるだけで、Murmur Assistant が結果を書き上げます。"
+        "description": "話しかけるだけで、Murmur Assistant が結果を書き上げます。",
+        "previewPrompt": "ビルドが完成したこと、今夜メモを送ることを Sam に返信して",
+        "previewSubjectLabel": "件名",
+        "previewSubject": "ビルドが完成しました",
+        "previewBody": "Sam さん、ビルドを試せる状態になりました。今夜メモをお送りします。",
+        "previewStatus": "Murmur が書いています"
       },
       "hotkey": {
         "capture": "使用したいキーを押してください",

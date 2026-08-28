@@ -205,7 +205,12 @@
         "title": "Configurer Murmur Assistant",
         "titleLineOne": "Configurez",
         "titleLineTwo": "Murmur Assistant",
-        "description": "Formulez une demande et Murmur Assistant rédige le résultat pour vous."
+        "description": "Formulez une demande et Murmur Assistant rédige le résultat pour vous.",
+        "previewPrompt": "Réponds à Sam que la build est prête et que j'enverrai mes notes ce soir",
+        "previewSubjectLabel": "Objet",
+        "previewSubject": "La build est prête",
+        "previewBody": "Bonjour Sam — la build est prête à tester. Je t'envoie mes notes ce soir.",
+        "previewStatus": "Murmur écrit"
       },
       "hotkey": {
         "capture": "Appuyez sur les touches que vous souhaitez utiliser",

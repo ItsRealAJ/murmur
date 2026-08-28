@@ -205,7 +205,12 @@
         "title": "Настройте Murmur Assistant",
         "titleLineOne": "Настройте",
         "titleLineTwo": "Murmur Assistant",
-        "description": "Произнесите запрос, и Murmur Assistant напишет результат за вас."
+        "description": "Произнесите запрос, и Murmur Assistant напишет результат за вас.",
+        "previewPrompt": "Ответь Сэму, что сборка готова и я пришлю заметки сегодня вечером",
+        "previewSubjectLabel": "Тема",
+        "previewSubject": "Сборка готова",
+        "previewBody": "Привет, Сэм! Сборка готова к проверке. Заметки пришлю сегодня вечером.",
+        "previewStatus": "Murmur пишет"
       },
       "hotkey": {
         "capture": "Нажмите клавиши, которые хотите использовать",

@@ -205,7 +205,12 @@
         "title": "Murmur Assistant einrichten",
         "titleLineOne": "Einrichten:",
         "titleLineTwo": "Murmur Assistant",
-        "description": "Sprechen Sie eine Anfrage aus, und Murmur Assistant schreibt das Ergebnis für Sie."
+        "description": "Sprechen Sie eine Anfrage aus, und Murmur Assistant schreibt das Ergebnis für Sie.",
+        "previewPrompt": "Antworte Sam, dass der Build fertig ist und ich heute Abend Notizen schicke",
+        "previewSubjectLabel": "Betreff",
+        "previewSubject": "Build ist fertig",
+        "previewBody": "Hallo Sam — der Build ist bereit zum Testen. Meine Notizen schicke ich dir heute Abend.",
+        "previewStatus": "Murmur schreibt"
       },
       "hotkey": {
         "capture": "Drücken Sie die Tasten, die Sie verwenden möchten",

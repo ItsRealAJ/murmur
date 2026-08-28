@@ -205,7 +205,12 @@
         "title": "设置 Murmur Assistant",
         "titleLineOne": "设置",
         "titleLineTwo": "Murmur Assistant",
-        "description": "说出你的需求，Murmur Assistant 就会为你写好结果。"
+        "description": "说出你的需求，Murmur Assistant 就会为你写好结果。",
+        "previewPrompt": "回复 Sam，告诉他构建已经完成，我今晚会把笔记发过去",
+        "previewSubjectLabel": "主题",
+        "previewSubject": "构建已完成",
+        "previewBody": "Sam，你好——构建已经可以试用了。我今晚把笔记发给你。",
+        "previewStatus": "Murmur 正在书写"
       },
       "hotkey": {
         "capture": "请按下你想使用的按键",

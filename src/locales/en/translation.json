@@ -205,7 +205,12 @@
         "title": "Set up Murmur Assistant",
         "titleLineOne": "Set up",
         "titleLineTwo": "Murmur Assistant",
-        "description": "Speak a request, and Murmur Assistant writes the result for you."
+        "description": "Speak a request, and Murmur Assistant writes the result for you.",
+        "previewPrompt": "Reply to Sam saying the build is ready and I'll send notes tonight",
+        "previewSubjectLabel": "Subject",
+        "previewSubject": "Build is ready",
+        "previewBody": "Hi Sam — the build is ready to try. I'll send my notes over tonight.",
+        "previewStatus": "Murmur is writing"
       },
       "hotkey": {
         "capture": "Press the keys you want to use",

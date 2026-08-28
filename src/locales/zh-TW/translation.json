@@ -205,7 +205,12 @@
         "title": "設定 Murmur Assistant",
         "titleLineOne": "設定",
         "titleLineTwo": "Murmur Assistant",
-        "description": "說出你的需求，Murmur Assistant 就會為你寫好結果。"
+        "description": "說出你的需求，Murmur Assistant 就會為你寫好結果。",
+        "previewPrompt": "回覆 Sam，告訴他建置已經完成，我今晚會把筆記寄過去",
+        "previewSubjectLabel": "主旨",
+        "previewSubject": "建置已完成",
+        "previewBody": "Sam 你好——建置已經可以試用了。我今晚把筆記寄給你。",
+        "previewStatus": "Murmur 正在書寫"
       },
       "hotkey": {
         "capture": "請按下你想使用的按鍵",

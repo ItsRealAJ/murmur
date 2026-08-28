@@ -28,8 +28,6 @@ import openAIIcon from "../../assets/icons/providers/openai.svg";
 import nvidiaIcon from "../../assets/icons/providers/nvidia.webp";
 // Only the Local card opens the warning dialog now — BYOK goes
 // straight through from the "Choose your API setup" modal.
-import warningBackdrop from "../../assets/onboarding-setup-warning-hero.webp";
-import apiSetupHero from "../../assets/onboarding-api-setup-hero.webp";
 
 type SetupMode = Exclude<OnboardingSetupMode, null>;
 type AdvancedSetupMode = Exclude<SetupMode, "cloud">;
@@ -310,12 +308,11 @@ export default function SetupChoiceStep({
           overlayClassName="bg-[var(--onboarding-scrim)]! backdrop-blur-[11px]"
           className="w-full max-w-sm gap-6 rounded-3xl border-0 bg-[var(--onboarding-surface)] px-4 pb-6 pt-5 text-left [&>button]:hidden"
         >
-          {/* Frame 2147258979: 238 tall, radius 20, image fill. Source is 840x477,
-              so it lands at ~2x for the 420x238 slot. */}
-          <div
-            className="flex h-[190px] items-center justify-center rounded-2xl bg-cover bg-center"
-            style={{ backgroundImage: `url(${apiSetupHero})` }}
-          >
+          {/* Was a stock watercolour wash exported at 2x. It had no relationship
+              to the subject, and a decorative texture is the loudest thing in a
+              dialog whose job is to explain one choice — so the slot is a tonal
+              panel now, lit the same way as every other surface in the app. */}
+          <div className="flex h-[190px] items-center justify-center rounded-2xl bg-[var(--onboarding-surface-secondary)]">
             {/* Frame 35: pad 10 20, gap 7, radius 38, 16/140% medium. */}
             <span className="inline-flex items-center gap-1.5 rounded-[38px] border border-[var(--onboarding-control-border)] bg-[var(--onboarding-surface)] px-4 py-2 text-sm font-medium leading-[1.4] text-[var(--onboarding-text-primary)]">
               <KeyRound
@@ -386,13 +383,10 @@ export default function SetupChoiceStep({
           className="w-full max-w-sm gap-6 rounded-3xl border-0 bg-[var(--onboarding-surface)] px-4 pb-6 pt-5 text-left text-[var(--onboarding-text-primary)] [&>button]:hidden"
           onOpenAutoFocus={handleWarningAutoFocus}
         >
-          {/* Frame 2147258979: 238 tall, radius 20, image crop. The three marks
-              are 32 / 55 / 32 on a 14 gap, with the outer two at 72% white so the
-              middle one reads as the subject. */}
-          <div
-            className="flex h-[190px] items-center justify-center rounded-2xl bg-cover bg-center"
-            style={{ backgroundImage: `url(${warningBackdrop})` }}
-          >
+          {/* Same tonal panel as the API dialog above, replacing a second stock
+              texture. The three marks are 32 / 55 / 32 on a 14 gap, with the
+              outer two dimmed so the middle one reads as the subject. */}
+          <div className="flex h-[190px] items-center justify-center rounded-2xl bg-[var(--onboarding-surface-secondary)]">
             <div className="flex items-center gap-3.5">
               <span className="flex size-8 items-center justify-center rounded-full border border-[var(--onboarding-control-border)] bg-[color-mix(in_srgb,var(--onboarding-surface)_72%,transparent)] text-[var(--onboarding-text-tertiary)]">
                 <KeyRound className="size-4" strokeWidth={1.25} />
