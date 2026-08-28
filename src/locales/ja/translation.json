@@ -218,55 +218,6 @@
         "inUse": "そのショートカットはすでに使用されています。別のものを選んでください。",
         "holding": "押したままにするか、別のキーを押してください"
       },
-      "dictationDemo": {
-        "title": "最初のディクテーションを試す",
-        "titleLineOne": "最初の",
-        "titleLineTwo": "ディクテーションを試す",
-        "description": "{{hotkey}} を押して話し始めてください。Murmur が音声をテキストに変換します。",
-        "founder": "こんにちは、Murmur創業者のゲイブです",
-        "prompt": "「初めてディクテーションを試しています」と話してみてください。",
-        "placeholder": "ここにディクテーションが表示されます…"
-      },
-      "assistantDemo": {
-        "title": "Murmur Assistant を使ってみる",
-        "titleLineOne": "ご紹介します",
-        "titleLineTwo": "Murmur Assistant",
-        "description": "話しかけるだけで、Murmur Assistant が結果を書き上げます。",
-        "senderName": "Eren Lauren",
-        "senderEmail": "eren32@gmail.com",
-        "recipientLabel": "John Doe 宛て",
-        "email": "こんにちは！来週コーヒーでもどうですか？ご都合を教えてください。",
-        "prompt": "火曜の15時で大丈夫だと返信して。招待を送って。",
-        "response": "エレンさん\n\nぜひ近況をお話ししたいです。火曜日の15時で大丈夫です。ご都合がよければ、カレンダーの招待をお送りします。\n楽しみにしています。\nジョン"
-      },
-      "demo": {
-        "listening": "聞き取り中…",
-        "processing": "音声をテキストに変換中…",
-        "stop": "停止",
-        "typing": "入力中…"
-      },
-      "notes": {
-        "title": "ボットなしで会議を録音 — Murmur Notes",
-        "titleLineOne": "ボットなしでミーティングを録音",
-        "titleLineTwoPrefix": "Murmur の",
-        "titleLineTwoBrand": "Notes",
-        "description": "Murmur は会話をわかりやすいノートに変換します。ミーティングボットが通話に参加することはありません。",
-        "hero": {
-          "description": "ミーティングを録音すれば、Murmur が会話をわかりやすく整理されたノートに変換します。",
-          "chat": "ミーティングノートとチャット",
-          "transcript": "全文の文字起こしを確認",
-          "speakers": "誰が何を話したかを確認"
-        },
-        "connectors": {
-          "connect": "接続",
-          "googleTitle": "Google カレンダー",
-          "googleDescription": "ミーティングを同期します。",
-          "microsoftTitle": "Microsoft Outlook",
-          "microsoftDescription": "仕事のミーティングと招待を取り込みます。",
-          "appleTitle": "Apple カレンダー",
-          "appleDescription": "Mac と iPhone の予定を同期します。"
-        }
-      },
       "setupChoice": {
         "title": "Murmur のセットアップを選択",
         "titleLineOne": "Murmur の",

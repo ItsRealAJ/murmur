@@ -10,9 +10,7 @@ export type OnboardingStepId =
   | "use-cases"
   | "dictation-hotkey"
   | "activation-mode"
-  | "dictation-demo"
   | "assistant-hotkey"
-  | "assistant-demo"
   | "setup-choice"
   | "byok-dictation"
   | "byok-assistant"
@@ -45,7 +43,6 @@ const CORE_ROUTE: OnboardingStepId[] = [
   "use-cases",
   "dictation-hotkey",
   "activation-mode",
-  "dictation-demo",
 ];
 
 const SETUP_ROUTES: Record<Exclude<OnboardingSetupMode, null | "cloud">, OnboardingStepId[]> = {
@@ -61,9 +58,7 @@ const STEP_ORDER: OnboardingStepId[] = [
   "use-cases",
   "dictation-hotkey",
   "activation-mode",
-  "dictation-demo",
   "assistant-hotkey",
-  "assistant-demo",
   "setup-choice",
   "byok-dictation",
   "byok-assistant",
@@ -122,11 +117,17 @@ export function getOnboardingRoute(context: OnboardingRouteContext): OnboardingS
   // and no account/guest fork. Permissions come first because a user who never
   // grants the microphone and never sees their hotkey has not been onboarded,
   // whatever else they clicked through.
+  //
+  // There is deliberately no "try dictating" step. Both demos used to sit here,
+  // ahead of setup-choice — which is where a local model gets downloaded or an
+  // API key gets entered. Nothing could transcribe yet, so the demo could only
+  // ever fail, and it failed on the one screen meant to prove the app works.
+  // Onboarding now covers the basics and hands straight over to setup.
   const setupChoice = context.skipSetupChoice ? [] : (["setup-choice"] as OnboardingStepId[]);
 
   const route: OnboardingStepId[] = [
     ...CORE_ROUTE,
-    ...(context.agentAllowed ? (["assistant-hotkey", "assistant-demo"] as OnboardingStepId[]) : []),
+    ...(context.agentAllowed ? (["assistant-hotkey"] as OnboardingStepId[]) : []),
     ...setupChoice,
   ];
 

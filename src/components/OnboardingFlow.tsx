@@ -8,7 +8,6 @@ import CompactPermissionsStep from "./onboarding/CompactPermissionsStep";
 import LanguageSelectionStep from "./onboarding/LanguageSelectionStep";
 import ShortcutSetupStep from "./onboarding/ShortcutSetupStep";
 import AssistantHotkeyPreview from "./onboarding/AssistantHotkeyPreview";
-import DemoStep from "./onboarding/DemoStep";
 import SetupChoiceStep from "./onboarding/SetupChoiceStep";
 import { ByokProviderStep, LocalModelSetupStep } from "./onboarding/ProviderSetupStep";
 import { AlertDialog } from "./ui/dialog";
@@ -97,8 +96,6 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
   // registered a fallback instead — recommending the unregistrable default would
   // make every confirm of it fail.
   const [recommendedDictationHotkey, setRecommendedDictationHotkey] = useState(getDefaultHotkey);
-  const [dictationDemoSuccess, setDictationDemoSuccess] = useState(false);
-  const [assistantDemoSuccess, setAssistantDemoSuccess] = useState(false);
   const [stageReady, setStageReady] = useState(false);
   const [isFinishing, setIsFinishing] = useState(false);
   const [fatalError, setFatalError] = useState<string | null>(null);
@@ -488,12 +485,8 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
         return dictationHotkeyConfirmed;
       case "activation-mode":
         return true;
-      case "dictation-demo":
-        return dictationDemoSuccess;
       case "assistant-hotkey":
         return assistantHotkeyConfirmed;
-      case "assistant-demo":
-        return assistantDemoSuccess;
       case "byok-dictation":
       case "byok-assistant":
       case "local-dictation":
@@ -655,78 +648,6 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
           </div>
         );
 
-      case "dictation-demo":
-      case "assistant-demo": {
-        const assistant = currentStepId === "assistant-demo";
-        const hotkeyInstruction = formatHotkeyInstruction(
-          assistant ? assistantHotkey : dictationHotkey
-        );
-        const description = t(
-          assistant
-            ? "onboarding.rehaul.assistantDemo.description"
-            : activationMode === "push"
-              ? "onboarding.activation.holdHotkey"
-              : "onboarding.rehaul.dictationDemo.description",
-          // Formatted for reading: the raw accelerator would show internal
-          // syntax like "GLOBE" or "CommandOrControl+Shift+Space".
-          { hotkey: hotkeyInstruction }
-        );
-        return (
-          <div className="h-full w-full pt-2">
-            <OnboardingStepHeader
-              title={t(
-                assistant
-                  ? "onboarding.rehaul.assistantDemo.title"
-                  : "onboarding.rehaul.dictationDemo.title"
-              )}
-              titleLines={
-                assistant
-                  ? [
-                      t("onboarding.rehaul.assistantDemo.titleLineOne"),
-                      t("onboarding.rehaul.assistantDemo.titleLineTwo"),
-                    ]
-                  : [
-                      t("onboarding.rehaul.dictationDemo.titleLineOne"),
-                      t("onboarding.rehaul.dictationDemo.titleLineTwo"),
-                    ]
-              }
-              description={
-                assistant ? (
-                  description
-                ) : (
-                  <DemoHotkeyDescription text={description} hotkey={hotkeyInstruction} />
-                )
-              }
-            />
-            <DemoStep
-              kind={assistant ? "assistant" : "dictation"}
-              firstMessage={t(
-                assistant
-                  ? "onboarding.rehaul.assistantDemo.email"
-                  : "onboarding.rehaul.dictationDemo.founder"
-              )}
-              secondMessage={t(
-                assistant
-                  ? "onboarding.rehaul.assistantDemo.prompt"
-                  : "onboarding.rehaul.dictationDemo.prompt"
-              )}
-              // Only the dictation demo renders this: the assistant card passes
-              // secondMessage as its textarea placeholder.
-              placeholder={t("onboarding.rehaul.dictationDemo.placeholder")}
-              listeningLabel={t("onboarding.rehaul.demo.listening")}
-              processingLabel={t("onboarding.rehaul.demo.processing")}
-              stopLabel={t("onboarding.rehaul.demo.stop")}
-              retryLabel={t("common.retry")}
-              assistantResponse={t("onboarding.rehaul.assistantDemo.response")}
-              assistantSenderName={t("onboarding.rehaul.assistantDemo.senderName")}
-              assistantSenderEmail={t("onboarding.rehaul.assistantDemo.senderEmail")}
-              assistantRecipientLabel={t("onboarding.rehaul.assistantDemo.recipientLabel")}
-              onSuccessChange={assistant ? setAssistantDemoSuccess : setDictationDemoSuccess}
-            />
-          </div>
-        );
-      }
-
       case "setup-choice":
         return (
           <div className="h-full w-full pt-2">
@@ -799,21 +720,17 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
 
   const hasShellNavigation = !compact;
   const hotkeyStep = currentStepId === "dictation-hotkey" || currentStepId === "assistant-hotkey";
-  const demoStep = currentStepId === "dictation-demo" || currentStepId === "assistant-demo";
-  const inlineGatedStep = hotkeyStep || demoStep;
+  const inlineGatedStep = hotkeyStep;
   const choiceStep = currentStepId === "setup-choice";
   const inlineProviderStep =
     currentStepId === "byok-dictation" ||
     currentStepId === "byok-assistant" ||
     currentStepId === "local-dictation" ||
     currentStepId === "local-assistant";
-  // Choice/provider pages own their forward action, while hotkey/demo pages
+  // Choice/provider pages own their forward action, while the hotkey pages
   // withhold Continue until their task is complete.
   const showsContinue =
     hasShellNavigation && !choiceStep && !inlineProviderStep && (!inlineGatedStep || canContinue);
-  // Keep this branch's demo escape hatch: practice must remain skippable when a
-  // microphone or backend problem prevents completion.
-  const showsSkip = demoStep && !canContinue;
 
   return (
     <>
@@ -827,7 +744,6 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
         // The demos are practice, not configuration — a mic problem or an
         // unreachable transcription backend must never dead-end setup, so they
         // stay skippable until they succeed.
-        onSkip={showsSkip ? () => void continueFromCurrentStep() : undefined}
         continueLabel={
           currentStepId === "use-cases"
             ? t("onboarding.useCase.proceedToSetup")
@@ -839,7 +755,7 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
         progress={getOnboardingProgress(currentStepId, route)}
         // Label Back only when it is the sole footer action. Unlike the source
         // commit, this branch also has demo Skip, so Back stays icon-only there.
-        showBackLabel={!showsContinue && !showsSkip}
+        showBackLabel={!showsContinue}
       >
         {fatalError && (
           <div

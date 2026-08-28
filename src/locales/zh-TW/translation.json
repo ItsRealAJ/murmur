@@ -218,55 +218,6 @@
         "inUse": "此快速鍵已被使用。請選擇其他快速鍵。",
         "holding": "繼續按住，或按下另一個鍵"
       },
-      "dictationDemo": {
-        "title": "試試第一次聽寫",
-        "titleLineOne": "試試你的",
-        "titleLineTwo": "第一次語音輸入",
-        "description": "按 {{hotkey}} 開始說話，Murmur 會把你的語音轉成文字。",
-        "founder": "你好，我是 Gabe，Murmur 的創辦人",
-        "prompt": "試著說：「我第一次測試聽寫功能。」",
-        "placeholder": "你的語音輸入結果會顯示在這裡…"
-      },
-      "assistantDemo": {
-        "title": "認識 Murmur Assistant",
-        "titleLineOne": "來認識",
-        "titleLineTwo": "Murmur Assistant",
-        "description": "說出你的需求，Murmur Assistant 就會為你寫好結果。",
-        "senderName": "Eren Lauren",
-        "senderEmail": "eren32@gmail.com",
-        "recipientLabel": "寄給 John Doe",
-        "email": "嗨！下週一起喝杯咖啡嗎？告訴我你什麼時候方便。",
-        "prompt": "回覆說週二下午 3 點可以。傳送一個邀請。",
-        "response": "你好，Eren：\n\n很想和你聊聊近況。週二下午 3 點對我來說很合適。如果你方便，我會發送行事曆邀請。\n期待見面，\nJohn"
-      },
-      "demo": {
-        "listening": "正在聆聽…",
-        "processing": "正在將你的語音轉成文字…",
-        "stop": "停止",
-        "typing": "正在輸入…"
-      },
-      "notes": {
-        "title": "用 Murmur Notes 錄製會議，無需機器人加入",
-        "titleLineOne": "不需機器人也能錄製會議",
-        "titleLineTwoPrefix": "使用 Murmur",
-        "titleLineTwoBrand": "Notes",
-        "description": "Murmur 把你的對話變成清楚的筆記。不會有會議機器人加入你的通話。",
-        "hero": {
-          "description": "錄製你的會議，讓 Murmur 把對話整理成清楚有條理的筆記。",
-          "chat": "與會議筆記對話",
-          "transcript": "檢視完整逐字稿",
-          "speakers": "看看誰說了什麼"
-        },
-        "connectors": {
-          "connect": "連接",
-          "googleTitle": "Google 日曆",
-          "googleDescription": "同步你的會議。",
-          "microsoftTitle": "Microsoft Outlook",
-          "microsoftDescription": "匯入工作會議與邀請。",
-          "appleTitle": "Apple 日曆",
-          "appleDescription": "同步你 Mac 和 iPhone 上的行程。"
-        }
-      },
       "setupChoice": {
         "title": "選擇你的 Murmur 設定",
         "titleLineOne": "選擇你的",

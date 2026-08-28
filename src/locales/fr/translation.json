@@ -218,55 +218,6 @@
         "inUse": "Ce raccourci est déjà utilisé. Choisissez-en un autre.",
         "holding": "Maintenez la touche ou appuyez sur une autre"
       },
-      "dictationDemo": {
-        "title": "Essayez votre première dictée",
-        "titleLineOne": "Essayez votre",
-        "titleLineTwo": "première dictée",
-        "description": "Appuyez sur {{hotkey}} et parlez. Murmur transformera votre voix en texte.",
-        "founder": "Bonjour, je suis Gabe, fondateur d’Murmur",
-        "prompt": "Essayez de dire : « Je teste la dictée pour la première fois. »",
-        "placeholder": "Votre dictée apparaîtra ici…"
-      },
-      "assistantDemo": {
-        "title": "Découvrez Murmur Assistant",
-        "titleLineOne": "Découvrez",
-        "titleLineTwo": "Murmur Assistant",
-        "description": "Formulez une demande et Murmur Assistant rédige le résultat pour vous.",
-        "senderName": "Eren Lauren",
-        "senderEmail": "eren32@gmail.com",
-        "recipientLabel": "à John Doe",
-        "email": "Salut ! Un café la semaine prochaine ? Dis-moi ce qui t’arrange.",
-        "prompt": "Réponds que mardi à 15 h me convient. Envoie une invitation.",
-        "response": "Bonjour Eren,\n\nJ’aimerais beaucoup qu’on se retrouve. Mardi à 15 h me convient bien. Si cela te va, je t’enverrai une invitation d’agenda.\nAu plaisir,\nJohn"
-      },
-      "demo": {
-        "listening": "Écoute…",
-        "processing": "Transformation de votre voix en texte…",
-        "stop": "Arrêter",
-        "typing": "Saisie en cours…"
-      },
-      "notes": {
-        "title": "Enregistrez vos réunions sans bot avec Murmur Notes",
-        "titleLineOne": "Enregistrez vos réunions sans bot",
-        "titleLineTwoPrefix": "avec Murmur",
-        "titleLineTwoBrand": "Notes",
-        "description": "Murmur transforme votre conversation en notes claires. Aucun bot de réunion ne rejoint votre appel.",
-        "hero": {
-          "description": "Enregistrez votre réunion et laissez Murmur transformer la conversation en notes claires et organisées.",
-          "chat": "Discutez avec vos notes de réunion",
-          "transcript": "Consultez la transcription complète",
-          "speakers": "Voyez qui a dit quoi"
-        },
-        "connectors": {
-          "connect": "Connecter",
-          "googleTitle": "Google Agenda",
-          "googleDescription": "Synchronisez vos réunions.",
-          "microsoftTitle": "Microsoft Outlook",
-          "microsoftDescription": "Importez vos réunions et invitations professionnelles.",
-          "appleTitle": "Calendrier Apple",
-          "appleDescription": "Synchronisez les événements de votre Mac et de votre iPhone."
-        }
-      },
       "setupChoice": {
         "title": "Choisissez votre configuration Murmur",
         "titleLineOne": "Choisissez votre",

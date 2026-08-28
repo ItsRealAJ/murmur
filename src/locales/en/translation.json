@@ -218,55 +218,6 @@
         "inUse": "That shortcut is already in use. Choose another one.",
         "holding": "Keep holding, or press another key"
       },
-      "dictationDemo": {
-        "title": "Try your first dictation",
-        "titleLineOne": "Try your",
-        "titleLineTwo": "first dictation",
-        "description": "Press {{hotkey}} and start speaking. Murmur will turn your voice into text.",
-        "founder": "Hi, I am Gabe, Founder of Murmur",
-        "prompt": "Try saying: “I’m testing dictation for the first time.”",
-        "placeholder": "Your dictation will appear here…"
-      },
-      "assistantDemo": {
-        "title": "Meet Murmur Assistant",
-        "titleLineOne": "Meet",
-        "titleLineTwo": "Murmur Assistant",
-        "description": "Speak a request, and Murmur Assistant writes the result for you.",
-        "senderName": "Eren Lauren",
-        "senderEmail": "eren32@gmail.com",
-        "recipientLabel": "to John Doe",
-        "email": "Hey! Want to grab coffee next week? Let me know what works for you.",
-        "prompt": "Reply that Tuesday at 3 works. Send an invite.",
-        "response": "Hi Eren,\n\nI’d love to catch up. Tuesday at 3 PM works well for me. If that suits you, I’ll send over a calendar invite.\nLooking forward to it,\nJohn"
-      },
-      "demo": {
-        "listening": "Listening…",
-        "processing": "Turning your voice into text…",
-        "stop": "Stop",
-        "typing": "Typing…"
-      },
-      "notes": {
-        "title": "Record meetings without a bot with Murmur Notes",
-        "titleLineOne": "Record meetings without a bot",
-        "titleLineTwoPrefix": "with Murmur",
-        "titleLineTwoBrand": "Notes",
-        "description": "Murmur turns your conversation into clear notes. No meeting bot joins your call.",
-        "hero": {
-          "description": "Record your meeting and let Murmur turn the conversation into clear, organized notes.",
-          "chat": "Chat with your meeting notes",
-          "transcript": "Review the full transcript",
-          "speakers": "See who said what"
-        },
-        "connectors": {
-          "connect": "Connect",
-          "googleTitle": "Google Calendar",
-          "googleDescription": "Sync your meetings.",
-          "microsoftTitle": "Microsoft Outlook",
-          "microsoftDescription": "Bring in work meetings and invites.",
-          "appleTitle": "Apple Calendar",
-          "appleDescription": "Sync events from your Mac and iPhone."
-        }
-      },
       "setupChoice": {
         "title": "Choose your Murmur setup",
         "titleLineOne": "Choose your",

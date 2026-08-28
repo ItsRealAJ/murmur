@@ -218,55 +218,6 @@
         "inUse": "Ese atajo ya está en uso. Elige otro.",
         "holding": "Mantén pulsado o pulsa otra tecla"
       },
-      "dictationDemo": {
-        "title": "Prueba tu primer dictado",
-        "titleLineOne": "Prueba tu",
-        "titleLineTwo": "primer dictado",
-        "description": "Pulsa {{hotkey}} y empieza a hablar. Murmur convertirá tu voz en texto.",
-        "founder": "Hola, soy Gabe, fundador de Murmur",
-        "prompt": "Prueba a decir: «Estoy probando el dictado por primera vez».",
-        "placeholder": "Tu dictado aparecerá aquí…"
-      },
-      "assistantDemo": {
-        "title": "Conoce Murmur Assistant",
-        "titleLineOne": "Te presentamos",
-        "titleLineTwo": "Murmur Assistant",
-        "description": "Di lo que necesitas y Murmur Assistant escribe el resultado por ti.",
-        "senderName": "Eren Lauren",
-        "senderEmail": "eren32@gmail.com",
-        "recipientLabel": "para John Doe",
-        "email": "¡Hola! ¿Te apetece un café la semana que viene? Dime qué día te viene bien.",
-        "prompt": "Responde que el martes a las 3 me va bien. Envía una invitación.",
-        "response": "Hola Eren:\n\nMe encantaría ponernos al día. El martes a las 15:00 me viene bien. Si te parece bien, te enviaré una invitación de calendario.\nCon ganas de verte,\nJohn"
-      },
-      "demo": {
-        "listening": "Escuchando…",
-        "processing": "Convirtiendo tu voz en texto…",
-        "stop": "Detener",
-        "typing": "Escribiendo…"
-      },
-      "notes": {
-        "title": "Graba reuniones sin ningún bot con Murmur Notes",
-        "titleLineOne": "Graba reuniones sin un bot",
-        "titleLineTwoPrefix": "con Murmur",
-        "titleLineTwoBrand": "Notes",
-        "description": "Murmur convierte tu conversación en notas claras. Ningún bot de reuniones se une a tu llamada.",
-        "hero": {
-          "description": "Graba tu reunión y deja que Murmur convierta la conversación en notas claras y organizadas.",
-          "chat": "Chatea con las notas de tu reunión",
-          "transcript": "Revisa la transcripción completa",
-          "speakers": "Descubre quién dijo qué"
-        },
-        "connectors": {
-          "connect": "Conectar",
-          "googleTitle": "Google Calendar",
-          "googleDescription": "Sincroniza tus reuniones.",
-          "microsoftTitle": "Microsoft Outlook",
-          "microsoftDescription": "Trae tus reuniones e invitaciones de trabajo.",
-          "appleTitle": "Calendario de Apple",
-          "appleDescription": "Sincroniza eventos de tu Mac y tu iPhone."
-        }
-      },
       "setupChoice": {
         "title": "Elige tu configuración de Murmur",
         "titleLineOne": "Elige tu configuración",

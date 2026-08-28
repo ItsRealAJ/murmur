@@ -218,55 +218,6 @@
         "inUse": "该快捷键已被使用。请选择其他快捷键。",
         "holding": "继续按住，或按下另一个键"
       },
-      "dictationDemo": {
-        "title": "试试第一次听写",
-        "titleLineOne": "试试你的",
-        "titleLineTwo": "第一次听写",
-        "description": "按 {{hotkey}} 开始说话，Murmur 会把你的语音转成文字。",
-        "founder": "你好，我是 Gabe，Murmur 的创始人",
-        "prompt": "试着说：“我第一次测试听写功能。”",
-        "placeholder": "你的听写结果会显示在这里…"
-      },
-      "assistantDemo": {
-        "title": "认识 Murmur Assistant",
-        "titleLineOne": "认识一下",
-        "titleLineTwo": "Murmur Assistant",
-        "description": "说出你的需求，Murmur Assistant 就会为你写好结果。",
-        "senderName": "Eren Lauren",
-        "senderEmail": "eren32@gmail.com",
-        "recipientLabel": "发送给 John Doe",
-        "email": "嗨！下周一起喝杯咖啡吗？告诉我你什么时候方便。",
-        "prompt": "回复说周二下午 3 点可以。发送一个邀请。",
-        "response": "你好，Eren：\n\n很想和你聊聊近况。周二下午 3 点对我来说很合适。如果你方便，我会发送日历邀请。\n期待见面，\nJohn"
-      },
-      "demo": {
-        "listening": "正在聆听…",
-        "processing": "正在把你的语音转成文字…",
-        "stop": "停止",
-        "typing": "正在输入…"
-      },
-      "notes": {
-        "title": "用 Murmur Notes 录制会议，无需机器人加入",
-        "titleLineOne": "无需机器人即可录制会议",
-        "titleLineTwoPrefix": "使用 Murmur",
-        "titleLineTwoBrand": "Notes",
-        "description": "Murmur 把你的对话变成清晰的笔记。不会有会议机器人加入你的通话。",
-        "hero": {
-          "description": "录制会议，让 Murmur 把对话整理成清晰有条理的笔记。",
-          "chat": "与会议笔记对话",
-          "transcript": "查看完整转录",
-          "speakers": "查看谁说了什么"
-        },
-        "connectors": {
-          "connect": "连接",
-          "googleTitle": "Google 日历",
-          "googleDescription": "同步你的会议。",
-          "microsoftTitle": "Microsoft Outlook",
-          "microsoftDescription": "导入工作会议和邀请。",
-          "appleTitle": "Apple 日历",
-          "appleDescription": "同步你的 Mac 和 iPhone 上的日程。"
-        }
-      },
       "setupChoice": {
         "title": "选择你的 Murmur 设置",
         "titleLineOne": "选择你的",

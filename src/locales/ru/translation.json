@@ -218,55 +218,6 @@
         "inUse": "Это сочетание уже используется. Выберите другое.",
         "holding": "Удерживайте или нажмите другую клавишу"
       },
-      "dictationDemo": {
-        "title": "Попробуйте свою первую диктовку",
-        "titleLineOne": "Попробуйте свою",
-        "titleLineTwo": "первую диктовку",
-        "description": "Нажмите {{hotkey}} и начните говорить. Murmur превратит вашу речь в текст.",
-        "founder": "Привет, я Гейб, основатель Murmur",
-        "prompt": "Попробуйте сказать: «Я впервые тестирую диктовку».",
-        "placeholder": "Ваша диктовка появится здесь…"
-      },
-      "assistantDemo": {
-        "title": "Знакомьтесь: Murmur Assistant",
-        "titleLineOne": "Знакомьтесь:",
-        "titleLineTwo": "Murmur Assistant",
-        "description": "Произнесите запрос, и Murmur Assistant напишет результат за вас.",
-        "senderName": "Eren Lauren",
-        "senderEmail": "eren32@gmail.com",
-        "recipientLabel": "для John Doe",
-        "email": "Привет! Может, выпьем кофе на следующей неделе? Скажи, когда тебе удобно.",
-        "prompt": "Ответь, что вторник в 15:00 подходит. Отправь приглашение.",
-        "response": "Привет, Эрен!\n\nБуду рад пообщаться. Вторник в 15:00 мне отлично подходит. Если тебе удобно, отправлю приглашение в календарь.\nДо встречи,\nДжон"
-      },
-      "demo": {
-        "listening": "Слушаю…",
-        "processing": "Превращаю ваш голос в текст…",
-        "stop": "Остановить",
-        "typing": "Печатает…"
-      },
-      "notes": {
-        "title": "Записывайте встречи без бота с Murmur Notes",
-        "titleLineOne": "Записывайте встречи без бота",
-        "titleLineTwoPrefix": "с Murmur",
-        "titleLineTwoBrand": "Notes",
-        "description": "Murmur превращает разговор в понятные заметки. Никакой бот не подключается к вашему звонку.",
-        "hero": {
-          "description": "Запишите встречу, и Murmur превратит разговор в понятные, структурированные заметки.",
-          "chat": "Общайтесь с заметками встречи",
-          "transcript": "Просматривайте полную расшифровку",
-          "speakers": "Смотрите, кто что сказал"
-        },
-        "connectors": {
-          "connect": "Подключить",
-          "googleTitle": "Google Календарь",
-          "googleDescription": "Синхронизируйте свои встречи.",
-          "microsoftTitle": "Microsoft Outlook",
-          "microsoftDescription": "Добавьте рабочие встречи и приглашения.",
-          "appleTitle": "Календарь Apple",
-          "appleDescription": "Синхронизируйте события с Mac и iPhone."
-        }
-      },
       "setupChoice": {
         "title": "Выберите настройку Murmur",
         "titleLineOne": "Выберите настройку",

@@ -218,55 +218,6 @@
         "inUse": "Dieses Tastenkürzel wird bereits verwendet. Wähle ein anderes.",
         "holding": "Weiter halten oder eine andere Taste drücken"
       },
-      "dictationDemo": {
-        "title": "Probieren Sie Ihr erstes Diktat aus",
-        "titleLineOne": "Probieren Sie Ihr",
-        "titleLineTwo": "erstes Diktat aus",
-        "description": "Drücken Sie {{hotkey}} und sprechen Sie los. Murmur wandelt Ihre Stimme in Text um.",
-        "founder": "Hallo, ich bin Gabe, Gründer von Murmur",
-        "prompt": "Sagen Sie zum Beispiel: „Ich teste das Diktieren zum ersten Mal.“",
-        "placeholder": "Ihr Diktat erscheint hier…"
-      },
-      "assistantDemo": {
-        "title": "Murmur Assistant kennenlernen",
-        "titleLineOne": "Das ist",
-        "titleLineTwo": "Murmur Assistant",
-        "description": "Sprechen Sie eine Anfrage aus, und Murmur Assistant schreibt das Ergebnis für Sie.",
-        "senderName": "Eren Lauren",
-        "senderEmail": "eren32@gmail.com",
-        "recipientLabel": "an John Doe",
-        "email": "Hey! Hast du nächste Woche Zeit für einen Kaffee? Sag mir, was dir passt.",
-        "prompt": "Antworte, dass Dienstag um 15 Uhr passt. Sende eine Einladung.",
-        "response": "Hallo Eren,\n\nich würde mich gern austauschen. Dienstag um 15 Uhr passt mir gut. Wenn es dir passt, schicke ich dir eine Kalendereinladung.\nIch freue mich darauf,\nJohn"
-      },
-      "demo": {
-        "listening": "Höre zu…",
-        "processing": "Ihre Stimme wird zu Text…",
-        "stop": "Stopp",
-        "typing": "Schreibt…"
-      },
-      "notes": {
-        "title": "Meetings ohne Bot aufzeichnen – mit Murmur Notes",
-        "titleLineOne": "Meetings ohne Bot aufzeichnen",
-        "titleLineTwoPrefix": "mit Murmur",
-        "titleLineTwoBrand": "Notes",
-        "description": "Murmur verwandelt Ihr Gespräch in klare Notizen. Kein Meeting-Bot nimmt an Ihrem Anruf teil.",
-        "hero": {
-          "description": "Zeichnen Sie Ihr Meeting auf und lassen Sie Murmur das Gespräch in klare, strukturierte Notizen verwandeln.",
-          "chat": "Mit Ihren Meeting-Notizen chatten",
-          "transcript": "Das vollständige Transkript ansehen",
-          "speakers": "Sehen, wer was gesagt hat"
-        },
-        "connectors": {
-          "connect": "Verbinden",
-          "googleTitle": "Google Calendar",
-          "googleDescription": "Synchronisieren Sie Ihre Meetings.",
-          "microsoftTitle": "Microsoft Outlook",
-          "microsoftDescription": "Arbeitsmeetings und Einladungen übernehmen.",
-          "appleTitle": "Apple Kalender",
-          "appleDescription": "Termine von Ihrem Mac und iPhone synchronisieren."
-        }
-      },
       "setupChoice": {
         "title": "Murmur-Einrichtung wählen",
         "titleLineOne": "Wählen Sie Ihre",
