@@ -2691,8 +2691,6 @@ declare global {
         success: boolean;
         config?: {
           dictationSileroEnabled: boolean;
-          noteRecordingSileroEnabled: boolean;
-          meetingSileroEnabled: boolean;
           threshold: number;
           minSpeechDurationMs: number;
           minSilenceDurationMs: number;
@@ -2704,8 +2702,6 @@ declare global {
       }>;
       setWhisperVadConfig?: (config: {
         dictationSileroEnabled?: boolean;
-        noteRecordingSileroEnabled?: boolean;
-        meetingSileroEnabled?: boolean;
         threshold?: number;
         minSpeechDurationMs?: number;
         minSilenceDurationMs?: number;

@@ -317,8 +317,6 @@ const BOOLEAN_SETTINGS = new Set([
   "meetingProcessDetection",
   "speakerDiarizationEnabled",
   "dictationSileroEnabled",
-  "noteRecordingSileroEnabled",
-  "meetingSileroEnabled",
   "isSignedIn",
   "autoPasteEnabled",
   "keepTranscriptionInClipboard",
@@ -332,8 +330,6 @@ const BOOLEAN_SETTINGS = new Set([
   "noteFormattingDisableThinking",
   "chatAgentDisableThinking",
   "notificationsEnabled",
-  "notifyMeetingDetection",
-  "notifyCalendarReminders",
   "notifyUpdates",
   "gcalPrimaryOnly",
   "mcalPrimaryOnly",
@@ -659,8 +655,6 @@ export interface SettingsState
   mcalAccounts: CalendarAccount[];
   mcalConnected: boolean;
   notificationsEnabled: boolean;
-  notifyMeetingDetection: boolean;
-  notifyCalendarReminders: boolean;
   notifyUpdates: boolean;
   gcalPrimaryOnly: boolean;
   mcalPrimaryOnly: boolean;
@@ -668,8 +662,6 @@ export interface SettingsState
   meetingProcessDetection: boolean;
   speakerDiarizationEnabled: boolean;
   dictationSileroEnabled: boolean;
-  noteRecordingSileroEnabled: boolean;
-  meetingSileroEnabled: boolean;
   whisperVadThreshold: number;
   whisperVadMinSpeechDurationMs: number;
   whisperVadMinSilenceDurationMs: number;
@@ -967,8 +959,6 @@ export interface SettingsState
   setGcalAccounts: (accounts: CalendarAccount[]) => void;
   setMcalAccounts: (accounts: CalendarAccount[]) => void;
   setNotificationsEnabled: (value: boolean) => void;
-  setNotifyMeetingDetection: (value: boolean) => void;
-  setNotifyCalendarReminders: (value: boolean) => void;
   setNotifyUpdates: (value: boolean) => void;
   setGcalPrimaryOnly: (value: boolean) => void;
   setMcalPrimaryOnly: (value: boolean) => void;
@@ -976,8 +966,6 @@ export interface SettingsState
   setMeetingProcessDetection: (value: boolean) => void;
   setSpeakerDiarizationEnabled: (value: boolean) => void;
   setDictationSileroEnabled: (value: boolean) => void;
-  setNoteRecordingSileroEnabled: (value: boolean) => void;
-  setMeetingSileroEnabled: (value: boolean) => void;
   setWhisperVadThreshold: (value: number) => void;
   setWhisperVadMinSpeechDurationMs: (value: number) => void;
   setWhisperVadMinSilenceDurationMs: (value: number) => void;
@@ -1373,8 +1361,6 @@ export const useSettingsStore = create<SettingsState>()((set, get) => ({
   floatingIconAutoHide: readBoolean("floatingIconAutoHide", false),
   startMinimized: readBoolean("startMinimized", false),
   notificationsEnabled: readBoolean("notificationsEnabled", true),
-  notifyMeetingDetection: readBoolean("notifyMeetingDetection", true),
-  notifyCalendarReminders: readBoolean("notifyCalendarReminders", true),
   notifyUpdates: readBoolean("notifyUpdates", true),
   ...(() => {
     let accounts: CalendarAccount[] = [];
@@ -1411,8 +1397,6 @@ export const useSettingsStore = create<SettingsState>()((set, get) => ({
   // Off by default: VAD on pause-heavy dictations can strip the speech and make
   // Whisper hallucinate the dictionary prompt as the transcript (#1454).
   dictationSileroEnabled: readBoolean("dictationSileroEnabled", false),
-  noteRecordingSileroEnabled: readBoolean("noteRecordingSileroEnabled", true),
-  meetingSileroEnabled: readBoolean("meetingSileroEnabled", true),
   whisperVadThreshold: clampVadValue("threshold", readString("whisperVadThreshold", "0.5")),
   whisperVadMinSpeechDurationMs: clampVadValue(
     "minSpeechDurationMs",
@@ -2210,8 +2194,6 @@ export const useSettingsStore = create<SettingsState>()((set, get) => ({
     });
   },
   setNotificationsEnabled: createBooleanSetter("notificationsEnabled"),
-  setNotifyMeetingDetection: createBooleanSetter("notifyMeetingDetection"),
-  setNotifyCalendarReminders: createBooleanSetter("notifyCalendarReminders"),
   setNotifyUpdates: createBooleanSetter("notifyUpdates"),
   setGcalPrimaryOnly: (value: boolean) => {
     if (isBrowser) localStorage.setItem("gcalPrimaryOnly", String(value));
@@ -2237,20 +2219,6 @@ export const useSettingsStore = create<SettingsState>()((set, get) => ({
     useSettingsStore.setState({ dictationSileroEnabled: value });
     if (isBrowser) {
       window.electronAPI?.setWhisperVadConfig?.({ dictationSileroEnabled: value });
-    }
-  },
-  setNoteRecordingSileroEnabled: (value: boolean) => {
-    if (isBrowser) localStorage.setItem("noteRecordingSileroEnabled", String(value));
-    useSettingsStore.setState({ noteRecordingSileroEnabled: value });
-    if (isBrowser) {
-      window.electronAPI?.setWhisperVadConfig?.({ noteRecordingSileroEnabled: value });
-    }
-  },
-  setMeetingSileroEnabled: (value: boolean) => {
-    if (isBrowser) localStorage.setItem("meetingSileroEnabled", String(value));
-    useSettingsStore.setState({ meetingSileroEnabled: value });
-    if (isBrowser) {
-      window.electronAPI?.setWhisperVadConfig?.({ meetingSileroEnabled: value });
     }
   },
   setWhisperVadThreshold: (value: number) => {
@@ -3292,8 +3260,6 @@ export async function initializeSettings(): Promise<void> {
       const currentState = useSettingsStore.getState();
       await window.electronAPI.syncNotificationPreferences?.({
         notificationsEnabled: currentState.notificationsEnabled,
-        notifyMeetingDetection: currentState.notifyMeetingDetection,
-        notifyCalendarReminders: currentState.notifyCalendarReminders,
         notifyUpdates: currentState.notifyUpdates,
       });
     } catch (err) {
@@ -3308,8 +3274,6 @@ export async function initializeSettings(): Promise<void> {
       const currentState = useSettingsStore.getState();
       await window.electronAPI.setWhisperVadConfig?.({
         dictationSileroEnabled: currentState.dictationSileroEnabled,
-        noteRecordingSileroEnabled: currentState.noteRecordingSileroEnabled,
-        meetingSileroEnabled: currentState.meetingSileroEnabled,
         threshold: currentState.whisperVadThreshold,
         minSpeechDurationMs: currentState.whisperVadMinSpeechDurationMs,
         minSilenceDurationMs: currentState.whisperVadMinSilenceDurationMs,

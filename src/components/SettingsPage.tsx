@@ -769,9 +769,6 @@ export default function SettingsPage({
     setCloudTranscriptionBaseUrl,
     setUseCleanupModel,
     setDictationKey,
-    meetingKey,
-    setMeetingKey,
-    meetingHotkeyLayoutMode,
     setMeetingHotkeyLayoutMode,
     autoLearnCorrections,
     setAutoLearnCorrections,
@@ -787,10 +784,6 @@ export default function SettingsPage({
     setRemoteTranscriptionModel,
     notificationsEnabled,
     setNotificationsEnabled,
-    notifyMeetingDetection,
-    setNotifyMeetingDetection,
-    notifyCalendarReminders,
-    setNotifyCalendarReminders,
     notifyUpdates,
     setNotifyUpdates,
     audioCuesEnabled,
@@ -828,10 +821,6 @@ export default function SettingsPage({
     setNoteFilesPath,
     dictationSileroEnabled,
     setDictationSileroEnabled,
-    noteRecordingSileroEnabled,
-    setNoteRecordingSileroEnabled,
-    meetingSileroEnabled,
-    setMeetingSileroEnabled,
     whisperVadThreshold,
     setWhisperVadThreshold,
     whisperVadMinSpeechDurationMs,
@@ -1011,25 +1000,6 @@ export default function SettingsPage({
     showAlert: showAlertDialog,
   });
 
-  const meetingRegisterFn = useCallback(async (hotkey: string) => {
-    const result = await window.electronAPI?.registerMeetingHotkey?.(hotkey);
-    // No `message`: useHotkeyRegistration falls back to the translated
-    // hooks.hotkeyRegistration.errors.couldNotRegister, and that string is what
-    // gets shown in a toast. An English literal here would surface untranslated.
-    return result ?? { success: false };
-  }, []);
-
-  const { registerHotkey: registerMeetingHotkey, isRegistering: isMeetingHotkeyRegistering } =
-    useHotkeyRegistration({
-      onSuccess: (registeredHotkey) => {
-        setMeetingKey(registeredHotkey);
-      },
-      showSuccessToast: false,
-      showErrorToast: true,
-      showAlert: showAlertDialog,
-      registerFn: meetingRegisterFn,
-    });
-
   // Agent hotkey setters resolve to false when main-process registration fails;
   // surface it and return the result so HotkeyListInput rolls the row back.
   const [isAgentHotkeyCommitting, setIsAgentHotkeyCommitting] = useState(false);
@@ -1057,27 +1027,13 @@ export default function SettingsPage({
       validateHotkeyForSlot(
         hotkey,
         {
-          "settingsPage.general.meetingHotkey.title": meetingKey,
           "settingsPage.general.voiceAgentHotkey.title": voiceAgentKey,
           "settingsPage.general.translationHotkey.title": translationKey,
+          "settingsPage.general.verbatimHotkey.title": verbatimKey,
         },
         t
       ),
-    [meetingKey, voiceAgentKey, translationKey, t]
-  );
-
-  const validateMeetingHotkey = useCallback(
-    (hotkey: string) =>
-      validateHotkeyForSlot(
-        hotkey,
-        {
-          "settingsPage.general.hotkey.title": dictationKey,
-          "settingsPage.general.voiceAgentHotkey.title": voiceAgentKey,
-          "settingsPage.general.translationHotkey.title": translationKey,
-        },
-        t
-      ),
-    [dictationKey, voiceAgentKey, translationKey, t]
+    [voiceAgentKey, translationKey, verbatimKey, t]
   );
 
   const validateVoiceAgentHotkey = useCallback(
@@ -1086,12 +1042,12 @@ export default function SettingsPage({
         hotkey,
         {
           "settingsPage.general.hotkey.title": dictationKey,
-          "settingsPage.general.meetingHotkey.title": meetingKey,
           "settingsPage.general.translationHotkey.title": translationKey,
+          "settingsPage.general.verbatimHotkey.title": verbatimKey,
         },
         t
       ),
-    [dictationKey, meetingKey, translationKey, t]
+    [dictationKey, translationKey, verbatimKey, t]
   );
 
   const validateVerbatimHotkey = useCallback(
@@ -1114,12 +1070,12 @@ export default function SettingsPage({
         hotkey,
         {
           "settingsPage.general.hotkey.title": dictationKey,
-          "settingsPage.general.meetingHotkey.title": meetingKey,
           "settingsPage.general.voiceAgentHotkey.title": voiceAgentKey,
+          "settingsPage.general.verbatimHotkey.title": verbatimKey,
         },
         t
       ),
-    [dictationKey, meetingKey, voiceAgentKey, t]
+    [dictationKey, voiceAgentKey, verbatimKey, t]
   );
 
   const {
@@ -1156,11 +1112,9 @@ export default function SettingsPage({
   useEffect(() => {
     window.electronAPI?.syncNotificationPreferences?.({
       notificationsEnabled,
-      notifyMeetingDetection,
-      notifyCalendarReminders,
       notifyUpdates,
     });
-  }, [notificationsEnabled, notifyMeetingDetection, notifyCalendarReminders, notifyUpdates]);
+  }, [notificationsEnabled, notifyUpdates]);
 
   const handleAutoStartChange = async (enabled: boolean) => {
     if (!window.electronAPI?.setAutoStartEnabled) return;
@@ -1375,22 +1329,6 @@ export default function SettingsPage({
           </SettingsRow>
         </SettingsPanelRow>
         <SettingsPanelRow>
-          <SettingsRow
-            label={t("settingsPage.transcription.vad.toggles.noteRecording.title")}
-            description={t("settingsPage.transcription.vad.toggles.noteRecording.description")}
-          >
-            <Toggle checked={noteRecordingSileroEnabled} onChange={setNoteRecordingSileroEnabled} />
-          </SettingsRow>
-        </SettingsPanelRow>
-        <SettingsPanelRow>
-          <SettingsRow
-            label={t("settingsPage.transcription.vad.toggles.meeting.title")}
-            description={t("settingsPage.transcription.vad.toggles.meeting.description")}
-          >
-            <Toggle checked={meetingSileroEnabled} onChange={setMeetingSileroEnabled} />
-          </SettingsRow>
-        </SettingsPanelRow>
-        <SettingsPanelRow>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
             <div className="space-y-1.5">
               <VADLabelWithInfo
@@ -1584,34 +1522,6 @@ export default function SettingsPage({
                     <Toggle
                       checked={!notificationsEnabled}
                       onChange={(v) => setNotificationsEnabled(!v)}
-                    />
-                  </SettingsRow>
-                </SettingsPanelRow>
-                <SettingsPanelRow>
-                  <SettingsRow
-                    label={t("settingsPage.general.notifications.meetingDetection")}
-                    description={t(
-                      "settingsPage.general.notifications.meetingDetectionDescription"
-                    )}
-                  >
-                    <Toggle
-                      checked={notifyMeetingDetection}
-                      onChange={setNotifyMeetingDetection}
-                      disabled={!notificationsEnabled}
-                    />
-                  </SettingsRow>
-                </SettingsPanelRow>
-                <SettingsPanelRow>
-                  <SettingsRow
-                    label={t("settingsPage.general.notifications.calendarReminders")}
-                    description={t(
-                      "settingsPage.general.notifications.calendarRemindersDescription"
-                    )}
-                  >
-                    <Toggle
-                      checked={notifyCalendarReminders}
-                      onChange={setNotifyCalendarReminders}
-                      disabled={!notificationsEnabled}
                     />
                   </SettingsRow>
                 </SettingsPanelRow>

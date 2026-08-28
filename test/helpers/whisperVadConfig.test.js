@@ -29,11 +29,9 @@ test("resolveContextSileroEnabled prefers context value then falls back to per-c
 
   assert.equal(resolveContextSileroEnabled({ dictationSileroEnabled: false }, "dictation"), false);
   assert.equal(resolveContextSileroEnabled({ dictationSileroEnabled: true }, "dictation"), true);
-  assert.equal(
-    resolveContextSileroEnabled({ noteRecordingSileroEnabled: true }, "noteRecording"),
-    true
-  );
-  assert.equal(resolveContextSileroEnabled({}, "meeting"), true);
+  // Every context other than dictation defaults on; only "dictation" is passed
+  // today, but an unknown context must not silently disable VAD.
+  assert.equal(resolveContextSileroEnabled({}, "someFutureContext"), true);
 });
 
 // VAD on pause-heavy dictations can strip the speech, making Whisper decode

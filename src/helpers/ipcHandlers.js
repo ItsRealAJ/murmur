@@ -205,8 +205,6 @@ class IPCHandlers {
     this._noteFilesEnabled = false;
     this.whisperVadSettings = {
       dictationSileroEnabled: false,
-      noteRecordingSileroEnabled: true,
-      meetingSileroEnabled: true,
       ...DEFAULT_WHISPER_VAD_CONFIG,
     };
     this._setupTextEditMonitor();
@@ -263,8 +261,6 @@ class IPCHandlers {
     const current = this.whisperVadSettings || {};
     return {
       dictationSileroEnabled: current.dictationSileroEnabled === true,
-      noteRecordingSileroEnabled: current.noteRecordingSileroEnabled !== false,
-      meetingSileroEnabled: current.meetingSileroEnabled !== false,
       ...sanitizeWhisperVadConfig(current),
     };
   }
@@ -272,8 +268,6 @@ class IPCHandlers {
   _setWhisperVadSettings(update = {}) {
     const ALLOWED_KEYS = new Set([
       "dictationSileroEnabled",
-      "noteRecordingSileroEnabled",
-      "meetingSileroEnabled",
       ...Object.keys(require("../constants/whisperVad.json").DEFAULTS),
     ]);
     const filtered = {};
@@ -286,12 +280,7 @@ class IPCHandlers {
 
   _resolveWhisperVadOptions(context) {
     const settings = this._getWhisperVadSettings();
-    const {
-      dictationSileroEnabled,
-      noteRecordingSileroEnabled,
-      meetingSileroEnabled,
-      ...vadConfig
-    } = settings;
+    const { dictationSileroEnabled, ...vadConfig } = settings;
     return {
       vadEnabled: resolveContextSileroEnabled(settings, context),
       vadConfig,
@@ -4837,12 +4826,7 @@ class IPCHandlers {
       return crypto.createHash("md5").update(text.toLowerCase().trim()).digest("hex");
     });
 
-    const NOTIFICATION_PREF_KEYS = new Set([
-      "notificationsEnabled",
-      "notifyMeetingDetection",
-      "notifyCalendarReminders",
-      "notifyUpdates",
-    ]);
+    const NOTIFICATION_PREF_KEYS = new Set(["notificationsEnabled", "notifyUpdates"]);
 
     ipcMain.handle("sync-notification-preferences", async (_event, prefs) => {
       try {
@@ -4854,12 +4838,6 @@ class IPCHandlers {
             this.windowManager.notificationPrefs[k] = !!v;
           }
         }
-        // Detection only serves the notification, so the toggle also gates the detector.
-        const { notificationsEnabled, notifyMeetingDetection } =
-          this.windowManager.notificationPrefs;
-        this.meetingDetectionEngine?.setPreferences({
-          audioDetection: notificationsEnabled && notifyMeetingDetection,
-        });
         return { success: true };
       } catch (error) {
         return { success: false, error: error.message };
