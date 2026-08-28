@@ -28,14 +28,17 @@ interface MorphPair {
  * no container, and reusing the slot keeps the existing four-element morph.
  */
 const CARET_RESTING: CubicPath = {
-  start: [17.3, 5.9],
-  curves: [[17.3, 9.9, 17.3, 14.1, 17.3, 18.1]],
+  // Drawn a unit longer at each end than the round-capped bars would need: the
+  // caret uses a butt cap, which stops dead at the endpoint instead of
+  // overhanging by half the stroke width.
+  start: [17.3, 4.9],
+  curves: [[17.3, 9.6, 17.3, 14.4, 17.3, 19.1]],
 };
 
 /** In agent mode the caret shortens and lifts, making room for the spark. */
 const CARET_AGENT: CubicPath = {
-  start: [16, 7.4],
-  curves: [[16, 10.2, 16, 14, 16, 16.8]],
+  start: [16, 6.4],
+  curves: [[16, 10.2, 16, 14, 16, 17.8]],
 };
 
 const MORPH_PATHS = {

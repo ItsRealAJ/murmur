@@ -93,7 +93,12 @@ export function VoiceIdentityIcon({
             d={renderedMorph.shell}
             stroke="currentColor"
             strokeWidth="2"
-            strokeLinecap="round"
+            // Flat, while the amplitude bars beside it stay round. That one
+            // difference is the whole mark: with a round cap the caret reads as
+            // a fourth, louder bar instead of the cursor the words land in.
+            // Matches src/assets/logo.svg, where the caret is rx=14 and the
+            // bars are rx=46. See docs/DESIGN.md, "Signature".
+            strokeLinecap="butt"
             strokeLinejoin="round"
             style={{ opacity: renderedMorph.constructionOpacity }}
           />
