@@ -71,7 +71,7 @@ export function useMainProcessNotifications({
                 text-emerald-100/90 hover:text-white
                 bg-emerald-500/15 hover:bg-emerald-500/25
                 border border-emerald-400/20 hover:border-emerald-400/35
-                transition-all duration-150"
+                transition-[background-color,border-color,color,opacity] duration-150"
             >
               {t("app.toasts.undo")}
             </button>

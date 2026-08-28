@@ -133,8 +133,6 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
     activeWorkspace: enterpriseWorkspace,
   });
 
-  const workspaceResolutionPending = false;
-
   const route = useMemo(
     () =>
       getOnboardingRoute({
@@ -467,7 +465,6 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
     settingsStore,
     t,
     withExtraDictationHotkeys,
-    workspaceResolutionPending,
     skipSetupChoiceForEnterprise,
   ]);
 
@@ -847,7 +844,7 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
         {fatalError && (
           <div
             role="alert"
-            className="fixed left-1/2 top-14 z-40 flex -translate-x-1/2 items-center gap-2 rounded-full border border-destructive/20 bg-card px-4 py-2 text-sm text-destructive shadow-lg"
+            className="fixed left-1/2 top-14 z-40 flex -translate-x-1/2 items-center gap-2 rounded-full border border-destructive/20 bg-card px-4 py-2 text-sm text-destructive"
           >
             <AlertCircle className="size-4" />
             {fatalError}

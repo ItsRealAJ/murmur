@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { MurmurMark } from "./ui/MurmurMark";
 import { useTranslation } from "react-i18next";
 import { X } from "lucide-react";
 
@@ -57,7 +58,7 @@ export default function UpdateNotificationOverlay() {
           "bg-card/95 dark:bg-surface-2/95 backdrop-blur-xl",
           "border border-border/40 dark:border-border-subtle/40",
           "rounded-xl shadow-lg p-2.5",
-          "transition-all duration-300 ease-out",
+          "transition-[background-color,border-color,color,opacity] duration-300 ease-out",
           isVisible
             ? "translate-x-0 opacity-100 scale-100"
             : "translate-x-[120%] opacity-0 scale-95",
@@ -72,7 +73,7 @@ export default function UpdateNotificationOverlay() {
             "flex items-center justify-center",
             "bg-card dark:bg-surface-2 border border-border/40 dark:border-border-subtle/40 shadow-sm",
             "text-muted-foreground/70 hover:text-foreground hover:bg-muted",
-            "transition-all duration-150",
+            "transition-[background-color,border-color,color,opacity] duration-150",
             isHovered ? "opacity-100 scale-100" : "opacity-0 scale-75 pointer-events-none",
           ].join(" ")}
         >
@@ -81,13 +82,7 @@ export default function UpdateNotificationOverlay() {
 
         <div className="flex items-center gap-2.5">
           <div className="shrink-0 bg-primary/10 rounded-md p-1">
-            <svg viewBox="0 0 1024 1024" className="w-4.5 h-4.5">
-              <rect width="1024" height="1024" rx="241" fill="#2056DF" />
-              <circle cx="512" cy="512" r="314" fill="#2056DF" stroke="white" strokeWidth="74" />
-              <path d="M512 383V641" stroke="white" strokeWidth="74" strokeLinecap="round" />
-              <path d="M627 457V568" stroke="white" strokeWidth="74" strokeLinecap="round" />
-              <path d="M397 457V568" stroke="white" strokeWidth="74" strokeLinecap="round" />
-            </svg>
+            <MurmurMark size={18} />
           </div>
 
           <div className="flex-1 min-w-0">

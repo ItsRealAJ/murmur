@@ -402,7 +402,7 @@ const Toast: React.FC<
             "bg-white/10 backdrop-blur-sm border border-white/10",
             "text-white/70 hover:text-white hover:bg-white/20",
             "opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100",
-            "transition-all duration-150",
+            "transition-[background-color,border-color,color,opacity] duration-150",
             "focus:outline-none focus-visible:ring-1 focus-visible:ring-white/30"
           )}
         >

@@ -532,56 +532,52 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
-   The caret — Murmur's signature element.
+   The caret inside the identity mark — Murmur's signature.
 
-   A text cursor inside the pill, because every dictation ends at one in some
-   other application. It reports pipeline state by rhythm rather than by adding
-   another colour: a blink means waiting, solid means receiving.
+   The pill *is* the logo: three quiet amplitude bars and the caret the words
+   land in. The caret is the only saturated element, and it reports pipeline
+   state by rhythm rather than by taking a second colour.
    ───────────────────────────────────────────────────────────────────────── */
 
-.murmur-caret {
-  display: inline-block;
-  width: 2px;
-  flex-shrink: 0;
-  border-radius: 1px;
-  background-color: currentColor;
-  opacity: 0.55;
+.voice-identity-morph-shell {
+  stroke: var(--color-primary);
+  transition: opacity 200ms ease-out;
 }
 
-/* Waiting. The 1.06s period is a hair slower than a system caret so the pill
-   reads as calm rather than as an input demanding attention. */
-.murmur-caret[data-caret-state="idle"] {
+/* Waiting. Slightly slower than a system caret so the pill reads as calm
+   rather than as an input demanding attention. */
+[data-pill-state="idle"] .voice-identity-morph-shell,
+[data-pill-state="hover"] .voice-identity-morph-shell {
   animation: murmur-caret-blink 1.06s steps(1, end) infinite;
 }
 
-/* Receiving. Solid and saturated — the one moment the interface lifts off its
-   ground. Blinking here would compete with the waveform right beside it. */
-.murmur-caret[data-caret-state="recording"] {
-  background-color: var(--color-primary);
-  opacity: 1;
+/* Receiving. Solid — a blink here would compete with the waveform beside it. */
+[data-pill-state="recording"] .voice-identity-morph-shell {
   animation: none;
+  opacity: 1;
 }
 
 /* Thinking. A slow breathe, never a freeze: a still caret after speech reads
    as a hang. */
-.murmur-caret[data-caret-state="processing"] {
-  background-color: var(--color-primary);
+[data-pill-state="processing"] .voice-identity-morph-shell,
+[data-pill-state="thinking"] .voice-identity-morph-shell {
   animation: murmur-caret-breathe 1.4s ease-in-out infinite;
 }
 
-.murmur-caret[data-caret-state="unavailable"] {
-  opacity: 0.25;
+[data-pill-state="unavailable"] .voice-identity-morph-shell {
+  stroke: currentColor;
+  opacity: 0.3;
   animation: none;
 }
 
 @keyframes murmur-caret-blink {
   0%,
   49% {
-    opacity: 0.55;
+    opacity: 1;
   }
   50%,
   100% {
-    opacity: 0;
+    opacity: 0.15;
   }
 }
 
@@ -598,12 +594,8 @@
 /* Reduced motion: hold the caret visible rather than mid-blink. An invisible
    caret would look like the app had stopped. */
 @media (prefers-reduced-motion: reduce) {
-  .murmur-caret {
+  .voice-identity-morph-shell {
     animation: none !important;
-    opacity: 0.75;
-  }
-  .murmur-caret[data-caret-state="recording"],
-  .murmur-caret[data-caret-state="processing"] {
     opacity: 1;
   }
 }

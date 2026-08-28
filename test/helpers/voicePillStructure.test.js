@@ -242,7 +242,7 @@ test("Live Transcript hands visual border ownership to the shared panel", async 
   assert.doesNotMatch(standalone, /data-integrated-with-panel/);
 });
 
-test("Agent Mode uses the supplied mark, a purple perimeter beam, and a neutral waveform", async () => {
+test("Agent Mode uses the Murmur agent mark, a perimeter beam, and a neutral waveform", async () => {
   const agentRecording = await renderPill("recording", true, "right", {
     agentMode: true,
   });
@@ -250,7 +250,10 @@ test("Agent Mode uses the supplied mark, a purple perimeter beam, and a neutral 
   const { AGENT_MODE_PATH } = await import("../../src/components/dictation/voiceIdentityMorph.ts");
   const styles = readDictationStyles();
 
-  assert.match(AGENT_MODE_PATH, /^M6\.14226 /);
+  // The agent mark is Murmur's own: the caret with a spark, same family as the
+  // dictation mark. Was the "supplied sparkle/leaf" artwork inherited upstream.
+  assert.match(AGENT_MODE_PATH, /^M15\.4 5\.2/, "the agent mark opens on the caret");
+  assert.ok(AGENT_MODE_PATH.includes("M4.9 2.6"), "and carries the spark");
   assert.match(styles, /--color-agent-brand:/);
   assert.doesNotMatch(styles, /\.voice-pill-control\[data-agent-mode="true"\]\s*\{/);
   assert.match(styles, /--beam-hue-base:/);
@@ -315,17 +318,19 @@ test("the voice identity performs an actual SVG geometry morph", async () => {
   assert.equal(agent.constructionOpacity, 0);
 });
 
-// The caret is Murmur's signature element (docs/DESIGN.md): every dictation ends
-// at a text cursor in another window, so the pill carries one of its own. It
-// reports pipeline state by rhythm, which is why the state attribute matters.
-test("the pill carries a caret that tracks the pipeline state", async () => {
+// The pill IS the logo: three quiet amplitude bars and the caret the words land
+// in (docs/DESIGN.md). The caret lives inside the identity mark rather than as a
+// separate element, and reports pipeline state by rhythm — which is why the
+// state attribute on the root matters, since CSS drives that animation.
+test("the pill exposes its state so the mark's caret can track the pipeline", async () => {
+  for (const state of ["idle", "recording", "processing", "unavailable"]) {
+    const html = await renderPill(state, state !== "idle");
+    assert.match(html, new RegExp(`data-pill-state="${state}"`));
+  }
+});
+
+test("the identity mark carries the caret, not a separate element", async () => {
   const idle = await renderPill("idle", false);
-  assert.match(idle, /class="murmur-caret[^"]*"/);
-  assert.match(idle, /data-caret-state="idle"/);
-
-  const recording = await renderPill("recording", true);
-  assert.match(recording, /data-caret-state="recording"/);
-
-  const processing = await renderPill("processing", true);
-  assert.match(processing, /data-caret-state="processing"/);
+  assert.match(idle, /voice-identity-morph-shell/, "the mark's caret path is present");
+  assert.doesNotMatch(idle, /murmur-caret/, "no duplicate standalone caret");
 });

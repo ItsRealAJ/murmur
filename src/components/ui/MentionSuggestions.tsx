@@ -52,7 +52,7 @@ const MentionSuggestions = forwardRef<MentionSuggestionsHandle, MentionSuggestio
     if (items.length === 0) return null;
 
     return (
-      <div className="w-60 rounded-md border border-border bg-popover p-1 shadow-lg">
+      <div className="w-60 rounded-md border border-border bg-popover p-1">
         {items.map((item, index) => (
           <button
             key={`${item.label}-${item.email ?? index}`}

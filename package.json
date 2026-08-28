@@ -62,7 +62,9 @@
     "quality-check": "npm run format:check && npm run typecheck",
     "i18n:check": "node scripts/check-i18n.js",
     "preview": "cd src && vite preview",
-    "clean": "node cleanup.js"
+    "clean": "node cleanup.js",
+    "dither": "node scripts/generate-dither.js",
+    "icons": "electron scripts/generate-icons.js"
   },
   "keywords": [
     "dictation",
@@ -116,6 +118,7 @@
     "@better-auth/sso": "1.6.27",
     "@fontsource-variable/caveat": "^5.3.0",
     "@fontsource-variable/inter": "^5.3.0",
+    "@fontsource-variable/schibsted-grotesk": "^5.3.0",
     "@homebridge/dbus-native": "^0.7.7",
     "@napi-rs/keyring": "^1.3.0",
     "@qdrant/js-client-rest": "^1.12.0",
@@ -140,8 +143,8 @@
     "ai": "^6.0.116",
     "better-auth": "1.6.27",
     "better-sqlite3": "12.9.0",
-    "canvas-confetti": "^1.9.4",
     "border-beam": "^1.3.0",
+    "canvas-confetti": "^1.9.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dotenv": "^17.4.1",

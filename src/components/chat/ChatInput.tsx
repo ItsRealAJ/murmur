@@ -120,7 +120,7 @@ export function ChatInput({
           "flex items-center gap-2 min-h-11 pl-4 pr-1.5 rounded-full",
           GLASS_SURFACE,
           "border border-black/10 dark:border-white/14",
-          "transition-all duration-200",
+          "transition-[background-color,border-color,color,opacity] duration-200",
           isIdle &&
             "focus-within:border-black/15 dark:focus-within:border-white/22 focus-within:ring-[3px] focus-within:ring-primary/8"
         )}
@@ -180,7 +180,7 @@ export function ChatInput({
                 GRADIENT_CIRCLE,
                 "hover:brightness-110 active:scale-95",
                 "focus:outline-none focus-visible:ring-1 focus-visible:ring-ring/30",
-                "transition-all duration-100"
+                "transition-[background-color,border-color,color,opacity] duration-100"
               )}
             >
               <Square size={10} fill="currentColor" />
@@ -209,7 +209,7 @@ export function ChatInput({
               autoFocus={autoFocus}
               placeholder={placeholder ?? t("agentMode.input.typeMessage")}
               className={cn(
-                "input-inline flex-1 outline-none bg-transparent caret-primary",
+                "input-inline flex-1 outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary bg-transparent caret-primary",
                 "text-[13px] text-foreground placeholder:text-muted-foreground/40",
                 "min-w-0 p-0",
                 isBusy && "text-muted-foreground/30 cursor-not-allowed"
@@ -239,7 +239,7 @@ export function ChatInput({
                   "rounded-full shrink-0",
                   voiceDraft && "animate-[scale-in_0.15s_ease-out_backwards]",
                   "focus:outline-none focus-visible:ring-1 focus-visible:ring-ring/30",
-                  "transition-all duration-100",
+                  "transition-[background-color,border-color,color,opacity] duration-100",
                   inputText.trim()
                     ? "hover:brightness-110 active:scale-95"
                     : "opacity-30 saturate-0 cursor-default"
@@ -257,7 +257,7 @@ export function ChatInput({
                   GRADIENT_CIRCLE,
                   "hover:brightness-110 active:scale-95",
                   "focus:outline-none focus-visible:ring-1 focus-visible:ring-ring/30",
-                  "transition-all duration-100"
+                  "transition-[background-color,border-color,color,opacity] duration-100"
                 )}
               >
                 <Mic size={14} />

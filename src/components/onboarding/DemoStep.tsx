@@ -5,9 +5,6 @@ import confetti from "canvas-confetti";
 import { ChevronDown, Loader2, Mic, RefreshCw, Square } from "lucide-react";
 import { Button } from "../ui/button";
 import type { OnboardingDemoEvent, OnboardingDemoKind } from "../../types/electron";
-import founderAvatar from "../../assets/onboarding-founder.webp";
-import emailSenderAvatar from "../../assets/onboarding-email-sender.webp";
-import assistantAvatar from "../../assets/onboarding-assistant-dog.webp";
 
 /**
  * The dictation success celebration: canvas-confetti's "school pride" effect —
@@ -106,21 +103,41 @@ function ConfettiLayer() {
   );
 }
 
-// Figma "Frame 26": 40px round avatar, bottom-aligned with the bubble beside it.
-function FounderAvatar() {
+/**
+ * A speaker in the demo.
+ *
+ * This replaces three inherited photographs — two of real people and a stock
+ * dog. Shipping a photo of someone who has nothing to do with this app implies
+ * an endorsement we do not have, and placeholder humans are the most
+ * recognisable thing a forked interface can carry.
+ *
+ * Murmur is a voice app, so a speaker is drawn as a voice: the same uneven
+ * amplitude bars as the app mark, at avatar scale. Named speakers get a
+ * monogram instead, so sender and recipient stay distinguishable in the mail
+ * demo. Both stay in surface tones — the accent belongs to live audio alone,
+ * and a demo avatar is not live audio.
+ */
+function DemoAvatar({ name, size = 36 }: { name?: string; size?: number }) {
+  const initial = name?.trim().charAt(0).toUpperCase();
+
   return (
-    <img
-      src={founderAvatar}
-      // Decorative: the demo conversation never names the sender, so a
-      // descriptive alt would announce a person the transcript doesn't mention.
-      alt=""
+    <span
       aria-hidden="true"
-      width={40}
-      height={40}
-      decoding="async"
-      draggable={false}
-      className="size-9 shrink-0 rounded-full object-cover"
-    />
+      className="grid shrink-0 place-items-center rounded-full bg-[var(--onboarding-surface-secondary)] text-[var(--onboarding-text-secondary)] ring-1 ring-inset ring-[var(--onboarding-control-border)]"
+      style={{ width: size, height: size }}
+    >
+      {initial ? (
+        <span className="font-semibold" style={{ fontSize: size * 0.4 }}>
+          {initial}
+        </span>
+      ) : (
+        <svg width={size * 0.5} height={size * 0.5} viewBox="0 0 24 24" fill="currentColor">
+          <rect x="3" y="9" width="3.4" height="6" rx="1.7" />
+          <rect x="10.3" y="6" width="3.4" height="12" rx="1.7" />
+          <rect x="17.6" y="8" width="3.4" height="8" rx="1.7" />
+        </svg>
+      )}
+    </span>
   );
 }
 
@@ -257,7 +274,7 @@ export default function DemoStep({
           <div className="flex flex-col gap-3">
             {messageCount === 0 ? (
               <div className="flex items-end gap-2.5">
-                <FounderAvatar />
+                <DemoAvatar />
                 <TypingBubble />
               </div>
             ) : (
@@ -270,7 +287,7 @@ export default function DemoStep({
                 </div>
                 {/* Frame 33 */}
                 <div className="flex items-end gap-2.5">
-                  <FounderAvatar />
+                  <DemoAvatar />
                   {messageCount === 1 ? (
                     <TypingBubble />
                   ) : (
@@ -303,16 +320,7 @@ export default function DemoStep({
           {/* Frame 2147259013: 44px avatar, 16 gap, and a column that keeps the
               body copy on the text's left edge rather than the avatar's. */}
           <div className="flex gap-3">
-            <img
-              src={emailSenderAvatar}
-              alt=""
-              aria-hidden="true"
-              width={44}
-              height={44}
-              decoding="async"
-              draggable={false}
-              className="size-10 shrink-0 rounded-full object-cover"
-            />
+            <DemoAvatar name={assistantSenderName} size={40} />
             <div className="flex min-w-0 flex-1 flex-col gap-4">
               <div className="flex flex-col gap-1">
                 <p className="flex min-w-0 gap-1 text-sm leading-[1.4]">
@@ -340,16 +348,7 @@ export default function DemoStep({
           {/* Frame 2147259014: the reply row repeats the 44px avatar and 16 gap so
               the input card lines up with the mail body above it. */}
           <div className="flex gap-3">
-            <img
-              src={assistantAvatar}
-              alt=""
-              aria-hidden="true"
-              width={44}
-              height={44}
-              decoding="async"
-              draggable={false}
-              className="size-10 shrink-0 rounded-full object-cover"
-            />
+            <DemoAvatar size={40} />
             <VoiceSurface
               inputRef={inputRef}
               value={draft || (successful ? (assistantResponse ?? "") : "")}
@@ -413,7 +412,7 @@ function VoiceSurface({
         // Placeholder is text-tertiary at 38% — 16/140% in the mail card, 18/140%
         // in the dictation one. The caret takes the brand colour, which is what
         // Figma draws as the 3x18 bar.
-        className={`input-inline min-h-0 w-full flex-1 resize-none bg-transparent pr-10 leading-[1.4] text-[var(--onboarding-text-primary)] caret-[var(--onboarding-accent)] outline-none placeholder:text-[color-mix(in_srgb,var(--onboarding-text-tertiary)_38%,transparent)] ${
+        className={`input-inline min-h-0 w-full flex-1 resize-none bg-transparent pr-10 leading-[1.4] text-[var(--onboarding-text-primary)] caret-[var(--onboarding-accent)] outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary placeholder:text-[color-mix(in_srgb,var(--onboarding-text-tertiary)_38%,transparent)] ${
           embedded ? "text-sm" : "text-base"
         }`}
       />

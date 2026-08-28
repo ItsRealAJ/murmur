@@ -3,7 +3,6 @@ import { BorderBeam, type BorderBeamTheme } from "border-beam";
 import { ChevronUp } from "lucide-react";
 import { cn } from "../lib/utils";
 import { PillWaveform } from "./PillWaveform";
-import { PillCaret, type PillCaretState } from "./PillCaret";
 import { VoiceIdentityIcon } from "./VoiceIdentityIcon";
 import { WAVEFORM_BAR_COUNT } from "./waveformMath";
 import {
@@ -60,15 +59,6 @@ const STATE_APPEARANCE: Record<VoicePillState, string> = {
   processing: "border-border-subtle bg-surface-1 text-foreground/70",
   thinking: "border-border-subtle bg-surface-1 text-foreground",
   unavailable: "border-border-subtle bg-surface-1 text-muted-foreground",
-};
-
-const CARET_STATE: Record<VoicePillState, PillCaretState> = {
-  idle: "idle",
-  hover: "idle",
-  recording: "recording",
-  processing: "processing",
-  thinking: "processing",
-  unavailable: "unavailable",
 };
 
 /** One persistent control that resizes between the floating and panel layouts. */
@@ -132,6 +122,7 @@ export const VoicePill = forwardRef<HTMLDivElement, VoicePillProps>(function Voi
         transition: `width ${GROW_TRANSITION}, height ${GROW_TRANSITION}, padding-left ${GROW_TRANSITION}, padding-right ${GROW_TRANSITION}, background-color 220ms ease-out, border-color 220ms ease-out, box-shadow 220ms ease-out`,
         ...style,
       }}
+      data-pill-state={state}
       data-horizontal-direction={horizontalDirection}
       data-integrated-with-panel={integratedWithPanel || undefined}
       data-agent-mode={agentMode || undefined}
@@ -216,10 +207,6 @@ export const VoicePill = forwardRef<HTMLDivElement, VoicePillProps>(function Voi
           )}
         />
       </div>
-
-      {/* The caret sits at the trailing edge, where transcribed words arrive —
-          the pill's only saturated element, and the app's signature. */}
-      <PillCaret state={CARET_STATE[state]} compact={showCompactPill} className="ml-1.5 mr-0.5" />
 
       {isUnavailable && (
         <div className="pointer-events-none absolute inset-0 rounded-full border-2 border-foreground/30 animate-pulse" />

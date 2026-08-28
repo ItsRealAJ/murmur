@@ -1,7 +1,25 @@
 <svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect width="1024" height="1024" rx="241" fill="#2056DF"/>
-<circle cx="512" cy="512" r="314" fill="#2056DF" stroke="white" stroke-width="74"/>
-<path d="M512 383V641" stroke="white" stroke-width="74" stroke-linecap="round"/>
-<path d="M627 457V568" stroke="white" stroke-width="74" stroke-linecap="round"/>
-<path d="M397 457V568" stroke="white" stroke-width="74" stroke-linecap="round"/>
+  <!--
+    Murmur's mark: quiet speech resolving into a caret.
+
+    Three short bars of uneven height read as low amplitude — a murmur, not a
+    shout — running left to right into the tall bar the words land in. The
+    asymmetry matters: a symmetric equaliser is the generic "audio" glyph every
+    dictation app already uses.
+
+    The caret is drawn with near-flat ends while the amplitude bars keep round
+    caps. That single shape difference is what makes it read as a text cursor
+    rather than just the loudest bar, and it survives down to 16px where the
+    height difference alone would not.
+  -->
+  <rect width="1024" height="1024" rx="228" fill="#0B0F0C"/>
+
+  <g fill="#8A968C">
+    <rect x="241" y="437" width="92" height="150" rx="46"/>
+    <rect x="391" y="382" width="92" height="260" rx="46"/>
+    <rect x="541" y="417" width="92" height="190" rx="46"/>
+  </g>
+
+  <!-- The caret. The only saturated element, as everywhere else in Murmur. -->
+  <rect x="691" y="252" width="92" height="520" rx="14" fill="#4FBF6E"/>
 </svg>

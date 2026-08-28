@@ -205,7 +205,7 @@ export default function LanguageSelector({
               left: `${dropdownPosition.left}px`,
               width: `${dropdownPosition.width}px`,
             }}
-            className="z-9999 bg-popover/95 backdrop-blur-xl border border-border/70 rounded shadow-xl overflow-hidden"
+            className="z-9999 bg-popover/95 backdrop-blur-xl border border-border/70 rounded overflow-hidden"
           >
             {showSearch && (
               <div className="px-2 pt-2 pb-1.5 border-b border-border/50">
@@ -218,7 +218,7 @@ export default function LanguageSelector({
                     onChange={(e) => handleSearchQueryChange(e.target.value)}
                     onKeyDown={handleKeyDown}
                     placeholder={t("languageSelector.searchPlaceholder")}
-                    className="w-full h-7 pl-7 pr-6 text-xs bg-transparent text-foreground border-0 focus:outline-none placeholder:text-muted-foreground/50"
+                    className="w-full h-7 pl-7 pr-6 text-xs bg-transparent text-foreground border-0 focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary placeholder:text-muted-foreground/50"
                   />
                   {searchQuery && (
                     <button

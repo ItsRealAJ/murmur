@@ -196,7 +196,7 @@ function GpuStatusBadge() {
       <div className="flex items-center gap-2 mt-2 px-1">
         <div className="flex-1 h-1 bg-muted rounded-full overflow-hidden">
           <div
-            className="h-full bg-primary transition-all"
+            className="h-full bg-primary transition-[background-color,border-color,color,opacity]"
             style={{ width: `${progress.percentage}%` }}
           />
         </div>

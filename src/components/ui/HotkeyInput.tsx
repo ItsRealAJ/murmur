@@ -649,7 +649,7 @@ export function HotkeyInput({
         onBlur={handleBlur}
         className={`
           relative group flex flex-col items-center justify-center py-4 px-5 min-h-28
-          rounded-md border cursor-pointer select-none outline-none
+          rounded-md border cursor-pointer select-none outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary
           transition-colors duration-150
           ${
             disabled
@@ -755,7 +755,7 @@ export function HotkeyInput({
       onBlur={handleBlur}
       className={`
         relative group overflow-hidden rounded-md border
-        transition-colors duration-150 cursor-pointer select-none focus:outline-none
+        transition-colors duration-150 cursor-pointer select-none focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary
         ${
           disabled
             ? "bg-muted/30 border-border cursor-not-allowed opacity-50"

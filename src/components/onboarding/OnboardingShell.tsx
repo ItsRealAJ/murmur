@@ -6,10 +6,8 @@ import { useTranslation } from "react-i18next";
 import { getPlatform } from "../../utils/platform";
 // Imported (not referenced by path) so Vite fingerprints it and it resolves
 // under the packaged app's file:// origin. See .onboarding-compact-hero.
-import heroDither from "@/assets/onboarding-hero-dither.webp";
-import heroDitherDark from "@/assets/onboarding-hero-dither-dark.webp";
-import onboardingBackgroundLight from "@/assets/onboarding-bg-light.svg";
-import onboardingBackgroundDark from "@/assets/onboarding-bg-dark.svg";
+import heroDither from "@/assets/onboarding-hero-dither.png";
+import heroDitherDark from "@/assets/onboarding-hero-dither-dark.png";
 
 interface OnboardingShellProps {
   compact?: boolean;
@@ -234,12 +232,6 @@ export default function OnboardingShell({
   return (
     <main
       className={`onboarding-canvas relative flex h-screen flex-col overflow-hidden ${compact ? "compact" : ""}`}
-      style={
-        {
-          "--onboarding-background-light": `url(${onboardingBackgroundLight})`,
-          "--onboarding-background-dark": `url(${onboardingBackgroundDark})`,
-        } as CSSProperties
-      }
     >
       {/* 48px, not a sliver: this is the frameless window's only title bar, so
           it has to be a target someone can actually grab. Interactive overlays
@@ -403,10 +395,12 @@ export function BrandMark({ className = "" }: { className?: string }) {
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
     >
-      <circle cx="512" cy="512" r="314" stroke="currentColor" strokeWidth="74" />
-      <path d="M512 383V641" stroke="currentColor" strokeWidth="74" strokeLinecap="round" />
-      <path d="M627 457V568" stroke="currentColor" strokeWidth="74" strokeLinecap="round" />
-      <path d="M397 457V568" stroke="currentColor" strokeWidth="74" strokeLinecap="round" />
+      <g fill="currentColor" opacity="0.55">
+        <rect x="241" y="437" width="92" height="150" rx="46" />
+        <rect x="391" y="382" width="92" height="260" rx="46" />
+        <rect x="541" y="417" width="92" height="190" rx="46" />
+      </g>
+      <rect x="691" y="252" width="92" height="520" rx="14" fill="currentColor" />
     </svg>
   );
 }

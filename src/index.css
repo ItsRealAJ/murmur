@@ -7,28 +7,28 @@
 @theme {
   /* Murmur Theme — registers color tokens with Tailwind v4.
      These are the light-mode defaults; .dark overrides them below. */
-  --color-primary: #bc381e;
-  --color-primary-foreground: #fffcf7;
-  --color-secondary: #f2ede5;
-  --color-secondary-foreground: #1a1613;
-  --color-muted: #f2ede5;
-  --color-muted-foreground: #6b625a;
-  --color-accent: #bc381e;
-  --color-accent-foreground: #fffcf7;
+  --color-primary: #186538;
+  --color-primary-foreground: #fafcf8;
+  --color-secondary: #e7ece4;
+  --color-secondary-foreground: #10150f;
+  --color-muted: #e7ece4;
+  --color-muted-foreground: #5c665d;
+  --color-accent: #186538;
+  --color-accent-foreground: #fafcf8;
   /* Agent Mode identity, sourced from the supplied sparkle/leaf mark. */
-  --color-agent-brand: #a8724f;
+  --color-agent-brand: #2e7d50;
   --color-destructive: #dc2626;
   --color-destructive-foreground: #ffffff;
-  --color-border: #e4dcd1;
-  --color-input: #fffcf7;
-  --color-ring: #bc381e;
-  --color-background: #f7f3ed;
-  --color-foreground: #1a1613;
-  --color-card: #fffcf7;
-  --color-card-foreground: #1a1613;
-  --color-popover: #fffcf7;
-  --color-popover-foreground: #1a1613;
-  --color-link: #a8482a;
+  --color-border: #dde3da;
+  --color-input: #fafcf8;
+  --color-ring: #186538;
+  --color-background: #f1f4ef;
+  --color-foreground: #10150f;
+  --color-card: #fafcf8;
+  --color-card-foreground: #10150f;
+  --color-popover: #fafcf8;
+  --color-popover-foreground: #10150f;
+  --color-link: #14663a;
   --color-success: #16a34a;
   --color-success-foreground: #ffffff;
   --color-warning: #d97706;
@@ -37,19 +37,30 @@
   --color-info-foreground: #ffffff;
 
   /* Surface hierarchy — light mode equivalents */
-  --color-surface-0: #fffcf7;
-  --color-surface-1: #f2ede5;
-  --color-surface-2: #fffcf7;
-  --color-surface-3: #ede6dc;
-  --color-surface-raised: #e7dfd3;
+  --color-surface-0: #fafcf8;
+  --color-surface-1: #e7ece4;
+  --color-surface-2: #fafcf8;
+  --color-surface-3: #dfe6dc;
+  --color-surface-raised: #d6ded2;
 
   /* Border states — light mode equivalents */
-  --color-border-subtle: #e4dcd1;
-  --color-border-hover: #d5cabb;
-  --color-border-active: #bc381e;
+  --color-border-subtle: #dde3da;
+  --color-border-hover: #c6cfc2;
+  --color-border-active: #186538;
   /* Type roles — see docs/DESIGN.md. Transcript text is data, not prose, so it
      is set in the host OS's mono: same promise the verbatim hotkey makes, and
      zero bytes to ship. */
+  /* Type scale. Murmur is dense chrome that sits beside the user's real work, so
+     body text is genuinely small and hierarchy is carried by WEIGHT and COLOUR
+     rather than by size — Schibsted Grotesk ships 400-900 and holds its shape at
+     the heavy end, which is what a newspaper face is built for. The one real
+     size jump is display, which spans well over 2x the body so a heading never
+     reads as "slightly bigger body". */
+  --text-micro: 11px;
+  --text-body: 12px;
+  --text-label: 14px;
+  --text-display: 32px;
+
   --font-family-transcript:
     ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
 
@@ -117,26 +128,26 @@
   /* Dark mode — charcoal surfaces with clear elevation hierarchy
      Base L=0.22 (charcoal) with 0.05 steps between layers.
      Hue 260 (neutral blue) with minimal chroma for sophistication. */
-  --color-background: #15120f;
-  --color-foreground: #efe9e1;
-  --color-card: #1c1815;
-  --color-card-foreground: #efe9e1;
-  --color-popover: #1c1815;
-  --color-popover-foreground: #efe9e1;
-  --color-primary: #d96f4b;
-  --color-primary-foreground: #15120f;
-  --color-secondary: #1f1b17;
-  --color-secondary-foreground: #efe9e1;
-  --color-muted: #1f1b17;
-  --color-muted-foreground: #9a9086;
-  --color-accent: #d96f4b;
-  --color-accent-foreground: #15120f;
-  --color-agent-brand: #c68a6a;
+  --color-background: #0b0f0c;
+  --color-foreground: #e6ede7;
+  --color-card: #121815;
+  --color-card-foreground: #e6ede7;
+  --color-popover: #121815;
+  --color-popover-foreground: #e6ede7;
+  --color-primary: #4fbf6e;
+  --color-primary-foreground: #0b0f0c;
+  --color-secondary: #141b17;
+  --color-secondary-foreground: #e6ede7;
+  --color-muted: #141b17;
+  --color-muted-foreground: #8a968c;
+  --color-accent: #4fbf6e;
+  --color-accent-foreground: #0b0f0c;
+  --color-agent-brand: #7fcf96;
   --color-destructive: oklch(0.62 0.22 25);
   --color-destructive-foreground: oklch(0.99 0 0);
-  --color-border: #2a2420;
-  --color-input: #1c1815;
-  --color-ring: #d96f4b;
+  --color-border: #1e2620;
+  --color-input: #121815;
+  --color-ring: #4fbf6e;
   --color-success: oklch(0.7 0.18 145);
   --color-success-foreground: oklch(0.99 0 0);
   --color-warning: oklch(0.75 0.15 70);
@@ -145,17 +156,17 @@
   --color-info-foreground: oklch(0.99 0 0);
 
   /* Surface hierarchy — charcoal depth system (0.22 → 0.33) */
-  --color-surface-0: #1c1815;
-  --color-surface-1: #1f1b17;
-  --color-surface-2: #1c1815;
-  --color-surface-3: #262019;
-  --color-surface-raised: #2e2720;
+  --color-surface-0: #121815;
+  --color-surface-1: #141b17;
+  --color-surface-2: #121815;
+  --color-surface-3: #18211b;
+  --color-surface-raised: #1e2822;
 
   /* Border states */
-  --color-border-subtle: #2a2420;
-  --color-border-hover: #3a322b;
-  --color-border-active: #d96f4b;
-  --color-link: #e08a6a;
+  --color-border-subtle: #1e2620;
+  --color-border-hover: #2c3830;
+  --color-border-active: #4fbf6e;
+  --color-link: #6adb86;
 
   /* Card depth shadows — softer for charcoal, with top highlight for premium depth */
   --shadow-card: 0 1px 3px oklch(0 0 0 / 0.2), inset 0 1px 0 oklch(1 0 0 / 0.03);
@@ -284,52 +295,52 @@
    tokens are shared — the canvas keeps its own painted background below. */
 .onboarding-canvas,
 body:has(.onboarding-canvas) {
-  /* Inter is prepended rather than replacing the stack: the woff2 files are
+  /* Schibsted Grotesk is prepended rather than replacing the stack: the woff2 files are
      subset by unicode-range and carry no CJK, so zh-CN/zh-TW/ja glyphs must still
      fall through to the original fonts. Overriding the variable as well covers
      descendants that re-declare font-family from it. */
   --font-family-sans:
-    "Inter Variable", "Noto Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, sans-serif;
+    "Schibsted Grotesk Variable", "Noto Sans", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
   font-family: var(--font-family-sans);
   font-optical-sizing: auto;
 
-  /* Onboarding design tokens, straight from the Figma library. The accent is
-     #4079ED, which is close to but NOT Tailwind's blue-500 (#3b82f6) — bind
-     these rather than re-typing the literals. */
-  --onboarding-accent: #4079ed;
-  --onboarding-accent-foreground: #ffffff;
+  /* Onboarding surfaces. Bound to the Murmur palette rather than the inherited
+     Figma library, which was OpenWhispr blue on pure #ffffff/#000000. Bind these
+     tokens rather than re-typing literals. */
+  --onboarding-accent: #186538;
+  --onboarding-accent-foreground: #fafcf8;
   /* Hover on a filled accent means "darker" on light and "lighter" on dark, so the
      mix target is a token rather than a literal `black` in the utility class. */
   --onboarding-accent-hover: color-mix(in srgb, var(--onboarding-accent) 88%, black);
-  --onboarding-text-primary: #000000;
-  --onboarding-text-secondary: #656565;
-  --onboarding-text-tertiary: #969393;
-  --onboarding-control-border: #e3e3e3;
+  --onboarding-text-primary: #10150f;
+  --onboarding-text-secondary: #5c665d;
+  --onboarding-text-tertiary: #8a948b;
+  --onboarding-control-border: #dde3da;
   /* The page/card fill everything else sits on. Split from surface-secondary so
      the dark theme can move the base without dragging the filled greys with it. */
-  --onboarding-surface: #ffffff;
+  --onboarding-surface: #fafcf8;
   /* light/surface-secondary and light/surface-tertiary: the two filled greys the
      onboarding frames use (capture surfaces and the inline hint pills). */
-  --onboarding-surface-secondary: #f7f7f7;
-  --onboarding-surface-tertiary: #e6e6e6;
+  --onboarding-surface-secondary: #f1f4ef;
+  --onboarding-surface-tertiary: #e2e8df;
   /* Hover step above the base surface (ghost rows, outline buttons) and above
      surface-tertiary (the neutral "Enable" pill). */
-  --onboarding-surface-hover: #fafafa;
-  --onboarding-surface-tertiary-hover: #d4d4d4;
+  --onboarding-surface-hover: #f4f7f2;
+  --onboarding-surface-tertiary-hover: #d2dace;
   /* The row hover slab, which is a fill painted *behind* a row's content rather
      than a control's own background — so it needs more separation from the base
      surface than surface-hover gives a bordered button, and it gets its own token
      instead of leaning on that one. */
-  --onboarding-row-hover: #f5f5f5;
+  --onboarding-row-hover: #edf1ea;
   /* Inverted HUD: keycaps and the dictation pill preview, which are near-black on
      light and have to lift off the background rather than sink into it on dark. */
-  --onboarding-inverse-surface: #0a0a0a;
-  --onboarding-inverse-surface-secondary: #262626;
-  --onboarding-inverse-text: #ffffff;
+  --onboarding-inverse-surface: #0b0f0c;
+  --onboarding-inverse-surface-secondary: #1e2620;
+  --onboarding-inverse-text: #e6ede7;
   /* Status. Kept separate from the accent so a failed provider test never reads
      as a brand colour. */
-  --onboarding-link: #2563eb;
+  --onboarding-link: #14663a;
   --onboarding-danger: #ef4444;
   --onboarding-success: #22c55e;
   /* Keycap. The cap is lit from above, so it needs its own top/bottom pair rather
@@ -357,28 +368,28 @@ body.dark:has(.onboarding-canvas) {
   /* Lifted off #4079ED: the Figma accent is tuned against white and goes muddy on
      a near-black surface, so dark takes the same hue a few steps brighter to hold
      the 4.5:1 it has in light. */
-  --onboarding-accent: #6f9bf5;
+  --onboarding-accent: #4fbf6e;
   /* White, same as light: a filled brand CTA reads as the brand in both themes,
      and flipping its label to near-black made the dark-mode buttons look like a
      different component. */
-  --onboarding-accent-foreground: #ffffff;
+  --onboarding-accent-foreground: #0b0f0c;
   --onboarding-accent-hover: color-mix(in srgb, var(--onboarding-accent) 88%, white);
-  --onboarding-text-primary: #f5f5f5;
-  --onboarding-text-secondary: #a1a1a1;
-  --onboarding-text-tertiary: #7c7c7c;
-  --onboarding-control-border: #2e2e2e;
-  --onboarding-surface: #141414;
-  --onboarding-surface-secondary: #1c1c1c;
-  --onboarding-surface-tertiary: #292929;
-  --onboarding-surface-hover: #202020;
-  --onboarding-surface-tertiary-hover: #363636;
-  --onboarding-row-hover: #202020;
+  --onboarding-text-primary: #e6ede7;
+  --onboarding-text-secondary: #8a968c;
+  --onboarding-text-tertiary: #6b766d;
+  --onboarding-control-border: #1e2620;
+  --onboarding-surface: #121815;
+  --onboarding-surface-secondary: #0b0f0c;
+  --onboarding-surface-tertiary: #18211b;
+  --onboarding-surface-hover: #161d19;
+  --onboarding-surface-tertiary-hover: #222c25;
+  --onboarding-row-hover: #161d19;
   /* The HUD inverts: on dark it is the one thing that gets *lighter* than the
      page, or the keycaps disappear into it. */
-  --onboarding-inverse-surface: #f5f5f5;
-  --onboarding-inverse-surface-secondary: #d4d4d4;
-  --onboarding-inverse-text: #0a0a0a;
-  --onboarding-link: #7ba6f7;
+  --onboarding-inverse-surface: #e6ede7;
+  --onboarding-inverse-surface-secondary: #c6cfc2;
+  --onboarding-inverse-text: #0b0f0c;
+  --onboarding-link: #6adb86;
   --onboarding-danger: #f87171;
   --onboarding-success: #4ade80;
   --onboarding-keycap-top: #3a3a3a;
@@ -424,19 +435,23 @@ body.dark:has(.onboarding-canvas) {
   --color-primary-foreground: var(--onboarding-accent-foreground);
   --color-ring: var(--onboarding-accent);
   background-color: var(--onboarding-surface);
-  /* Supplied full-width artwork replaces the generated corner washes. Keeping
-     its natural aspect ratio preserves the authored violet-to-blue composition
-     while the surface token fills the transparent lower portion of the panel. */
-  background-image: var(--onboarding-background-light);
-  background-position: top center;
-  background-repeat: no-repeat;
-  background-size: 100% auto;
-  color: var(--onboarding-text-primary);
-}
+  /* The ground is silence, so it is drawn as one — undisturbed, no artwork.
+     This replaces 1.5MB of inherited violet-to-blue blob SVGs that were both
+     the wrong hue for Murmur and the loudest thing on a screen whose job is to
+     be quiet until the user speaks.
 
-.dark .onboarding-canvas,
-.dark.onboarding-canvas {
-  background-image: var(--onboarding-background-dark);
+     What is left is the app's elevation policy applied at window scale: a
+     single soft tonal lift behind the content column, one step above the
+     surface and carrying no chroma at all. Same rule as the pill — elevation is
+     a tonal step, never a shadow — so onboarding and the overlay are lit the
+     same way. Costs nothing to ship and nothing to decode. */
+  background-image: radial-gradient(
+    120% 68% at 50% 0%,
+    var(--onboarding-surface-secondary) 0%,
+    transparent 72%
+  );
+  background-repeat: no-repeat;
+  color: var(--onboarding-text-primary);
 }
 
 /* Nested list surface + rows, per Figma "Onboarding / Frame 37".
@@ -732,7 +747,7 @@ body.dark:has(.onboarding-canvas) {
    fingerprints it and it resolves under the packaged file:// origin — which is
    also why the theme swap reads two inline custom properties instead of naming
    the files here. The strips are 32px-wide Bayer-dither gradients, one per
-   theme, baked into src/assets/onboarding-hero-dither{,-dark}.webp. */
+   theme, generated by scripts/generate-dither.js (npm run dither). */
 .onboarding-compact-hero {
   background-image: var(--onboarding-hero-dither-light);
   background-repeat: repeat-x;
@@ -740,9 +755,9 @@ body.dark:has(.onboarding-canvas) {
   image-rendering: pixelated;
 }
 
-/* The dark strip resolves into --onboarding-surface rather than white, so it has
-   to be a separate asset — a filter or blend on the light one would take the
-   indigo with it. */
+/* Two assets rather than one filtered asset: both strips fade out on alpha, so
+   the only difference is the ink, and the dark theme needs a band that recedes
+   below its surface where the light one sits above it. */
 .dark .onboarding-compact-hero {
   background-image: var(--onboarding-hero-dither-dark);
 }
@@ -768,7 +783,7 @@ body.dark:has(.onboarding-canvas) {
   animation: onboarding-typing-dot 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
-/* The UA stylesheet gives <kbd> a monospace family; onboarding is on Inter, so
+/* The UA stylesheet gives <kbd> a monospace family; onboarding is on the UI face, so
    every keycap and inline key has to opt back in to the inherited stack. */
 .onboarding-canvas kbd,
 body:has(.onboarding-canvas) kbd {
@@ -806,14 +821,6 @@ body:has(.onboarding-canvas) kbd {
   line-height: 1.6;
 }
 
-.brand-script {
-  /* Figma binds this to Caveat Regular 400. Self-hosted like Inter so it works
-     offline; Snell Roundhand stays as the fallback for the same handwritten feel
-     if the face ever fails to load. Not italic — Caveat is already slanted. */
-  font-family: "Caveat Variable", "Snell Roundhand", "Segoe Script", cursive;
-  font-weight: 400;
-}
-
 h1,
 h2,
 h3,
@@ -821,23 +828,29 @@ h4,
 h5,
 h6 {
   font-family: var(--font-family-sans);
-  font-weight: 600;
-  letter-spacing: -0.025em;
+  /* 700 rather than 600: at these small sizes a single weight step is not
+     enough separation from 500-weight labels, and the face carries it. */
+  font-weight: 700;
+  letter-spacing: -0.022em;
   line-height: 1.15;
 }
 
 h1 {
   font-size: 2.5rem;
-  font-weight: 700;
+  font-weight: 800;
+  letter-spacing: -0.03em;
 }
 
 .onboarding-display-title {
-  font-size: 2rem; /* 32px */
-  font-weight: 500; /* Inter Medium */
+  font-size: var(--text-display);
+  /* Was 500, which read as body text scaled up. Display type earns its own
+     weight. */
+  font-weight: 700;
   line-height: 1.2; /* 120% */
-  /* No letter-spacing on purpose. Inter's opsz build already tightens the
-     letterforms at display sizes via font-optical-sizing: auto, so manual
-     negative tracking stacked on top of that read as cramped. */
+  /* Schibsted Grotesk has no optical-size axis, unlike the Inter build this
+     replaced, so display sizes need the tracking that opsz used to apply for
+     free. Without it, 32px headings read loose. */
+  letter-spacing: -0.02em;
 }
 
 /* The compact first-run steps (auth + permissions, per COMPACT_STEPS in

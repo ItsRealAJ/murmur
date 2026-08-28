@@ -100,7 +100,7 @@ export default function UseCaseStep({
             value={note}
             onChange={(event) => onNoteChange(event.target.value)}
             placeholder={t("onboarding.useCase.notePlaceholder")}
-            className="onboarding-light-input onboarding-light-input-bordered w-full rounded-xl! border border-[var(--onboarding-control-border)] bg-[var(--onboarding-surface)] p-2.5 text-sm font-normal leading-[1.4] text-[var(--onboarding-text-primary)] shadow-none! outline-none placeholder:text-[var(--onboarding-text-tertiary)] focus:border-[var(--onboarding-accent)] focus:ring-2 focus:ring-[color-mix(in_srgb,var(--onboarding-accent)_15%,transparent)]"
+            className="onboarding-light-input onboarding-light-input-bordered w-full rounded-xl! border border-[var(--onboarding-control-border)] bg-[var(--onboarding-surface)] p-2.5 text-sm font-normal leading-[1.4] text-[var(--onboarding-text-primary)] shadow-none! outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary placeholder:text-[var(--onboarding-text-tertiary)] focus:border-[var(--onboarding-accent)] focus:ring-2 focus:ring-[color-mix(in_srgb,var(--onboarding-accent)_15%,transparent)]"
           />
         </label>
       </div>
