@@ -1,22 +1,9 @@
 import React from "react";
-import {
-  Home,
-  MessageSquare,
-  NotebookPen,
-  BookOpen,
-  Upload,
-  Blocks,
-  Settings,
-  HelpCircle,
-  UserCircle,
-  Search,
-} from "lucide-react";
+import { Home, BookOpen, Settings, HelpCircle, Search } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { cn } from "./lib/utils";
 import SupportDropdown from "./ui/SupportDropdown";
 import { getCachedPlatform } from "../utils/platform";
-import { isAgentAllowed, isPolicyActionAllowed } from "../stores/policyRules";
-import { usePolicyStore } from "../stores/policyStore";
 
 const platform = getCachedPlatform();
 
@@ -27,19 +14,23 @@ const rowLabelClass =
 const rowButtonClass =
   "group flex items-center gap-2.5 w-full h-8 px-2.5 rounded-md text-left outline-none hover:bg-foreground/4 dark:hover:bg-white/4 focus-visible:ring-1 focus-visible:ring-primary/30 transition-colors duration-150";
 
-export type ControlPanelView =
-  "home" | "chat" | "personal-notes" | "dictionary" | "upload" | "integrations";
+/**
+ * Only the views ControlPanel can actually render.
+ *
+ * "chat", "personal-notes", "upload" and "integrations" were still listed here
+ * and still had sidebar entries, but their content was removed with the notes,
+ * upload-queue and MCP strip — ControlPanel branches on "home" and "dictionary"
+ * and nothing else, so those four rows navigated to an empty pane. Same failure
+ * as the onboarding "auth" step: a view id outlives its renderer and the result
+ * is a blank screen, not a build error.
+ */
+export type ControlPanelView = "home" | "dictionary";
 
 interface ControlPanelSidebarProps {
   activeView: ControlPanelView;
   onViewChange: (view: ControlPanelView) => void;
   onOpenSettings: () => void;
   onOpenSearch?: () => void;
-  userName?: string | null;
-  userEmail?: string | null;
-  userImage?: string | null;
-  isSignedIn?: boolean;
-  authLoaded?: boolean;
   updateAction?: React.ReactNode;
 }
 
@@ -48,16 +39,9 @@ export default function ControlPanelSidebar({
   onViewChange,
   onOpenSettings,
   onOpenSearch,
-  userName,
-  userEmail,
-  userImage,
-  isSignedIn,
-  authLoaded,
   updateAction,
 }: ControlPanelSidebarProps) {
   const { t } = useTranslation();
-  const agentAllowed = usePolicyStore(isAgentAllowed);
-  const policyActionsAllowed = usePolicyStore((state) => isPolicyActionAllowed(state));
 
   const navItems: {
     id: ControlPanelView;
@@ -65,15 +49,7 @@ export default function ControlPanelSidebar({
     icon: React.ComponentType<{ size?: number; className?: string }>;
   }[] = [
     { id: "home", label: t("sidebar.home"), icon: Home },
-    ...(agentAllowed
-      ? [{ id: "chat" as const, label: t("sidebar.chat"), icon: MessageSquare }]
-      : []),
-    { id: "personal-notes", label: t("sidebar.notes"), icon: NotebookPen },
-    ...(policyActionsAllowed
-      ? [{ id: "upload" as const, label: t("sidebar.upload"), icon: Upload }]
-      : []),
     { id: "dictionary", label: t("sidebar.dictionary"), icon: BookOpen },
-    { id: "integrations", label: t("sidebar.integrations"), icon: Blocks },
   ];
 
   return (
@@ -172,34 +148,6 @@ export default function ControlPanelSidebar({
             </button>
           }
         />
-
-        <div className="mx-1 h-px bg-border/10 dark:bg-white/6 my-1.5!" />
-
-        <div className="flex items-center gap-2.5 px-2.5 py-1.5 rounded-md">
-          {userImage ? (
-            <img src={userImage} alt="" className="w-6 h-6 rounded-full shrink-0 object-cover" />
-          ) : (
-            <UserCircle size={18} className="shrink-0 text-foreground/50 dark:text-foreground/45" />
-          )}
-          <div className="flex-1 min-w-0">
-            {isSignedIn && (userName || userEmail) ? (
-              <>
-                <p className="text-xs text-foreground/80 dark:text-foreground/80 truncate leading-tight">
-                  {userName || t("sidebar.defaultUser")}
-                </p>
-                {userEmail && (
-                  <p className="text-xs text-foreground/55 dark:text-foreground/55 truncate leading-tight">
-                    {userEmail}
-                  </p>
-                )}
-              </>
-            ) : authLoaded && !isSignedIn ? (
-              <p className="text-xs text-foreground/45 dark:text-foreground/55">
-                {t("sidebar.notSignedIn")}
-              </p>
-            ) : null}
-          </div>
-        </div>
       </div>
     </div>
   );
