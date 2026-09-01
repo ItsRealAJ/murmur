@@ -104,11 +104,11 @@ export const VoicePill = forwardRef<HTMLDivElement, VoicePillProps>(function Voi
   // collapses now, and only for its first frames.
   const collapseToIdentity = collapseToLogo;
   const showCompactPill = !collapseToIdentity;
-  const showDivider = showCompactPill && waveformVisible && !isRecording;
-  const dividerMargin = showCompactPill ? (showDivider ? 4 : 3) : 0;
+  const isActive = expanded || isRecording;
+  const showDivider = isActive && waveformVisible && !isRecording;
+  const dividerMargin = isActive ? (showDivider ? 4 : 3) : 0;
   const identitySize = 22;
   const floatingHover = !isPanel && state === "hover";
-  const isActive = expanded || isRecording;
   const footprint = isActive ? VOICE_PILL_FOOTPRINT.recording : VOICE_PILL_FOOTPRINT.idle;
 
   const pill = (
@@ -176,7 +176,7 @@ export const VoicePill = forwardRef<HTMLDivElement, VoicePillProps>(function Voi
       <div
         className="shrink-0 overflow-hidden bg-border/60"
         style={{
-          height: showCompactPill ? 16 : 20,
+          height: isActive ? 16 : 0,
           width: showDivider ? 1 : 0,
           marginLeft: dividerMargin,
           marginRight: dividerMargin,
@@ -188,14 +188,14 @@ export const VoicePill = forwardRef<HTMLDivElement, VoicePillProps>(function Voi
       <div
         className="voice-pill-waveform relative shrink-0 overflow-hidden text-foreground"
         style={{
-          width: showCompactPill ? VOICE_PILL_WAVEFORM_WIDTH : 0,
-          height: showCompactPill ? 24 : 32,
+          width: isActive ? VOICE_PILL_WAVEFORM_WIDTH : 0,
+          height: isActive ? 24 : 0,
           transition: `width ${GROW_TRANSITION}, height ${GROW_TRANSITION}`,
         }}
       >
         <div
           className="absolute inset-0 flex items-center justify-center gap-0.75 transition-opacity duration-200 ease-out"
-          style={{ opacity: showCompactPill && waveformVisible && !isRecording ? 1 : 0 }}
+          style={{ opacity: isActive && waveformVisible && !isRecording ? 1 : 0 }}
           aria-hidden="true"
         >
           {RESTING_WAVE_HEIGHTS.map((height, index) => (
@@ -211,7 +211,7 @@ export const VoicePill = forwardRef<HTMLDivElement, VoicePillProps>(function Voi
           active={isRecording}
           className={cn(
             "absolute inset-0 transition-opacity duration-200 ease-out",
-            showCompactPill && waveformVisible && isRecording ? "opacity-100" : "opacity-0"
+            isActive && waveformVisible && isRecording ? "opacity-100" : "opacity-0"
           )}
         />
       </div>
