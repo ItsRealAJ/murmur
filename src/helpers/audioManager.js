@@ -515,6 +515,15 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
     return this.getEffectiveSttLanguage(settings);
   }
 
+  // In translation mode the STT hint is the configured source language, not
+  // the UI-wide preferred language; "auto" keeps whisper auto-detection.
+  getEffectiveSttLanguage(settings) {
+    if (this.translationRequested) {
+      return settings.translationSourceLanguage || "auto";
+    }
+    return settings.preferredLanguage;
+  }
+
   // Whisper only accepts language "zh"; script (简体/繁體) is applied here. See #975.
   // No transcript exists yet, so only an explicit zh-CN/zh-TW may bias the prompt.
   getWhisperPrompt(settings = getSettings()) {

@@ -12,13 +12,14 @@ export const VOICE_PILL_FOOTPRINT = Object.freeze({
 });
 
 export const LISTENING_ENTRANCE_TIMING = Object.freeze({
-  // Give the Beam enough time to read as an intentional thinking state before
-  // the persistent control begins changing shape.
-  thinkingMs: 420,
-  expansionMs: 300,
-  // Hold the finished footprint briefly so the waveform reveal cannot be
-  // perceived as part of the width animation.
-  waveformDelayMs: 100,
+  // 820ms used to pass before the waveform appeared, most of it a "thinking"
+  // beam that made sense when a request might be reasoned about. Dictation has
+  // nothing to think about: the fastest possible confirmation that Murmur is
+  // hearing you is your own voice moving. This is now just long enough to cover
+  // mic-open latency so the waveform does not appear flat-lined.
+  thinkingMs: 140,
+  expansionMs: 180,
+  waveformDelayMs: 0,
 });
 
 export const ASSISTANT_FOOTER_TRANSITION_TIMING = Object.freeze({
@@ -184,7 +185,12 @@ export function resolveListeningEntrancePresentation({ isRecording, phase }) {
       activeState: "recording",
       beamActive: true,
       collapseToLogo: true,
-      compactPill: false,
+      // compactPill is true from the first recording frame, not from
+      // "expanding". It feeds the native window size ladder, which resizes on a
+      // 340ms trailing timer — so flipping it mid-entrance landed an Electron
+      // window resize in the middle of the CSS shape animation, and the two
+      // fought. The footprint is now decided once, when recording starts.
+      compactPill: true,
       waveformVisible: false,
     };
   }

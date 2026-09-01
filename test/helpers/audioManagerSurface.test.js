@@ -24,9 +24,9 @@ function walk(dir, out = []) {
 test("every AudioManager method the app calls actually exists", () => {
   const source = fs.readFileSync(path.join(ROOT, "src/helpers/audioManager.js"), "utf8");
 
-  const defined = new Set([
-    ...source.matchAll(/^ {2}(?:async\s+|\*\s*)?([A-Za-z_]\w*)\s*\(/gm),
-  ].map((m) => m[1]));
+  const defined = new Set(
+    [...source.matchAll(/^ {2}(?:async\s+|\*\s*)?([A-Za-z_]\w*)\s*\(/gm)].map((m) => m[1])
+  );
   // Instance fields read as properties (this.x = ... in the constructor).
   for (const m of source.matchAll(/^\s*this\.([A-Za-z_]\w*)\s*=/gm)) defined.add(m[1]);
 
@@ -56,4 +56,26 @@ test("the translation and verbatim entry points survive", () => {
   for (const method of ["setTranslationRequested", "setVerbatimRequested", "setTargetAppId"]) {
     assert.match(source, new RegExp(`^ {2}${method}\\(`, "m"), `${method} is missing`);
   }
+});
+
+// The external check above missed this one: getEffectiveSttLanguage is only ever
+// called as this.getEffectiveSttLanguage(...) from inside the class, so nothing
+// outside audioManager.js referenced it. It went in the same over-wide delete,
+// and the failure surfaced only after a recording had already succeeded —
+// "Local Whisper failed: this.getEffectiveSttLanguage is not a function".
+test("every method AudioManager calls on itself exists", () => {
+  const source = fs.readFileSync(path.join(ROOT, "src/helpers/audioManager.js"), "utf8");
+
+  const defined = new Set([
+    ...[...source.matchAll(/^ {2}(?:async\s+|\*\s*)?([A-Za-z_]\w*)\s*\(/gm)].map((m) => m[1]),
+    ...[...source.matchAll(/^\s*this\.([A-Za-z_]\w*)\s*=/gm)].map((m) => m[1]),
+  ]);
+
+  const missing = [
+    ...new Set([...source.matchAll(/\bthis\.([A-Za-z_]\w*)\s*\(/g)].map((m) => m[1])),
+  ]
+    .filter((name) => !defined.has(name))
+    .sort();
+
+  assert.deepEqual(missing, [], "AudioManager calls methods on itself that do not exist");
 });

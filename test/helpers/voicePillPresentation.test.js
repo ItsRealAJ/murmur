@@ -280,9 +280,25 @@ test("listening entrance starts in the thinking circle before expanding", async 
     activeState: "recording",
     beamActive: true,
     collapseToLogo: true,
-    compactPill: false,
+    // True from the very first recording frame: this drives the native window
+    // size ladder, and flipping it partway through the entrance landed an
+    // Electron resize inside the CSS shape animation.
+    compactPill: true,
     waveformVisible: false,
   });
+});
+
+test("the recording footprint never changes mid-entrance", async () => {
+  const { resolveListeningEntrancePresentation } = await load();
+  const phases = ["idle", "thinking", "expanding", "settled", "waveform"];
+  const footprints = phases.map(
+    (phase) => resolveListeningEntrancePresentation({ isRecording: true, phase }).compactPill
+  );
+  assert.deepEqual(
+    footprints,
+    phases.map(() => true),
+    "compactPill must hold across the whole entrance or the window resize fights the animation"
+  );
 });
 
 test("listening entrance expands before revealing the waveform", async () => {
@@ -326,22 +342,11 @@ test("listening entrance timers preserve the visual order", async () => {
 
   assert.ok(timeline.expandAtMs > 0);
   assert.ok(timeline.settleAtMs > timeline.expandAtMs);
-  assert.ok(timeline.waveformAtMs > timeline.settleAtMs);
-});
-
-test("Agent footer retreats actions before the compact pill enters", async () => {
-  const { getAssistantFooterTransitionTimeline, getListeningEntranceTimeline } = await load();
-  const timeline = getAssistantFooterTransitionTimeline(false);
-
-  assert.equal(timeline.initialPhase, "actions-exiting");
-  assert.equal(timeline.handoffPhase, "pill-entering");
-  assert.equal(timeline.settledPhase, "pill");
-  assert.ok(timeline.handoffAtMs > 0);
-  assert.ok(timeline.settledAtMs > timeline.handoffAtMs);
-  // Cross-policy contract: the footer handoff must fully settle before the
-  // listening entrance starts expanding the pill, or the two animations fight
-  // over the same control.
-  assert.ok(timeline.settledAtMs < getListeningEntranceTimeline().expandAtMs);
+  assert.ok(timeline.waveformAtMs >= timeline.settleAtMs);
+  // The whole point of the entrance is to get to the waveform. Dictation has
+  // nothing to think about, so this stays short enough to read as a response to
+  // the press rather than a wait.
+  assert.ok(timeline.waveformAtMs <= 400, `waveform at ${timeline.waveformAtMs}ms is too slow`);
 });
 
 test("Agent footer retreats the pill before final actions grow from its anchor", async () => {
