@@ -4,6 +4,7 @@ const assert = require("node:assert/strict");
 const {
   resolveHorizontalWindowDirection,
   WindowPositionUtil,
+  WINDOW_SIZES,
 } = require("../../src/helpers/windowConfig");
 
 // A 1512px laptop screen with a wider monitor mounted above it: x beyond 1512
@@ -54,7 +55,14 @@ const MONITOR_ABOVE = { workArea: { x: -451, y: -1440, width: 2560, height: 1440
 test("the panel lands on a monitor mounted above the primary display", () => {
   const position = WindowPositionUtil.getMainWindowPosition(MONITOR_ABOVE, null, "bottom-right");
 
-  assert.deepEqual(position, { x: 2009, y: -100, width: 96, height: 96 });
+  const { width, height } = WINDOW_SIZES.BASE;
+  const MARGIN = 4;
+  assert.deepEqual(position, {
+    x: MONITOR_ABOVE.workArea.x + MONITOR_ABOVE.workArea.width - width - MARGIN,
+    y: MONITOR_ABOVE.workArea.y + MONITOR_ABOVE.workArea.height - height - MARGIN,
+    width,
+    height,
+  });
   assert.ok(position.y < 0, "a display above the primary one needs a negative y");
 });
 

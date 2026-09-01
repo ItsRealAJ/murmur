@@ -77,7 +77,7 @@ class WindowManager {
     this.winPushState = null;
     this._cachedActivationMode = "tap";
     this._floatingIconAutoHide = false;
-    this._panelStartPosition = "bottom-right";
+    this._panelStartPosition = "center";
     this._activeHorizontalDirection = null;
     this._isDictatingToggle = false;
     this._dictationLifecycleState = DICTATION_LIFECYCLE.IDLE;
@@ -1004,7 +1004,7 @@ class WindowManager {
   }
 
   setPanelStartPosition(position) {
-    this._panelStartPosition = position || "bottom-right";
+    this._panelStartPosition = position || "center";
     this._mainWindowPlacementCoordinator.resetManualPosition();
     this._activeHorizontalDirection = null;
     // Reposition the window immediately

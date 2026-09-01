@@ -1415,9 +1415,12 @@ export const useSettingsStore = create<SettingsState>()((set, get) => ({
     readString("whisperVadSamplesOverlap", "0.5")
   ),
   panelStartPosition: (() => {
-    const v = readString("panelStartPosition", "bottom-right");
+    // Bottom-centre by default: the pill is the thing you look at while
+    // dictating, so it starts where the eye already is. Dragging it, or the
+    // start-position setting, still moves it anywhere.
+    const v = readString("panelStartPosition", "center");
     if (v === "bottom-right" || v === "center" || v === "bottom-left") return v;
-    return "bottom-right" as const;
+    return "center" as const;
   })(),
   showTranscriptionPreview: readBoolean("showTranscriptionPreview", false),
   autoPasteEnabled: readBoolean("autoPasteEnabled", true),

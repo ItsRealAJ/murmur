@@ -98,14 +98,18 @@ export const VoicePill = forwardRef<HTMLDivElement, VoicePillProps>(function Voi
   // Agent surface never looks like work is already in flight.
   const showBorderBeam = !isUnavailable && (showThinkingBeam || (agentMode && isRecording));
   const isPanel = variant === "panel";
-  const collapseToIdentity = collapseToLogo || isThinking;
-  const showCompactPill =
-    !collapseToIdentity && (isRecording || expanded || (isPanel && !waveformOnlyWhileRecording));
+  // Thinking used to force a collapse back to the bare identity circle, which
+  // overrode every caller and is why processing had no visible readout: the
+  // pill threw away the status it was handed. Only the listening entrance
+  // collapses now, and only for its first frames.
+  const collapseToIdentity = collapseToLogo;
+  const showCompactPill = !collapseToIdentity;
   const showDivider = showCompactPill && waveformVisible && !isRecording;
   const dividerMargin = showCompactPill ? (showDivider ? 4 : 3) : 0;
   const identitySize = 22;
   const floatingHover = !isPanel && state === "hover";
-  const footprint = showCompactPill ? VOICE_PILL_FOOTPRINT.recording : VOICE_PILL_FOOTPRINT.idle;
+  const isActive = expanded || isRecording;
+  const footprint = isActive ? VOICE_PILL_FOOTPRINT.recording : VOICE_PILL_FOOTPRINT.idle;
 
   const pill = (
     <div
@@ -218,9 +222,9 @@ export const VoicePill = forwardRef<HTMLDivElement, VoicePillProps>(function Voi
       <span
         className="voice-pill-status shrink-0 overflow-hidden whitespace-nowrap text-left text-[11px] font-medium"
         style={{
-          maxWidth: showCompactPill && statusLabel ? 96 : 0,
-          marginLeft: showCompactPill && statusLabel ? 8 : 0,
-          opacity: showCompactPill && statusLabel ? 1 : 0,
+          maxWidth: isActive && statusLabel ? 96 : 0,
+          marginLeft: isActive && statusLabel ? 8 : 0,
+          opacity: isActive && statusLabel ? 1 : 0,
           transition: `max-width ${GROW_TRANSITION}, margin-left ${GROW_TRANSITION}, opacity 180ms ease-out`,
         }}
       >

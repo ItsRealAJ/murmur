@@ -7,7 +7,10 @@ export { LIVE_TRANSCRIPT_SURFACE_LIMITS };
 // native overlay window around the compact recording pill, so these values
 // and that window size may only change together.
 export const VOICE_PILL_FOOTPRINT = Object.freeze({
-  idle: Object.freeze({ width: 40, height: 40 }),
+  // Resting is a small pill, not a dot. The control is the same object at every
+  // size — it only grows — so there is no moment where one shape becomes a
+  // different one.
+  idle: Object.freeze({ width: 100, height: 32 }),
   // Active is a genuinely different object from the resting dot: wide enough to
   // carry the waveform and a status word, so what the app is doing is legible
   // without hovering. The old 92x36 could not fit a label, which is why the

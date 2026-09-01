@@ -126,7 +126,7 @@ function fitDictationErrorWindowToWorkArea(requestedSize, workArea) {
 }
 
 const WINDOW_SIZES = {
-  BASE: { width: 96, height: 96 },
+  BASE: { width: 148, height: 84 },
   RECORDING: { width: 272, height: 96 },
   DICTATION_ERROR: { width: DICTATION_ERROR_WINDOW_LIMITS.width, height: 112 },
   DICTATION_ERROR_WITH_TRANSCRIPT: {
@@ -144,7 +144,7 @@ const WINDOW_SIZES = {
  * actually sits. The saved preference is only a fallback for an exact center
  * or unavailable geometry; dragging the pill must be able to override it.
  */
-function resolveHorizontalWindowDirection(bounds, display, preferredPosition = "bottom-right") {
+function resolveHorizontalWindowDirection(bounds, display, preferredPosition = "center") {
   if (preferredPosition === "center") return "right";
 
   const workArea = display?.workArea || display?.bounds;
@@ -284,7 +284,7 @@ function getMeetingNotificationWindowSize(promptData) {
 }
 
 class WindowPositionUtil {
-  static getMainWindowPosition(display, customSize = null, position = "bottom-right") {
+  static getMainWindowPosition(display, customSize = null, position = "center") {
     const { width, height } = customSize || WINDOW_SIZES.BASE;
     const MARGIN = 4;
     const workArea = display.workArea || display.bounds;
