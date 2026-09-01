@@ -57,10 +57,6 @@ import {
 import { applyChineseScript, resolveChineseScriptTarget } from "../utils/chineseScript";
 import HistoryView from "./HistoryView";
 import logger from "../utils/logger";
-import {
-  consumePendingInvitationToken,
-  clearPendingInvitationToken,
-} from "../utils/pendingInvitationToken";
 
 const platform = getCachedPlatform();
 
@@ -96,7 +92,6 @@ export default function ControlPanel({ initialSettingsSection }: ControlPanelPro
   const [aiCTADismissed, setAiCTADismissed] = useState(
     () => localStorage.getItem("aiCTADismissed") === "true"
   );
-  const [invitationToken, setInvitationToken] = useState<string | null>(null);
   const [invitationNotesEntry, setInvitationNotesEntry] = useState<{
     workspaceId: string;
     teamIds: string[];
@@ -313,30 +308,6 @@ export default function ControlPanel({ initialSettingsSection }: ControlPanelPro
       duration: 8000,
     });
   }, [usage?.isPastDue, toast, t]);
-
-  useEffect(() => {
-    const unsubscribe = window.electronAPI?.onWorkspaceInvitationToken?.((token) => {
-      setInvitationToken(token);
-      // Consume the main-process stash so a handled push isn't re-pulled on a
-      // later remount.
-      void window.electronAPI?.getPendingInvitationToken?.();
-    });
-    window.electronAPI?.getPendingInvitationToken?.().then((token) => {
-      if (token) setInvitationToken(token);
-    });
-    return () => unsubscribe?.();
-  }, []);
-
-  useEffect(() => {
-    // Also when signed out (the modal's "Sign in to accept" handles auth);
-    // isSignedIn stays in the deps so a stored token resurfaces after sign-in.
-    if (!authLoaded) return;
-    const pending = consumePendingInvitationToken();
-    if (pending) {
-      setInvitationToken(pending);
-      clearPendingInvitationToken();
-    }
-  }, [authLoaded, isSignedIn]);
 
   useEffect(() => {
     if (!authLoaded || !isSignedIn || cloudMigrationProcessed.current) return;

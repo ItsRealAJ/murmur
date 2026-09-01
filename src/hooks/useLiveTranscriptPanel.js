@@ -17,11 +17,10 @@ const LIVE_TRANSCRIPT_FINAL_HIDE_MS = 4000;
  * buffered text scheduler, and the measure-then-reveal pipeline that keeps a
  * new transcript line from pushing the panel up before its BrowserWindow
  * catches up. The assistant panel always wins the shared surface, checked
- * through `assistantOpenRef`.
+ * The assistant panel that used to contend for this window is gone.
  */
 export function useLiveTranscriptPanel({
   resizeToContent,
-  assistantOpenRef,
   onWillOpen,
   isRecording,
   isProcessing,
@@ -200,7 +199,7 @@ export function useLiveTranscriptPanel({
 
   const openPanel = useCallback(() => {
     clearFinalHide();
-    if (suppressedRef.current || assistantOpenRef.current || openRef.current) {
+    if (suppressedRef.current || openRef.current) {
       return;
     }
     if (openPromiseRef.current) return;
@@ -216,11 +215,7 @@ export function useLiveTranscriptPanel({
       // Live Transcript owns an adaptive footprint. Enter at its footer-sized
       // surface instead of flashing the full Agent window before measurement.
       await requestHeight(LIVE_TRANSCRIPT_SURFACE_LIMITS.minHeight);
-      if (
-        generation !== openGenerationRef.current ||
-        suppressedRef.current ||
-        assistantOpenRef.current
-      ) {
+      if (generation !== openGenerationRef.current || suppressedRef.current) {
         if (generation === openGenerationRef.current) {
           openRef.current = false;
         }
@@ -282,7 +277,6 @@ export function useLiveTranscriptPanel({
       }
     });
   }, [
-    assistantOpenRef,
     clearEntranceTimers,
     clearFinalHide,
     onWillOpen,
