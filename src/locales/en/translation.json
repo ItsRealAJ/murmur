@@ -292,7 +292,6 @@
       "provider": {
         "progress": "Provider setup progress",
         "dictation": "Dictation",
-        "assistant": "Assistant",
         "title": "Connect your AI provider",
         "description": "Choose a provider, add your credentials, and test the connection.",
         "descriptionLineOne": "Choose a provider and add",
@@ -331,7 +330,8 @@
           "timeout": "The connection test timed out.",
           "network": "The provider could not be reached."
         },
-        "recommended": "Recommended for this Mac"
+        "recommended": "Recommended for this Mac",
+        "cleanup": "Cleanup"
       },
       "local": {
         "title": "Set up local models",
@@ -339,7 +339,6 @@
         "descriptionLineOne": "Choose the models you want",
         "descriptionLineTwo": "to run on your device.",
         "providerLabel": "Provider",
-        "agent": "Agent",
         "download": "Download",
         "downloadingShort": "Downloading",
         "selected": "Selected",

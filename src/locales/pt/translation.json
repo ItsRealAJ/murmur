@@ -271,7 +271,6 @@
       "provider": {
         "progress": "Progresso da configuração do provedor",
         "dictation": "Ditado",
-        "assistant": "Assistente",
         "title": "Conecte seu provedor de IA",
         "description": "Escolha um provedor, adicione suas credenciais e teste a conexão.",
         "descriptionLineOne": "Escolha um provedor e adicione",
@@ -309,7 +308,8 @@
           "providerStatus": "O provedor retornou o status {{status}}.",
           "timeout": "O teste de conexão expirou.",
           "network": "Não foi possível contatar o provedor."
-        }
+        },
+        "cleanup": "Limpeza"
       },
       "local": {
         "title": "Configurar modelos locais",
@@ -317,7 +317,6 @@
         "descriptionLineOne": "Escolha os modelos que você quer",
         "descriptionLineTwo": "executar no seu dispositivo.",
         "providerLabel": "Provedor",
-        "agent": "Agente",
         "download": "Baixar",
         "downloadingShort": "Baixando",
         "selected": "Selecionado",

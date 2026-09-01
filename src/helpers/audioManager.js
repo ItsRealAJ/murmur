@@ -40,7 +40,6 @@ import {
 import {
   effectiveAudioRetentionDays,
   effectiveLocalHistoryEnabled,
-  isAgentAllowed,
   isTranscriptionContextAllowed,
   isTranscriptionSelectionAllowed,
 } from "../stores/policyRules";
@@ -67,18 +66,9 @@ import {
   resolveTranslatedText,
   shouldRunTranslateStep,
 } from "./translationChain";
-import { detectAgentName, stripAgentAddress } from "../config/agentDetection";
-import {
-  resolveDictationRouteKind,
-  resolveAgentImageTarget,
-  resolveWakeWordLanguage,
-} from "./dictationRouting";
-import {
-  resolveDictationAgentInference,
-  resolveDictationAgentVisionInference,
-} from "./dictationAgentInference";
+import { resolveDictationRouteKind } from "./dictationRouting";
 import { resolveDictationTranslationInference } from "./dictationTranslationInference";
-import { resolvePrompt, appendScreenContextSuffix } from "../config/prompts";
+import { resolvePrompt } from "../config/prompts";
 import { evaluateFinishedRecording, withSalvageWarning } from "./recordingValidation";
 import { isEmptyRecording } from "./recordingGuard";
 import {
@@ -88,14 +78,7 @@ import {
 } from "../utils/dictionaryEchoFilter.js";
 import { getDictionaryHintWords } from "../utils/snippets";
 import { setTargetAppId } from "./dictationTarget.js";
-import { normalizeAgentSelectionContext } from "../utils/agentSelectionContext";
 import { shouldDisplayDictationPreview } from "../utils/transcriptionPreview";
-import {
-  buildSelectionEditSystemPrompt,
-  buildSelectionEditUserPrompt,
-  extractSelectionEditReplacement,
-  getSelectionCaptureDisposition,
-} from "./selectionEditing";
 import {
   REALTIME_MODELS,
   defaultStreamingProviderName,
@@ -126,19 +109,6 @@ const providerSupportsImages = (providerId) =>
 
 // Shared by the agent route and its text-only retry, which needs the prompt
 // without the screen-context suffix.
-function dictationAgentPrompt(settings, agentName) {
-  return resolvePrompt("dictationAgent", {
-    agentName,
-    language: settings.preferredLanguage,
-    customDictionary: getDictionaryHintWords(settings),
-    uiLanguage: settings.uiLanguage,
-  });
-}
-
-function dictationAgentReachable(settings) {
-  return resolveDictationAgentInference(settings, { isCloudAgent: isCloudDictationAgentMode() })
-    .reachable;
-}
 
 function translationChainReachable(settings) {
   return resolveDictationTranslationInference(settings, {
@@ -150,22 +120,15 @@ function resolveReasoningRoute(
   text,
   settings,
   agentName,
-  voiceAgentRequested,
   translationRequested,
-  screenContext,
-  detectedLanguage,
   verbatimRequested = false
 ) {
   const cleanup = selectResolvedLLMConfig(settings, "dictationCleanup");
-  // Verbatim means exactly what was said: no cleanup model, and no agent even
-  // if the transcript happens to open with the wake word.
+  // Verbatim means exactly what was said: no cleanup model.
   const cleanupReachable =
     !verbatimRequested &&
     !!settings.useCleanupModel &&
     (!!cleanup.model?.trim() || isCloudCleanupMode());
-  const agent = resolveDictationAgentInference(settings, {
-    isCloudAgent: isCloudDictationAgentMode(),
-  });
 
   const translation = resolveDictationTranslationInference(settings, {
     isCloudTranslation: isCloudTranslationMode(),
@@ -173,26 +136,10 @@ function resolveReasoningRoute(
 
   const kind = resolveDictationRouteKind({
     cleanupReachable,
-    agentReachable: agent.reachable,
-    // A translation recording never routes to the agent, so skip the scan.
-    agentInvoked:
-      !verbatimRequested &&
-      !translationRequested &&
-      !!agentName &&
-      detectAgentName(text, agentName, resolveWakeWordLanguage(settings, detectedLanguage)),
-    voiceAgentRequested,
     translationRequested,
     translationReachable: translation.reachable,
   });
-  logger.logReasoning("ROUTE_RESOLVED", {
-    kind,
-    voiceAgentRequested,
-    agentReachable: agent.reachable,
-    agentMode: settings.dictationAgentMode,
-    agentProvider: agent.displayProvider,
-    agentModel: agent.model,
-    hasScreenContext: !!screenContext,
-  });
+  logger.logReasoning("ROUTE_RESOLVED", { kind });
   if (translationRequested && kind !== "translation") {
     logger.warn(
       "Translation requested but unreachable, falling back",
@@ -221,47 +168,6 @@ function resolveReasoningRoute(
           customDictionary: getDictionaryHintWords(settings),
           uiLanguage: settings.uiLanguage,
         }),
-      },
-    };
-  }
-  if (kind === "agent") {
-    const vision = resolveDictationAgentVisionInference(settings, {
-      isSignedIn: settings.isSignedIn,
-    });
-    const { attach, useVisionOverride } = resolveAgentImageTarget({
-      hasScreenContext: !!screenContext,
-      visionOverrideActive: vision.active,
-      visionProviderImageWired: providerSupportsImages(vision.config.provider),
-      baseProviderImageWired: providerSupportsImages(agent.config.provider),
-      isCloudAgent: isCloudDictationAgentMode(),
-      baseModelSupportsVision: !!getCloudModel(agent.model)?.supportsVision,
-    });
-    const target = useVisionOverride ? vision : agent;
-    logger.logReasoning("AGENT_IMAGE_TARGET", {
-      hasScreenContext: !!screenContext,
-      visionOverrideActive: vision.active,
-      attach,
-      useVisionOverride,
-    });
-
-    const systemPrompt = dictationAgentPrompt(settings, agentName);
-
-    return {
-      kind: "agent",
-      model: target.model,
-      config: {
-        ...target.config,
-        systemPrompt: attach
-          ? appendScreenContextSuffix(systemPrompt, settings.uiLanguage)
-          : systemPrompt,
-        ...(attach ? { screenContext, textOnlySystemPrompt: systemPrompt } : {}),
-        // Selection edits run on this (dictation) scope, so they need it
-        // reachable; standalone commands run on the chat scope in the panel.
-        selectionEditReachable: agent.reachable,
-        // The panel re-decides attach/drop against the chat scope's model,
-        // which may see images even when this scope's cannot — carry the raw
-        // screenshot past the attach gate for that path.
-        ...(screenContext ? { rawScreenContext: screenContext } : {}),
       },
     };
   }
@@ -499,16 +405,11 @@ class AudioManager {
     this._activeStreamingSessionId = null;
     this.streamingFallbackRecorder = null;
     this.streamingFallbackChunks = [];
-    this.voiceAgentRequested = false;
     this.translationRequested = false;
     this.verbatimRequested = false;
     this.translationApplied = false;
-    this.pendingSelectionEdit = null;
-    this.pendingAssistantConversation = null;
     this._processingCancellationGeneration = 0;
     this._activeProcessingPipeline = null;
-    this.assistantSelectionContext = null;
-    this.screenContextPromise = null;
     this.selectionCapturePromise = null;
     this.sttConfig = null;
     this.warmupFailureStreak = 0;
@@ -740,119 +641,15 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
     setTargetAppId(appId);
   }
 
-  setVoiceAgentRequested(requested) {
-    this.voiceAgentRequested = requested;
-    this.pendingSelectionEdit = null;
-    this.pendingAssistantConversation = null;
-    this.assistantSelectionContext = null;
-    // No recording must ever see a stale capture (e.g. left over from a
-    // cancelled voice-agent recording, even after the setting was turned
-    // off). A live voice-agent start re-captures right after this call.
-    this.screenContextPromise = null;
-    // Same for a prefetched selection: bounded to one recording, so a read taken
-    // in an earlier app can never be edited in place by this command.
-    this.selectionCapturePromise = null;
-  }
-
-  setAssistantSelectionContext(context) {
-    this.assistantSelectionContext = normalizeAgentSelectionContext(context);
-    if (this.assistantSelectionContext) this.selectionCapturePromise = null;
-  }
-
-  consumeAssistantSelectionContext() {
-    const context = this.assistantSelectionContext;
-    this.assistantSelectionContext = null;
-    return context;
-  }
-
-  setTranslationRequested(requested) {
-    this.translationRequested = requested;
-    this.translationApplied = false;
-  }
-
-  // In translation mode the STT hint is the configured source language, not
-  // the UI-wide preferred language; "auto" keeps whisper auto-detection.
-  getEffectiveSttLanguage(settings) {
-    if (this.translationRequested) {
-      return settings.translationSourceLanguage || "auto";
-    }
-    return settings.preferredLanguage;
-  }
-
-  // Kicked off at voice-agent recording start (so the screenshot reflects the
-  // invocation moment) and consumed after transcription by the reasoning route.
-  beginScreenContextCapture() {
-    this.screenContextPromise = window.electronAPI?.captureScreenContext?.() ?? null;
-  }
-
-  // Kicked off at voice-agent recording start, alongside the screenshot, so the
-  // read resolves while the user is still speaking.
-  beginSelectionCapture() {
-    this.selectionCapturePromise = window.electronAPI?.captureSelectedText?.() ?? null;
-    // Marks the stored promise handled without consuming it: a failure nobody is
-    // awaiting yet must not surface as an unhandled rejection, and the awaiting
-    // caller must still see the original error.
-    this.selectionCapturePromise?.catch(() => {});
-  }
-
   consumeSelectionCapture() {
     const pending = this.selectionCapturePromise;
     this.selectionCapturePromise = null;
     return pending ?? window.electronAPI?.captureSelectedText?.();
   }
 
-  async consumeScreenContext() {
-    const pending = this.screenContextPromise;
-    this.screenContextPromise = null;
-    if (!pending) return null;
-    try {
-      // Capture resolves in well under a second; the race only protects the
-      // paste path if the IPC ever hangs.
-      const image = await Promise.race([
-        pending,
-        new Promise((resolve) => setTimeout(() => resolve(null), 3000)),
-      ]);
-      if (!image) logger.logReasoning("SCREEN_CONTEXT_UNAVAILABLE", {});
-      return image;
-    } catch {
-      return null;
-    }
-  }
-
-  // An agent-route failure pastes the spoken command verbatim into the focused
-  // app — surface that. Cleanup failures stay quiet; raw text is a fine result.
-  _notifyAgentReasoningFailed() {
-    this.onError?.({
-      code: "AGENT_REASONING_FAILED",
-      title: "Agent Unavailable",
-      messageKey: "hooks.audioRecording.errorDescriptions.agentReasoningFailed",
-    });
-  }
-
-  // The command still ran, so this is a downgrade notice rather than a failure.
-  _notifyScreenContextSkipped() {
-    this.onError?.({
-      code: "SCREEN_CONTEXT_SKIPPED",
-      title: "Screen Context Skipped",
-      messageKey: "hooks.audioRecording.errorDescriptions.screenContextSkipped",
-      variant: "default",
-    });
-  }
-
   isRecordingAllowedByPolicy() {
     const policyState = usePolicyStore.getState();
-    return (
-      isTranscriptionContextAllowed(policyState, getSettings(), "dictation") &&
-      (!this.voiceAgentRequested || isAgentAllowed(policyState))
-    );
-  }
-
-  assertAgentAllowedByPolicy() {
-    if (isAgentAllowed(usePolicyStore.getState())) return;
-    const error = new Error("AI agent use is restricted by your organization.");
-    error.code = "POLICY_RESTRICTED";
-    error.messageKey = "common.policyAgentRestricted";
-    throw error;
+    return isTranscriptionContextAllowed(policyState, getSettings(), "dictation");
   }
 
   setSttConfig(config) {
@@ -1301,10 +1098,7 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
             provider,
             model,
             language,
-            display: shouldDisplayDictationPreview(
-              showTranscriptionPreview,
-              this.voiceAgentRequested
-            ),
+            display: shouldDisplayDictationPreview(showTranscriptionPreview, false),
           });
           this._streamingCommitActive = streamingCommit;
         } catch (e) {
@@ -1897,10 +1691,8 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
         noAudioDetected = true;
       } else {
         this.onError?.({
-          title: error.selectionEditFatal ? "Selection Edit Failed" : "Transcription Error",
-          description: error.selectionEditFatal
-            ? error.message
-            : `Transcription failed: ${error.message}`,
+          title: "Transcription Error",
+          description: `Transcription failed: ${error.message}`,
           code: error.code,
           messageKey: error.messageKey,
         });
@@ -2009,9 +1801,6 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
         throw new Error(result.message || result.error || "Local Whisper transcription failed");
       }
     } catch (error) {
-      if (error.selectionEditFatal) {
-        throw error;
-      }
       if (error.message === "No audio detected") {
         throw error;
       }
@@ -2032,9 +1821,6 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
           const fallbackResult = await this.processWithOpenAIAPI(audioBlob, metadata, wasCancelled);
           return { ...fallbackResult, source: "openai-fallback" };
         } catch (fallbackError) {
-          if (fallbackError.selectionEditFatal) {
-            throw fallbackError;
-          }
           throw new Error(
             `Local Whisper failed: ${error.message}. OpenAI fallback also failed: ${fallbackError.message}`
           );
@@ -2115,9 +1901,6 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
         throw new Error(result.message || result.error || "Parakeet transcription failed");
       }
     } catch (error) {
-      if (error.selectionEditFatal) {
-        throw error;
-      }
       if (error.message === "No audio detected") {
         throw error;
       }
@@ -2138,9 +1921,6 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
           const fallbackResult = await this.processWithOpenAIAPI(audioBlob, metadata, wasCancelled);
           return { ...fallbackResult, source: "openai-fallback" };
         } catch (fallbackError) {
-          if (fallbackError.selectionEditFatal) {
-            throw fallbackError;
-          }
           throw new Error(
             `Parakeet failed: ${error.message}. OpenAI fallback also failed: ${fallbackError.message}`
           );
@@ -2288,7 +2068,6 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
   }
 
   async processWithReasoningModel(text, model, agentName, config) {
-    if (config?.requiresAgent) this.assertAgentAllowedByPolicy();
     logger.logReasoning("CALLING_REASONING_SERVICE", {
       model,
       agentName,
@@ -2321,193 +2100,14 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
         stack: error.stack,
       });
 
-      // A screenshot the model or transport rejects must not cost the user
-      // their command — rerun it text-only, swapping in the pre-built prompt
-      // that never had the screen-context suffix. Rebuilding from scratch
-      // would drop the selection-edit instructions and completion marker.
-      // rawScreenContext/selectionEditReachable are routing-only keys (see
-      // processAgentCommand) — keep the retry config clean of them too.
-      if (config?.screenContext) {
-        const {
-          screenContext,
-          rawScreenContext,
-          selectionEditReachable,
-          textOnlySystemPrompt,
-          ...textOnlyConfig
-        } = config;
-        const result = await ReasoningService.processText(text, model, agentName, {
-          ...textOnlyConfig,
-          systemPrompt: textOnlySystemPrompt ?? dictationAgentPrompt(getSettings(), agentName),
-        });
-        this._notifyScreenContextSkipped();
-        return result;
-      }
-
       throw error;
     }
-  }
-
-  // Panel-first banking: the command streams into the assistant panel with
-  // the chat's tools and memory once transcription completes; nothing types
-  // at the cursor. The transcript flows back as the result text so history
-  // and previews stay truthful.
-  _bankAssistantDirective(transcript, config, selectedContext) {
-    if (!this.isProcessing) return;
-    this.pendingAssistantConversation = {
-      transcript,
-      // resolveReasoningRoute mirrors an attached screenContext into
-      // rawScreenContext (same object), so the raw carry is the single source
-      // to read — it also survives when the agent scope's attach gate dropped
-      // the image (the panel re-decides against the chat scope's model).
-      screenContext: config?.rawScreenContext ?? null,
-      ...(selectedContext ? { selectedContext } : {}),
-    };
   }
 
   // Consume the directives banked during reasoning so that exactly one
   // transcription result — batch or streaming — carries them.
   _takePendingResultExtras() {
-    const extras = {
-      ...(this.pendingAssistantConversation
-        ? { assistantConversation: this.pendingAssistantConversation }
-        : {}),
-      ...(this.pendingSelectionEdit ? { selectionEdit: this.pendingSelectionEdit } : {}),
-    };
-    this.pendingAssistantConversation = null;
-    this.pendingSelectionEdit = null;
-    return extras;
-  }
-
-  // Panel-first commands skip the dictation-agent model, so the org policy
-  // guard that protected that model must run here instead.
-  _bankPanelAgentCommand(text, agentName, config, selectedContext, selectedText) {
-    this.assertAgentAllowedByPolicy();
-    const command = this.voiceAgentRequested
-      ? text
-      : stripAgentAddress(text, agentName, resolveWakeWordLanguage(getSettings()));
-    const transcript = selectedText === undefined ? command : `${command}\n\n"${selectedText}"`;
-    this._bankAssistantDirective(transcript, config, selectedContext);
-    return text;
-  }
-
-  async processAgentCommand(text, model, agentName, config, wasCancelled = neverCancelled) {
-    if (wasCancelled()) return text;
-    const assistantSelectionContext = this.consumeAssistantSelectionContext();
-    if (assistantSelectionContext) {
-      // An in-panel selection is conversational context, not an editable OS
-      // target. Keep it on the existing panel-first route and leave the
-      // external selection replacement path completely untouched.
-      this.selectionCapturePromise = null;
-      return this._bankPanelAgentCommand(text, agentName, config, assistantSelectionContext);
-    }
-
-    let capture;
-    try {
-      capture = await this.consumeSelectionCapture();
-    } catch (cause) {
-      const error = new Error(
-        `Selection edit could not safely read the selection: ${cause.message}`
-      );
-      error.code = "SELECTION_EDIT_CAPTURE_FAILED";
-      error.messageKey = "hooks.audioRecording.selectionEditing.unavailable";
-      error.selectionEditFatal = true;
-      error.cause = cause;
-      throw error;
-    }
-    if (wasCancelled()) return text;
-
-    const captureDisposition = getSelectionCaptureDisposition(capture);
-
-    if (!config?.selectionEditReachable) {
-      // No in-place editor: the panel never types, so only a readable
-      // selection is quoted; every other capture sends the plain command.
-      return this._bankPanelAgentCommand(
-        text,
-        agentName,
-        config,
-        undefined,
-        captureDisposition === "selection" && typeof capture?.text === "string"
-          ? capture.text
-          : undefined
-      );
-    }
-
-    if (capture?.status === "too_large") {
-      // A large selection definitely exists, so running the command as plain
-      // agent dictation would paste over it — the one capture failure that
-      // must not fall through.
-      const error = new Error(
-        `Selected text exceeds the ${capture.maxCharacters || 6000} character limit`
-      );
-      error.code = "SELECTION_EDIT_TOO_LARGE";
-      error.messageKey = "hooks.audioRecording.selectionEditing.tooLarge";
-      error.selectionEditFatal = true;
-      throw error;
-    }
-
-    if (captureDisposition === "standalone") {
-      return this._bankPanelAgentCommand(text, agentName, config);
-    }
-
-    if (capture?.status !== "selected") {
-      // A captured target changing, a synthetic-copy failure, or an unexpected
-      // accessibility result is ambiguous: a normal agent paste could overwrite
-      // unrelated selected text. Abort instead of falling through.
-      const error = new Error("Selection edit could not safely verify the selected text");
-      error.code = "SELECTION_EDIT_CAPTURE_FAILED";
-      error.messageKey =
-        captureDisposition === "changed"
-          ? "hooks.audioRecording.selectionEditing.changed"
-          : "hooks.audioRecording.selectionEditing.unavailable";
-      error.selectionEditFatal = true;
-      throw error;
-    }
-
-    // selectionEditReachable and rawScreenContext are routing directives for
-    // this method, not reasoning options — strip them before the config
-    // reaches ReasoningService.
-    const { selectionEditReachable, rawScreenContext, ...reasoningOptions } = config ?? {};
-    const selectionConfig = {
-      ...reasoningOptions,
-      maxTokens: Math.max(config?.maxTokens || 0, 8192),
-      contextSize: Math.max(config?.contextSize || 0, 16384),
-      temperature: config?.temperature ?? 0.2,
-      requireCompleteOutput: true,
-    };
-    const completionMarker = `__MURMUR_SELECTION_COMPLETE_${crypto.randomUUID()}__`;
-    selectionConfig.systemPrompt = buildSelectionEditSystemPrompt(
-      config?.systemPrompt,
-      completionMarker
-    );
-    if (selectionConfig.textOnlySystemPrompt) {
-      // The text-only retry prompt must carry the same selection-edit
-      // instructions and marker, or a rejected screenshot loses the command.
-      selectionConfig.textOnlySystemPrompt = buildSelectionEditSystemPrompt(
-        selectionConfig.textOnlySystemPrompt,
-        completionMarker
-      );
-    }
-    const userPrompt = buildSelectionEditUserPrompt(text, capture.text);
-
-    try {
-      const result = await this.processWithReasoningModel(
-        userPrompt,
-        model,
-        agentName,
-        selectionConfig
-      );
-      if (wasCancelled()) return text;
-      const replacement = extractSelectionEditReplacement(result, completionMarker);
-      this.pendingSelectionEdit = { sessionId: capture.sessionId };
-      return replacement;
-    } catch (cause) {
-      const error = new Error(`Selection edit failed: ${cause.message}`);
-      error.code = "SELECTION_EDIT_REASONING_FAILED";
-      error.messageKey = "hooks.audioRecording.selectionEditing.reasoningFailed";
-      error.selectionEditFatal = true;
-      error.cause = cause;
-      throw error;
-    }
+    return {};
   }
 
   async isReasoningAvailable() {
@@ -2516,8 +2116,7 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
     }
 
     const s = getSettings();
-    const useReasoning =
-      !!s.useCleanupModel || dictationAgentReachable(s) || translationChainReachable(s);
+    const useReasoning = !!s.useCleanupModel || translationChainReachable(s);
     const now = Date.now();
     const cacheValid =
       this.reasoningAvailabilityCache &&
@@ -2670,26 +2269,13 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
     const settings = getSettings();
     const cleanupProvider = settings.cleanupProvider || "auto";
     const cleanupReachable = !!settings.useCleanupModel && (!!cleanupModel || isCloud);
-    const agentReachable = dictationAgentReachable(settings);
-    const agentName =
-      typeof window !== "undefined" && window.localStorage
-        ? localStorage.getItem("agentName") || null
-        : null;
-    if (
-      !cleanupReachable &&
-      !agentReachable &&
-      !(this.translationRequested && translationChainReachable(settings)) &&
-      // A voice-assistant command always routes: standalone commands run on
-      // the chat scope in the panel, so no dictation-scope model is needed.
-      !this.voiceAgentRequested
-    ) {
-      logger.logReasoning("REASONING_SKIPPED", {
-        reason: "No cleanup or dictation-agent model available",
-      });
+    const agentName = null;
+    if (!cleanupReachable && !(this.translationRequested && translationChainReachable(settings))) {
+      logger.logReasoning("REASONING_SKIPPED", { reason: "No cleanup model available" });
       return normalizedText;
     }
 
-    const useReasoning = this.voiceAgentRequested || (await this.isReasoningAvailable());
+    const useReasoning = await this.isReasoningAvailable();
     if (wasCancelled()) return normalizedText;
 
     logger.logReasoning("REASONING_CHECK", {
@@ -2702,15 +2288,11 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
     if (useReasoning) {
       let route;
       try {
-        const screenContext = this.voiceAgentRequested ? await this.consumeScreenContext() : null;
         route = resolveReasoningRoute(
           normalizedText,
           settings,
           agentName,
-          this.voiceAgentRequested,
           this.translationRequested,
-          screenContext,
-          undefined,
           this.verbatimRequested
         );
         if (this.translationRequested && route.kind !== "translation") {
@@ -2740,7 +2322,7 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
           return translatedText;
         }
 
-        const targetModel = route.kind === "agent" ? route.model : cleanupModel;
+        const targetModel = cleanupModel;
         const reasoningConfig = route.config;
 
         logger.logReasoning("SENDING_TO_REASONING", {
@@ -2751,24 +2333,12 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
           disableThinking: reasoningConfig?.disableThinking,
         });
 
-        const result =
-          route.kind === "agent"
-            ? await this.processAgentCommand(
-                normalizedText,
-                targetModel,
-                agentName,
-                {
-                  ...reasoningConfig,
-                  requiresAgent: true,
-                },
-                wasCancelled
-              )
-            : await this.processWithReasoningModel(
-                normalizedText,
-                targetModel,
-                agentName,
-                reasoningConfig
-              );
+        const result = await this.processWithReasoningModel(
+          normalizedText,
+          targetModel,
+          agentName,
+          reasoningConfig
+        );
 
         logger.logReasoning("REASONING_SUCCESS", {
           resultLength: result.length,
@@ -2779,7 +2349,6 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
         // A blank reply must not wipe the dictation — keep the transcript (#1616).
         return hasTextContent(result) ? result : normalizedText;
       } catch (error) {
-        if (error.selectionEditFatal) throw error;
         if (wasCancelled()) return normalizedText;
         logger.logReasoning("REASONING_FAILED", {
           error: error.message,
@@ -2788,7 +2357,6 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
         });
         logger.warn("Reasoning failed", { source, error: error.message }, "notes");
         if (route?.kind === "cleanup") recordCleanupFailure(error.message);
-        if (route?.kind === "agent") this._notifyAgentReasoningFailed();
       }
     }
 
@@ -3289,9 +2857,6 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
       }
     } catch (error) {
       if (error.name === "AbortError") throw error;
-      if (error.selectionEditFatal) {
-        throw error;
-      }
       if (error.message === "No audio detected") {
         throw error;
       }
@@ -3325,9 +2890,6 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
           }
           throw error;
         } catch (fallbackError) {
-          if (fallbackError.selectionEditFatal) {
-            throw fallbackError;
-          }
           const wrapped = new Error(
             `OpenAI API failed: ${error.message}. Local fallback also failed: ${fallbackError.message}`
           );
@@ -3627,7 +3189,6 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
               settings,
               language: settings.preferredLanguage,
               keyterms: this.getKeyterms(),
-              voiceAgentRequested: this.voiceAgentRequested,
             })
           );
           // Throw so the outer catch reports the failure through _reportWarmupFailure.
@@ -3971,7 +3532,6 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
             settings: streamingSettings,
             language: this.getEffectiveSttLanguage(streamingSettings),
             keyterms: this.getKeyterms(),
-            voiceAgentRequested: this.voiceAgentRequested,
           })
         );
 
@@ -4182,10 +3742,6 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
     window.electronAPI?.cancelCloudTranscription?.();
     this._activeTranscriptionAbortController?.abort();
     this._activeTranscriptionAbortController = null;
-    this.pendingSelectionEdit = null;
-    this.pendingAssistantConversation = null;
-    this.assistantSelectionContext = null;
-    this.screenContextPromise = null;
     this.selectionCapturePromise = null;
   }
 
@@ -4423,16 +3979,12 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
     if (finalText) {
       const reasoningStart = performance.now();
       const agentName = localStorage.getItem("agentName") || null;
-      const screenContext = this.voiceAgentRequested ? await this.consumeScreenContext() : null;
       if (wasCancelled()) return true;
       const route = resolveReasoningRoute(
         finalText,
         stSettings,
         agentName,
-        this.voiceAgentRequested,
         this.translationRequested,
-        screenContext,
-        undefined,
         this.verbatimRequested
       );
       if (this.translationRequested && route.kind !== "translation") {
@@ -4440,24 +3992,7 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
       }
 
       try {
-        if (route.kind === "agent") {
-          const reasoned = await this.processAgentCommand(
-            finalText,
-            route.model,
-            agentName,
-            {
-              ...route.config,
-              requiresAgent: true,
-            },
-            wasCancelled
-          );
-          if (hasTextContent(reasoned)) finalText = reasoned;
-          logger.info(
-            "Streaming dictation-agent complete",
-            { reasoningDurationMs: Math.round(performance.now() - reasoningStart) },
-            "streaming"
-          );
-        } else if (route.kind === "cleanup") {
+        if (route.kind === "cleanup") {
           const effectiveModel = getEffectiveCleanupModel();
           if (effectiveModel) {
             const reasoned = await this.processWithReasoningModel(
@@ -4488,25 +4023,12 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
         }
       } catch (reasonError) {
         if (wasCancelled()) return true;
-        if (reasonError.selectionEditFatal) {
-          this.pendingSelectionEdit = null;
-          this.onError?.({
-            title: "Selection Edit Failed",
-            description: reasonError.message,
-            code: reasonError.code,
-            messageKey: reasonError.messageKey,
-          });
-          this.isProcessing = false;
-          this.onStateChange?.({ isRecording: false, isProcessing: false, isStreaming: false });
-          return false;
-        }
         logger.error(
           "Streaming reasoning failed, using raw text",
           { error: reasonError.message },
           "streaming"
         );
         if (route.kind === "cleanup") recordCleanupFailure(reasonError.message);
-        if (route.kind === "agent") this._notifyAgentReasoningFailed();
       }
       if (wasCancelled()) return true;
     }

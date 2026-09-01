@@ -292,7 +292,6 @@
       "provider": {
         "progress": "服務商設定進度",
         "dictation": "語音輸入",
-        "assistant": "助理",
         "title": "連接你的 AI 服務商",
         "description": "選擇服務商、新增憑證，然後測試連線。",
         "descriptionLineOne": "選擇服務商並新增",
@@ -330,7 +329,8 @@
           "providerStatus": "服務商回傳了狀態碼 {{status}}。",
           "timeout": "連線測試逾時。",
           "network": "無法連上服務商。"
-        }
+        },
+        "cleanup": "潤飾"
       },
       "local": {
         "title": "設定本機模型",
@@ -338,7 +338,6 @@
         "descriptionLineOne": "選擇你想在裝置上",
         "descriptionLineTwo": "執行的模型。",
         "providerLabel": "服務商",
-        "agent": "代理程式",
         "download": "下載",
         "downloadingShort": "下載中",
         "selected": "已選擇",

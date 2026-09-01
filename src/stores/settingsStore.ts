@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import { API_ENDPOINTS } from "../config/constants";
 import i18n, { normalizeUiLanguage } from "../i18n";
-import { ensureAgentNameInDictionary } from "../utils/agentName";
 import { chooseDictionaryStartupAction } from "../helpers/dictionaryStartup";
 import logger from "../utils/logger";
 import whisperVadConstants from "../constants/whisperVad.json";
@@ -3313,12 +3312,6 @@ export async function initializeSettings(): Promise<void> {
         { error: (err as Error).message },
         "settings"
       );
-    }
-
-    // Only after a successful DB↔cache reconcile. If the read failed, the cache
-    // may still be stale — writing it via setCustomDictionary would wipe SQLite.
-    if (dictionarySyncSucceeded) {
-      ensureAgentNameInDictionary();
     }
   }
 

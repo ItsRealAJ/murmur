@@ -109,7 +109,6 @@ test("proxied providers carry their quirks as route data", async () => {
     preferredLanguage: "yo",
   });
   assert.equal(xaiUnsupported.language, undefined, "outside the xAI ITN allowlist");
-
 });
 
 test("custom requires a configured secure endpoint (empty, sentinel, garbage all fail)", async () => {

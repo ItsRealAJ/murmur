@@ -9,26 +9,24 @@ const load = () => import("../../src/components/onboarding/flow.ts");
 // else they clicked past.
 test("one route for everyone, permissions first", async () => {
   const { getOnboardingRoute } = await load();
-  assert.deepEqual(getOnboardingRoute({ authPath: "guest", setupMode: null, agentAllowed: true }), [
+  assert.deepEqual(getOnboardingRoute({ authPath: "guest", setupMode: null }), [
     "permissions",
     "languages",
     "use-cases",
     "dictation-hotkey",
     "activation-mode",
-    "assistant-hotkey",
     "setup-choice",
   ]);
 });
 
 test("authPath no longer changes the route", async () => {
   const { getOnboardingRoute } = await load();
-  const asGuest = getOnboardingRoute({ authPath: "guest", setupMode: null, agentAllowed: true });
+  const asGuest = getOnboardingRoute({ authPath: "guest", setupMode: null });
   const asAccount = getOnboardingRoute({
     authPath: "account",
     setupMode: null,
-    agentAllowed: true,
   });
-  const asNull = getOnboardingRoute({ authPath: null, setupMode: null, agentAllowed: true });
+  const asNull = getOnboardingRoute({ authPath: null, setupMode: null });
   assert.deepEqual(asAccount, asGuest);
   // Previously a null authPath returned ["auth"] — a step whose renderer is gone,
   // which meant a blank first run.
@@ -40,35 +38,43 @@ test("every dictation route restores activation mode setup after shortcut captur
   const accountRoute = getOnboardingRoute({
     authPath: "account",
     setupMode: null,
-    agentAllowed: true,
   });
   const guestRoute = getOnboardingRoute({
     authPath: "guest",
     setupMode: null,
-    agentAllowed: true,
   });
 
   assert.equal(accountRoute[accountRoute.indexOf("dictation-hotkey") + 1], "activation-mode");
   assert.equal(guestRoute[guestRoute.indexOf("dictation-hotkey") + 1], "activation-mode");
 });
 
-test("policy removes assistant states", async () => {
+// The assistant is gone, so no route can reach it however it is asked for.
+test("no route offers an assistant step", async () => {
   const { getOnboardingRoute } = await load();
-  const route = getOnboardingRoute({ authPath: "account", setupMode: null, agentAllowed: false });
-  assert.equal(route.includes("assistant-hotkey"), false);
-  assert.equal(route.at(-1), "setup-choice");
+  for (const setupMode of [null, "byok", "local"]) {
+    const route = getOnboardingRoute({ authPath: "account", setupMode });
+    assert.equal(
+      route.some((step) => step.includes("assistant")),
+      false,
+      `assistant step in ${setupMode} route`
+    );
+  }
 });
 
+// Two stages, but the second is the cleanup model rather than the assistant:
+// it is what configures the LLM, so it outlived the agent under a truer name.
 test("setup choice appends the selected two-stage route", async () => {
   const { getOnboardingRoute } = await load();
-  assert.deepEqual(
-    getOnboardingRoute({ authPath: "guest", setupMode: "byok", agentAllowed: true }).slice(-3),
-    ["setup-choice", "byok-dictation", "byok-assistant"]
-  );
-  assert.deepEqual(
-    getOnboardingRoute({ authPath: "account", setupMode: "local", agentAllowed: false }).slice(-2),
-    ["setup-choice", "local-dictation"]
-  );
+  assert.deepEqual(getOnboardingRoute({ authPath: "guest", setupMode: "byok" }).slice(-3), [
+    "setup-choice",
+    "byok-dictation",
+    "byok-cleanup",
+  ]);
+  assert.deepEqual(getOnboardingRoute({ authPath: "account", setupMode: "local" }).slice(-3), [
+    "setup-choice",
+    "local-dictation",
+    "local-cleanup",
+  ]);
 });
 
 test("skipping the setup choice ends the route at the last guided step", async () => {
@@ -76,11 +82,11 @@ test("skipping the setup choice ends the route at the last guided step", async (
   const route = getOnboardingRoute({
     authPath: "guest",
     setupMode: null,
-    agentAllowed: true,
     skipSetupChoice: true,
   });
-  // Was "notes", then "assistant-demo"; both steps went with their features.
-  assert.equal(route.at(-1), "assistant-hotkey");
+  // Was "notes", then "assistant-demo", then "assistant-hotkey" — each went
+  // with its feature.
+  assert.equal(route.at(-1), "activation-mode");
   assert.equal(route.includes("setup-choice"), false);
 });
 
@@ -177,46 +183,37 @@ test("legacy numeric steps migrate conservatively", async () => {
   assert.equal(migrateLegacyOnboardingStep("999"), "setup-choice");
 });
 
-test("an off-route assistant step clamps to its neighbour, not the end of the route", async () => {
+// A saved session can name a step the live route does not have — a provider
+// stage from a setup mode that was since changed, or a step removed by an
+// upgrade. Clamping to route.at(-1) would teleport the user past everything in
+// between, which reads as a jump to the end.
+test("an off-route step clamps to its nearest neighbour, not the end of the route", async () => {
   const { getOnboardingRoute, reconcileStepWithRoute } = await load();
-  // agentAllowed false is what a failed policy fetch produces, and it drops both
-  // assistant steps from the route. Clamping to route.at(-1) used to land the
-  // user past intermediate steps, which read as a jump to the end.
-  const route = getOnboardingRoute({
-    authPath: "account",
-    setupMode: null,
-    agentAllowed: false,
-  });
-  assert.equal(route.includes("assistant-hotkey"), false);
-  assert.equal(reconcileStepWithRoute("assistant-hotkey", route), "activation-mode");
-  assert.notEqual(reconcileStepWithRoute("assistant-hotkey", route), "setup-choice");
+  const route = getOnboardingRoute({ authPath: "account", setupMode: null });
 
-  // With the agent allowed the steps are on the route and pass through untouched.
-  const agentRoute = getOnboardingRoute({
-    authPath: "account",
-    setupMode: null,
-    agentAllowed: true,
-  });
-  assert.equal(reconcileStepWithRoute("assistant-hotkey", agentRoute), "assistant-hotkey");
+  assert.equal(route.includes("byok-cleanup"), false);
+  assert.equal(reconcileStepWithRoute("byok-cleanup", route), "setup-choice");
+
+  // A step id that no longer exists at all (an assistant step from an older
+  // install) has no position to measure from, so it restarts the route rather
+  // than landing somewhere arbitrary.
+  assert.equal(reconcileStepWithRoute("assistant-hotkey", route), "permissions");
 });
 
-test("route helpers recover from ineligible steps", async () => {
+test("route helpers walk the route in order", async () => {
   const { getNextOnboardingStep, getOnboardingRoute, reconcileStepWithRoute } = await load();
-  const route = getOnboardingRoute({ authPath: "guest", setupMode: null, agentAllowed: true });
-  // assistant-hotkey is on this route now, so it passes through untouched; a
-  // provider step that was never selected is the genuinely off-route case.
-  assert.equal(reconcileStepWithRoute("assistant-hotkey", route), "assistant-hotkey");
-  assert.equal(reconcileStepWithRoute("byok-assistant", route), "setup-choice");
+  const route = getOnboardingRoute({ authPath: "guest", setupMode: null });
+  assert.equal(reconcileStepWithRoute("setup-choice", route), "setup-choice");
   assert.equal(getNextOnboardingStep("permissions", route), "languages");
   assert.equal(getNextOnboardingStep("setup-choice", route), null);
 });
 
 test("progress counts every step the user is shown, once each", async () => {
   const { getOnboardingProgress, getOnboardingRoute } = await load();
-  const route = getOnboardingRoute({ authPath: "account", setupMode: null, agentAllowed: true });
+  const route = getOnboardingRoute({ authPath: "account", setupMode: null });
 
   // Permissions renders in a compact frame with no footer, so it carries no row
-  // and must not inflate the total — landing on languages is "1 of 6".
+  // and must not inflate the total — landing on languages is "1 of 5".
   assert.equal(getOnboardingProgress("permissions", route), null);
 
   const counted = route.filter((stepId) => getOnboardingProgress(stepId, route) !== null);
@@ -224,30 +221,27 @@ test("progress counts every step the user is shown, once each", async () => {
     counted.map((stepId) => getOnboardingProgress(stepId, route).index),
     counted.map((_, index) => index)
   );
-  assert.deepEqual(getOnboardingProgress("languages", route), { index: 0, total: 6 });
-  assert.deepEqual(getOnboardingProgress("setup-choice", route), { index: 5, total: 6 });
+  assert.deepEqual(getOnboardingProgress("languages", route), { index: 0, total: 5 });
+  assert.deepEqual(getOnboardingProgress("setup-choice", route), { index: 4, total: 5 });
 });
 
 test("progress total tracks the conditional parts of the route", async () => {
   const { getOnboardingProgress, getOnboardingRoute } = await load();
-  const context = { authPath: "account", setupMode: null, agentAllowed: true };
-
-  // Dropping the assistant step shortens the row rather than leaving a dot
-  // that can never fill.
-  const noAgent = getOnboardingRoute({ ...context, agentAllowed: false });
-  assert.equal(getOnboardingProgress("languages", noAgent).total, 5);
-  assert.deepEqual(getOnboardingProgress("setup-choice", noAgent), { index: 4, total: 5 });
+  const context = { authPath: "account", setupMode: null };
 
   // Picking a non-cloud mode appends the provider pair, so the row grows by two
   // at that moment and the last provider step is what fills it.
   const byok = getOnboardingRoute({ ...context, setupMode: "byok" });
-  assert.deepEqual(getOnboardingProgress("setup-choice", byok), { index: 5, total: 8 });
-  assert.deepEqual(getOnboardingProgress("byok-assistant", byok), { index: 7, total: 8 });
+  assert.deepEqual(getOnboardingProgress("setup-choice", byok), { index: 4, total: 7 });
+  assert.deepEqual(getOnboardingProgress("byok-cleanup", byok), { index: 6, total: 7 });
+
+  const local = getOnboardingRoute({ ...context, setupMode: "local" });
+  assert.deepEqual(getOnboardingProgress("local-cleanup", local), { index: 6, total: 7 });
 });
 
 test("an off-route step reports no position", async () => {
   const { getOnboardingProgress, getOnboardingRoute } = await load();
-  const route = getOnboardingRoute({ authPath: "guest", setupMode: "byok", agentAllowed: true });
+  const route = getOnboardingRoute({ authPath: "guest", setupMode: "byok" });
   // The guest-only variant of this test is gone with the account/guest fork.
   assert.equal(getOnboardingProgress("local-dictation", route), null);
 });

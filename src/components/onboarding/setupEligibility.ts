@@ -23,12 +23,10 @@ export interface OnboardingSetupAvailability {
  */
 export function getOnboardingSetupAvailability({
   policy,
-  agentAllowed,
   transcriptionProviders,
   llmProviders,
 }: {
   policy: PolicyDecisionSnapshot;
-  agentAllowed: boolean;
   transcriptionProviders: ProviderOption[];
   llmProviders: ProviderOption[];
 }): OnboardingSetupAvailability {
@@ -42,16 +40,18 @@ export function getOnboardingSetupAvailability({
   // Murmur has no hosted account tier — the only paths are the user's own API
   // key (BYOK / self-hosted) or fully on-device. Never offer a sign-in card.
   const cloud = false;
+  // Both stages always run: setup configures a transcription model and the
+  // cleanup LLM. The agent used to make the LLM stage conditional; it is gone,
+  // and cleanup needs a model regardless, so every route requires both.
   const local =
     isModeAllowedByPolicy(policy, "transcription", "local") &&
-    (!agentAllowed || isModeAllowedByPolicy(policy, "llm", "local"));
-  const byok = transcriptionByokAvailable && (!agentAllowed || llmByokAvailable);
+    isModeAllowedByPolicy(policy, "llm", "local");
+  const byok = transcriptionByokAvailable && llmByokAvailable;
   const selfHosted =
     isModeAllowedByPolicy(policy, "transcription", "self-hosted") &&
     isProviderAllowedByPolicy(policy, "transcription", "custom") &&
-    (!agentAllowed ||
-      (isModeAllowedByPolicy(policy, "llm", "self-hosted") &&
-        isProviderAllowedByPolicy(policy, "llm", "custom")));
+    isModeAllowedByPolicy(policy, "llm", "self-hosted") &&
+    isProviderAllowedByPolicy(policy, "llm", "custom");
 
   return { cloud, local, byok, selfHosted };
 }

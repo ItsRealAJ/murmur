@@ -292,7 +292,6 @@
       "provider": {
         "progress": "Progression de la configuration du fournisseur",
         "dictation": "Dictée",
-        "assistant": "Assistant",
         "title": "Connectez votre fournisseur d’IA",
         "description": "Choisissez un fournisseur, ajoutez vos identifiants et testez la connexion.",
         "descriptionLineOne": "Choisissez un fournisseur et ajoutez",
@@ -330,7 +329,8 @@
           "providerStatus": "Le fournisseur a renvoyé le statut {{status}}.",
           "timeout": "Le test de connexion a expiré.",
           "network": "Le fournisseur est injoignable."
-        }
+        },
+        "cleanup": "Nettoyage"
       },
       "local": {
         "title": "Configurer les modèles locaux",
@@ -338,7 +338,6 @@
         "descriptionLineOne": "Choisissez les modèles à exécuter",
         "descriptionLineTwo": "sur votre appareil.",
         "providerLabel": "Fournisseur",
-        "agent": "Agent",
         "download": "Télécharger",
         "downloadingShort": "Téléchargement",
         "selected": "Sélectionné",

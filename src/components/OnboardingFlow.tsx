@@ -7,7 +7,6 @@ import OnboardingShell, { OnboardingStepHeader } from "./onboarding/OnboardingSh
 import CompactPermissionsStep from "./onboarding/CompactPermissionsStep";
 import LanguageSelectionStep from "./onboarding/LanguageSelectionStep";
 import ShortcutSetupStep from "./onboarding/ShortcutSetupStep";
-import AssistantHotkeyPreview from "./onboarding/AssistantHotkeyPreview";
 import SetupChoiceStep from "./onboarding/SetupChoiceStep";
 import { ByokProviderStep, LocalModelSetupStep } from "./onboarding/ProviderSetupStep";
 import { AlertDialog } from "./ui/dialog";
@@ -69,7 +68,6 @@ function DemoHotkeyDescription({ text, hotkey }: { text: string; hotkey: string 
 export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
   const { t } = useTranslation();
   const { isSignedIn } = useAuth();
-  const agentAllowed = usePolicyStore(isAgentAllowed);
   const settings = useSettings();
   const settingsStore = useSettingsStore();
   const {
@@ -86,11 +84,7 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
   const [dictationHotkey, setDictationHotkey] = useState(
     () => parseHotkeyList(settings.dictationKey)[0] || getDefaultHotkey()
   );
-  const [assistantHotkey, setAssistantHotkey] = useState(
-    () => parseHotkeyList(settings.voiceAgentKey)[0] || "CommandOrControl+Shift+Space"
-  );
   const [dictationHotkeyConfirmed, setDictationHotkeyConfirmed] = useState(false);
-  const [assistantHotkeyConfirmed, setAssistantHotkeyConfirmed] = useState(false);
   // Seeded from main rather than getDefaultHotkey(): main already knows when the
   // platform default can't bind (GNOME/X11 reject modifier-only combos) and
   // registered a fallback instead — recommending the unregistrable default would
@@ -135,10 +129,9 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
       getOnboardingRoute({
         authPath: session.authPath,
         setupMode: session.setupMode,
-        agentAllowed,
         skipSetupChoice: skipSetupChoiceForEnterprise,
       }),
-    [agentAllowed, session.authPath, session.setupMode, skipSetupChoiceForEnterprise]
+    [session.authPath, session.setupMode, skipSetupChoiceForEnterprise]
   );
   const currentStepId = reconcileStepWithRoute(session.currentStepId, route);
   const compact = COMPACT_STEPS.has(currentStepId);
@@ -339,46 +332,20 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
   );
 
   const handleSetupSelection = useCallback(
-    async (mode: Exclude<OnboardingSetupMode, null>, options?: { selfHosted?: boolean }) => {
+    async (
+      mode: Exclude<OnboardingSetupMode, null | "cloud">,
+      options?: { selfHosted?: boolean }
+    ) => {
       setSetupMode(mode);
       setSelfHostedRequested(!!options?.selfHosted);
-      if (mode === "cloud") {
-        settingsStore.setCloudTranscriptionForAllScopes({
-          useLocalWhisper: false,
-          cloudTranscriptionMode: "openwhispr",
-          cloudTranscriptionProvider: "openwhispr",
-        });
-        if (agentAllowed) {
-          settingsStore.setCloudReasoningForAllScopes({
-            cleanupCloudMode: "openwhispr",
-            cleanupProvider: "openwhispr",
-          });
-        } else {
-          // The policy-shortened route has no assistant setup. Avoid persisting
-          // a reasoning provider the workspace disallows, and keep dictation
-          // from attempting cleanup through an unconfigured LLM.
-          settingsStore.updateCleanupSettings({ useCleanupModel: false });
-        }
-        await finalizeOnboarding("cloud");
-        return;
-      }
       const nextRoute = getOnboardingRoute({
         authPath: session.authPath,
         setupMode: mode,
-        agentAllowed,
       });
       const next = getNextOnboardingStep("setup-choice", nextRoute);
       if (next) goTo(next);
     },
-    [
-      agentAllowed,
-      finalizeOnboarding,
-      goTo,
-      session.authPath,
-      setSelfHostedRequested,
-      setSetupMode,
-      settingsStore,
-    ]
+    [goTo, session.authPath, setSelfHostedRequested, setSetupMode]
   );
 
   const continueFromCurrentStep = useCallback(async () => {
@@ -398,40 +365,16 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
         setFatalError(t("onboarding.hotkey.couldNotRegisterDescription"));
         return;
       }
-    } else if (currentStepId === "assistant-hotkey") {
-      if (parseHotkeyList(settings.voiceAgentKey)[0] !== assistantHotkey) {
-        const registered = await settings.setVoiceAgentKey(
-          serializeHotkeyList([
-            assistantHotkey,
-            ...parseHotkeyList(settings.voiceAgentKey).slice(1),
-          ])
-        );
-        if (!registered) {
-          setFatalError(t("onboarding.rehaul.hotkey.inUse"));
-          return;
-        }
-      }
     } else if (currentStepId === "byok-dictation") {
       settingsStore.setCloudTranscriptionForAllScopes({
         useLocalWhisper: false,
         cloudTranscriptionMode: "byok",
       });
-      // When policy disallows the agent, the assistant step is off-route and no
-      // LLM gets configured. Turn cleanup off so dictations do not route to a
-      // default provider with no credential behind it.
-      if (!route.includes("byok-assistant")) {
-        settingsStore.updateCleanupSettings({ useCleanupModel: false });
-      }
-    } else if (currentStepId === "byok-assistant") {
+    } else if (currentStepId === "byok-cleanup") {
       applyReasoningSelectionToAllScopes("byok");
     } else if (currentStepId === "local-dictation") {
       settingsStore.setCloudTranscriptionForAllScopes({ useLocalWhisper: true });
-      // Same policy-shortened-route case as BYOK: no local LLM was downloaded,
-      // so cleanup must not silently fall back to a cloud default.
-      if (!route.includes("local-assistant")) {
-        settingsStore.updateCleanupSettings({ useCleanupModel: false });
-      }
-    } else if (currentStepId === "local-assistant") {
+    } else if (currentStepId === "local-cleanup") {
       applyReasoningSelectionToAllScopes("local");
     }
 
@@ -448,7 +391,6 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
     if (session.setupMode) await finalizeOnboarding(session.setupMode);
   }, [
     applyReasoningSelectionToAllScopes,
-    assistantHotkey,
     currentStepId,
     dictationHotkey,
     finalizeOnboarding,
@@ -485,12 +427,10 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
         return dictationHotkeyConfirmed;
       case "activation-mode":
         return true;
-      case "assistant-hotkey":
-        return assistantHotkeyConfirmed;
       case "byok-dictation":
-      case "byok-assistant":
+      case "byok-cleanup":
       case "local-dictation":
-      case "local-assistant":
+      case "local-cleanup":
         return stageReady;
       default:
         return true;
@@ -542,73 +482,33 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
         );
 
       case "dictation-hotkey":
-      case "assistant-hotkey": {
-        const assistant = currentStepId === "assistant-hotkey";
         return (
-          // Flex column: the preview illustration is allowed to shrink so the
-          // capture box below it always stays inside the shell, which is
-          // overflow-hidden.
           <div className="flex h-full min-h-0 w-full flex-col pt-2">
             <OnboardingStepHeader
-              title={t(
-                assistant
-                  ? "onboarding.rehaul.assistantHotkey.title"
-                  : "onboarding.rehaul.dictationHotkey.title"
-              )}
-              titleLines={
-                assistant
-                  ? [
-                      t("onboarding.rehaul.assistantHotkey.titleLineOne"),
-                      t("onboarding.rehaul.assistantHotkey.titleLineTwo"),
-                    ]
-                  : [
-                      t("onboarding.rehaul.dictationHotkey.titleLineOne"),
-                      t("onboarding.rehaul.dictationHotkey.titleLineTwo"),
-                    ]
-              }
-              description={t(
-                assistant
-                  ? "onboarding.rehaul.assistantHotkey.description"
-                  : "onboarding.rehaul.dictationHotkey.description"
-              )}
+              title={t("onboarding.rehaul.dictationHotkey.title")}
+              titleLines={[
+                t("onboarding.rehaul.dictationHotkey.titleLineOne"),
+                t("onboarding.rehaul.dictationHotkey.titleLineTwo"),
+              ]}
+              description={t("onboarding.rehaul.dictationHotkey.description")}
             />
-            {assistant && <AssistantHotkeyPreview />}
             <ShortcutSetupStep
-              value={
-                (assistant ? assistantHotkeyConfirmed : dictationHotkeyConfirmed)
-                  ? assistant
-                    ? assistantHotkey
-                    : dictationHotkey
-                  : ""
-              }
+              value={dictationHotkeyConfirmed ? dictationHotkey : ""}
               onChange={(value) => {
-                if (assistant) {
-                  setAssistantHotkey(value);
-                  setAssistantHotkeyConfirmed(true);
-                } else {
-                  setDictationHotkey(value);
-                  setDictationHotkeyConfirmed(true);
-                }
+                setDictationHotkey(value);
+                setDictationHotkeyConfirmed(true);
               }}
-              onClearSelection={() => {
-                if (assistant) {
-                  setAssistantHotkeyConfirmed(false);
-                } else {
-                  setDictationHotkeyConfirmed(false);
-                }
-              }}
-              recommended={assistant ? "CommandOrControl+Shift+Space" : recommendedDictationHotkey}
+              onClearSelection={() => setDictationHotkeyConfirmed(false)}
+              recommended={recommendedDictationHotkey}
               captureLabel={t("onboarding.rehaul.hotkey.capture")}
               recommendedLabel={t("common.recommended")}
               chooseAnotherLabel={t("onboarding.rehaul.hotkey.chooseAnother")}
-              validate={assistant ? validateAssistantHotkey : validateDictationHotkey}
-              onConfirm={assistant ? confirmAssistantHotkey : confirmDictationHotkey}
-              dense={assistant}
-              showCandidateActions={!assistant}
+              validate={validateDictationHotkey}
+              onConfirm={confirmDictationHotkey}
+              showCandidateActions
             />
           </div>
         );
-      }
 
       case "activation-mode":
         return (
@@ -661,14 +561,13 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
             />
             <SetupChoiceStep
               isSignedIn={isSignedIn}
-              agentAllowed={agentAllowed}
               onSelect={(mode, options) => void handleSetupSelection(mode, options)}
             />
           </div>
         );
 
       case "byok-dictation":
-      case "byok-assistant":
+      case "byok-cleanup":
         return (
           <div className="h-full w-full pt-2">
             <div>
@@ -693,7 +592,7 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
         );
 
       case "local-dictation":
-      case "local-assistant":
+      case "local-cleanup":
         return (
           <div className="h-full w-full pt-2">
             <OnboardingStepHeader
@@ -719,14 +618,14 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
   };
 
   const hasShellNavigation = !compact;
-  const hotkeyStep = currentStepId === "dictation-hotkey" || currentStepId === "assistant-hotkey";
+  const hotkeyStep = currentStepId === "dictation-hotkey";
   const inlineGatedStep = hotkeyStep;
   const choiceStep = currentStepId === "setup-choice";
   const inlineProviderStep =
     currentStepId === "byok-dictation" ||
-    currentStepId === "byok-assistant" ||
+    currentStepId === "byok-cleanup" ||
     currentStepId === "local-dictation" ||
-    currentStepId === "local-assistant";
+    currentStepId === "local-cleanup";
   // Choice/provider pages own their forward action, while the hotkey pages
   // withhold Continue until their task is complete.
   const showsContinue =

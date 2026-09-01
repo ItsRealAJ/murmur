@@ -105,10 +105,7 @@ function createAgentStreamBridge() {
 const waitForMicrotasks = () => new Promise((resolve) => setImmediate(resolve));
 
 test("raw self-hosted streaming filters split tags and flushes visible trailing text", async (t) => {
-  const { reasoningService } = await loadReasoningService(
-    t,
-    "murmur-raw-streaming-think-test-"
-  );
+  const { reasoningService } = await loadReasoningService(t, "murmur-raw-streaming-think-test-");
   const originalFetch = globalThis.fetch;
   t.after(() => {
     globalThis.fetch = originalFetch;
@@ -154,95 +151,8 @@ test("raw self-hosted streaming flushes visible trailing text at body EOF", asyn
   assert.equal(await collectRawText(stream), "Answer<");
 });
 
-test("tool-enabled self-hosted streaming filters nested tags", async (t) => {
-  const { reasoningService, vite } = await loadReasoningService(
-    t,
-    "murmur-tool-streaming-think-test-"
-  );
-  const { ToolRegistry } = await vite.ssrLoadModule("/services/tools/ToolRegistry.ts");
-  const registry = new ToolRegistry();
-  registry.register({
-    name: "noop",
-    description: "No-op test tool",
-    parameters: { type: "object", properties: {}, additionalProperties: false },
-    readOnly: true,
-    execute: async () => ({ success: true, data: "ok", displayText: "ok" }),
-  });
-
-  const originalFetch = globalThis.fetch;
-  t.after(() => {
-    globalThis.fetch = originalFetch;
-  });
-  globalThis.fetch = async () =>
-    createOpenAiSseResponse(["<thi", "nk>a<think>b</think>c</thi", "nk>Answer"]);
-
-  const stream = reasoningService.processTextStreamingAI(
-    [{ role: "user", content: "hello" }],
-    "qwen3-4b-q4_k_m",
-    "lan",
-    {
-      systemPrompt: "Answer the user.",
-      lanUrl: "http://127.0.0.1:11434/v1",
-      disableThinking: true,
-    },
-    registry.toAISDKFormat()
-  );
-
-  assert.equal(await collectAgentText(stream), "Answer");
-});
-
-test("tool-loop filtering resets after an unterminated reasoning block", async (t) => {
-  const { reasoningService, vite } = await loadReasoningService(
-    t,
-    "murmur-tool-step-streaming-think-test-"
-  );
-  const { ToolRegistry } = await vite.ssrLoadModule("/services/tools/ToolRegistry.ts");
-  const registry = new ToolRegistry();
-  registry.register({
-    name: "noop",
-    description: "No-op test tool",
-    parameters: { type: "object", properties: {}, additionalProperties: false },
-    readOnly: true,
-    execute: async () => ({ success: true, data: "ok", displayText: "ok" }),
-  });
-
-  const originalFetch = globalThis.fetch;
-  t.after(() => {
-    globalThis.fetch = originalFetch;
-  });
-  let fetchCalls = 0;
-  globalThis.fetch = async () => {
-    fetchCalls += 1;
-    if (fetchCalls === 1) {
-      return createOpenAiSseResponse(["<think>secret"], {
-        finishReason: "tool_calls",
-        toolCall: { id: "call-noop", name: "noop", arguments: "{}" },
-      });
-    }
-    return createOpenAiSseResponse(["Answer"]);
-  };
-
-  const stream = reasoningService.processTextStreamingAI(
-    [{ role: "user", content: "hello" }],
-    "qwen3-4b-q4_k_m",
-    "lan",
-    {
-      systemPrompt: "Answer the user.",
-      lanUrl: "http://127.0.0.1:11434/v1",
-      disableThinking: true,
-    },
-    registry.toAISDKFormat()
-  );
-
-  assert.equal(await collectAgentText(stream), "Answer");
-  assert.equal(fetchCalls, 2);
-});
-
 test("tool-enabled streaming does not flush buffered text after abort", async (t) => {
-  const { reasoningService } = await loadReasoningService(
-    t,
-    "murmur-abort-streaming-think-test-"
-  );
+  const { reasoningService } = await loadReasoningService(t, "murmur-abort-streaming-think-test-");
   const originalFetch = globalThis.fetch;
   t.after(() => {
     globalThis.fetch = originalFetch;
@@ -293,20 +203,16 @@ test("cancelling during local model setup stops before streaming begins", async 
   const serverReady = new Promise((resolve) => {
     resolveServer = resolve;
   });
-  const { reasoningService } = await loadReasoningService(
-    t,
-    "murmur-model-setup-cancel-test-",
-    {
-      window: {
-        electronAPI: {
-          llamaServerStart: () => {
-            serverStarted = true;
-            return serverReady;
-          },
+  const { reasoningService } = await loadReasoningService(t, "murmur-model-setup-cancel-test-", {
+    window: {
+      electronAPI: {
+        llamaServerStart: () => {
+          serverStarted = true;
+          return serverReady;
         },
       },
-    }
-  );
+    },
+  });
   const originalFetch = globalThis.fetch;
   t.after(() => {
     globalThis.fetch = originalFetch;
@@ -477,10 +383,7 @@ test("a timeout-owned abort during raw response reading remains a timeout error"
 // silently ended with "". A provider-reported error part must now reject the
 // generator instead; buffered text must still never leak into that rejection.
 test("tool-enabled streaming rejects instead of flushing buffered text after a stream error", async (t) => {
-  const { reasoningService } = await loadReasoningService(
-    t,
-    "murmur-error-streaming-think-test-"
-  );
+  const { reasoningService } = await loadReasoningService(t, "murmur-error-streaming-think-test-");
   const originalFetch = globalThis.fetch;
   t.after(() => {
     globalThis.fetch = originalFetch;
@@ -563,11 +466,9 @@ test("self-hosted streaming preserves think tags when thinking is enabled", asyn
 });
 
 test("non-local streaming remains unfiltered", async (t) => {
-  const { reasoningService } = await loadReasoningService(
-    t,
-    "murmur-cloud-streaming-think-test-",
-    { window: { electronAPI: { getGroqKey: async () => "test-key" } } }
-  );
+  const { reasoningService } = await loadReasoningService(t, "murmur-cloud-streaming-think-test-", {
+    window: { electronAPI: { getGroqKey: async () => "test-key" } },
+  });
   const originalFetch = globalThis.fetch;
   t.after(() => {
     globalThis.fetch = originalFetch;
@@ -673,11 +574,9 @@ test("cloud agent streaming correlates events to the initiating request", async 
 
 test("cancelling a cloud agent stream aborts main and ends the local generator", async (t) => {
   const bridge = createAgentStreamBridge();
-  const { reasoningService } = await loadReasoningService(
-    t,
-    "murmur-cloud-agent-cancel-test-",
-    { window: { electronAPI: bridge.electronAPI } }
-  );
+  const { reasoningService } = await loadReasoningService(t, "murmur-cloud-agent-cancel-test-", {
+    window: { electronAPI: bridge.electronAPI },
+  });
   const stream = reasoningService.processTextStreamingCloud([{ role: "user", content: "hello" }], {
     systemPrompt: "Answer the user.",
   });
@@ -785,42 +684,4 @@ test("cancelling during a cloud tool execution prevents results and later model 
 
   assert.equal((await pending).done, true);
   assert.equal(bridge.startCalls.length, 1);
-});
-
-test("a provider error part rejects the agent stream instead of ending it silently", async (t) => {
-  const { reasoningService, vite } = await loadReasoningService(
-    t,
-    "murmur-stream-error-part-test-"
-  );
-  const { ToolRegistry } = await vite.ssrLoadModule("/services/tools/ToolRegistry.ts");
-  const registry = new ToolRegistry();
-  registry.register({
-    name: "noop",
-    description: "No-op test tool",
-    parameters: { type: "object", properties: {}, additionalProperties: false },
-    readOnly: true,
-    execute: async () => ({ success: true, data: "ok", displayText: "ok" }),
-  });
-
-  const originalFetch = globalThis.fetch;
-  t.after(() => {
-    globalThis.fetch = originalFetch;
-  });
-  // streamText never throws on an HTTP failure; it emits an `error` part and
-  // closes the stream. The generator must surface that as a rejection.
-  globalThis.fetch = async () =>
-    new Response(
-      JSON.stringify({ error: { message: "Incorrect API key provided", type: "invalid_request_error" } }),
-      { status: 401, headers: { "content-type": "application/json" } }
-    );
-
-  const stream = reasoningService.processTextStreamingAI(
-    [{ role: "user", content: "hello" }],
-    "qwen3-4b-q4_k_m",
-    "lan",
-    { systemPrompt: "Answer the user.", lanUrl: "http://127.0.0.1:11434/v1", disableThinking: true },
-    registry.toAISDKFormat()
-  );
-
-  await assert.rejects(collectAgentText(stream), /Incorrect API key/);
 });

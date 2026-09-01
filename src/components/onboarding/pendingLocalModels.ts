@@ -6,7 +6,7 @@ import type {
 
 export const PENDING_LOCAL_MODELS_KEY = "pendingLocalModelSelectionsV1";
 
-export type PendingLocalModelKind = "dictation" | "assistant";
+export type PendingLocalModelKind = "dictation" | "cleanup";
 
 export interface PendingLocalModelSelection {
   provider: string;
@@ -84,7 +84,7 @@ export function getPendingLocalModelAvailability(
   selection: PendingLocalModelSelection,
   inventory: PendingLocalModelInventory
 ): PendingLocalModelAvailability {
-  if (kind === "assistant") {
+  if (kind === "cleanup") {
     if (!inventory.llm) return "unknown";
     const model = inventory.llm.find((candidate) => candidate.id === selection.modelId);
     if (model?.isDownloaded) return "downloaded";

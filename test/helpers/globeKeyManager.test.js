@@ -105,7 +105,8 @@ test("spawn args carry the state path and omit suppression by default", () => {
 });
 
 test("spawn args include mouse buttons, a spaced state path, and the suppression flag", () => {
-  const statePath = "/Users/a b/Library/Application Support/open whispr/globe-preference-state.json";
+  const statePath =
+    "/Users/a b/Library/Application Support/open whispr/globe-preference-state.json";
   const { GlobeKeyManager, spawnCalls } = loadManager();
   const manager = new GlobeKeyManager({ preferenceStatePath: statePath });
 

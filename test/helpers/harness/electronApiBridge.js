@@ -67,8 +67,22 @@ function createElectronApi(db, options = {}) {
     getNoteByClientId: async (clientNoteId) => db.getNoteByClientId(clientNoteId),
     upsertNoteFromCloud: async (cloudNote, localFolderId, localSpaceId) =>
       db.upsertNoteFromCloud(cloudNote, localFolderId, localSpaceId),
-    acknowledgeNoteCreate: async (id, snapshot, cloudId, cloudUpdatedAt, ownerUserId, settleIfUnchanged) =>
-      db.acknowledgeNoteCreate(id, snapshot, cloudId, cloudUpdatedAt, ownerUserId, settleIfUnchanged),
+    acknowledgeNoteCreate: async (
+      id,
+      snapshot,
+      cloudId,
+      cloudUpdatedAt,
+      ownerUserId,
+      settleIfUnchanged
+    ) =>
+      db.acknowledgeNoteCreate(
+        id,
+        snapshot,
+        cloudId,
+        cloudUpdatedAt,
+        ownerUserId,
+        settleIfUnchanged
+      ),
     markNoteSyncedIfUnchanged: async (id, snapshot, expectedCloudId, cloudUpdatedAt, ownerUserId) =>
       db.markNoteSyncedIfUnchanged(id, snapshot, expectedCloudId, cloudUpdatedAt, ownerUserId),
     markNoteSyncError: async (id) => db.markNoteSyncError(id),

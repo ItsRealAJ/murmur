@@ -12,8 +12,8 @@ onboarding).
 
 | Host                                          | Protocol | Port | Purpose                                                                            |
 | --------------------------------------------- | -------- | ---- | ---------------------------------------------------------------------------------- |
-| `api.murmur.com`                          | HTTPS    | 443  | Cloud API: transcription, sync, agent reasoning, settings, usage.                  |
-| `auth.murmur.com`                         | HTTPS    | 443  | Account sign-in and session refresh (Better Auth).                                 |
+| `api.murmur.com`                              | HTTPS    | 443  | Cloud API: transcription, sync, agent reasoning, settings, usage.                  |
+| `auth.murmur.com`                             | HTTPS    | 443  | Account sign-in and session refresh (Better Auth).                                 |
 | `github.com`, `objects.githubusercontent.com` | HTTPS    | 443  | Application auto-update (release artifacts via electron-updater, GitHub provider). |
 
 ## Required for streaming transcription
@@ -47,7 +47,7 @@ Contacted only if the user connects Google Calendar in settings.
 | `accounts.google.com`   | HTTPS    | 443  | OAuth authorization.                                        |
 | `oauth2.googleapis.com` | HTTPS    | 443  | OAuth token exchange and revoke.                            |
 | `www.googleapis.com`    | HTTPS    | 443  | Calendar event and calendar list reads.                     |
-| `murmur.com`        | HTTPS    | 443  | OAuth desktop callback redirect (`/auth/desktop-callback`). |
+| `murmur.com`            | HTTPS    | 443  | OAuth desktop callback redirect (`/auth/desktop-callback`). |
 
 ## Required for URL audio import (optional feature)
 
@@ -55,11 +55,11 @@ Contacted only when a user pastes a URL into the Upload view to download and
 transcribe its audio. Downloads are HTTPS-only and hosts resolving to
 private/internal addresses are rejected.
 
-| Host                                | Protocol | Port | Purpose                                                                    |
-| ----------------------------------- | -------- | ---- | -------------------------------------------------------------------------- |
-| `www.youtube.com`, `youtube.com`, `youtu.be`, `m.youtube.com`, `music.youtube.com` | HTTPS | 443 | YouTube page/metadata fetch for pasted YouTube links (bundled yt-dlp).     |
-| `*.googlevideo.com`                 | HTTPS    | 443  | YouTube media CDN — the actual audio stream download.                      |
-| _User-pasted hosts_                 | HTTPS    | 443  | Direct audio/video URL imports contact whatever public host the user pastes. |
+| Host                                                                               | Protocol | Port | Purpose                                                                      |
+| ---------------------------------------------------------------------------------- | -------- | ---- | ---------------------------------------------------------------------------- |
+| `www.youtube.com`, `youtube.com`, `youtu.be`, `m.youtube.com`, `music.youtube.com` | HTTPS    | 443  | YouTube page/metadata fetch for pasted YouTube links (bundled yt-dlp).       |
+| `*.googlevideo.com`                                                                | HTTPS    | 443  | YouTube media CDN — the actual audio stream download.                        |
+| _User-pasted hosts_                                                                | HTTPS    | 443  | Direct audio/video URL imports contact whatever public host the user pastes. |
 
 ## BYOK provider hosts (only if configured)
 

@@ -29,7 +29,7 @@ import { isLocalStageDownloadActive } from "./localDownloadState";
 
 export function SetupStageStepper({ stepId }: { stepId: OnboardingStepId }) {
   const { t } = useTranslation();
-  const assistant = stepId.endsWith("assistant");
+  const cleanup = stepId.endsWith("cleanup");
   const local = stepId.startsWith("local");
   return (
     <div
@@ -40,12 +40,12 @@ export function SetupStageStepper({ stepId }: { stepId: OnboardingStepId }) {
       <div className="relative z-10 flex w-14 flex-col items-center gap-1.5 text-[var(--onboarding-text-secondary)]">
         <span
           className={`flex size-7 items-center justify-center rounded-full ${
-            assistant
+            cleanup
               ? "bg-[var(--onboarding-accent)] text-[var(--onboarding-accent-foreground)]"
               : "bg-[var(--onboarding-inverse-surface)] text-[var(--onboarding-inverse-text)]"
           }`}
         >
-          {assistant ? (
+          {cleanup ? (
             local ? (
               <AudioLines className="size-3.5" />
             ) : (
@@ -60,18 +60,14 @@ export function SetupStageStepper({ stepId }: { stepId: OnboardingStepId }) {
       <div className="relative z-10 flex w-14 flex-col items-center gap-1.5 text-[var(--onboarding-text-secondary)]">
         <span
           className={`flex size-7 items-center justify-center rounded-full ${
-            assistant
+            cleanup
               ? "bg-[var(--onboarding-inverse-surface)] text-[var(--onboarding-inverse-text)]"
               : "border border-[var(--onboarding-control-border)] bg-[var(--onboarding-surface)] text-[var(--onboarding-text-primary)]"
           }`}
         >
           <MousePointer2 className="size-3.5" />
         </span>
-        <span className="text-[0.6875rem]">
-          {local && assistant
-            ? t("onboarding.rehaul.local.agent")
-            : t("onboarding.rehaul.provider.assistant")}
-        </span>
+        <span className="text-[0.6875rem]">{t("onboarding.rehaul.provider.cleanup")}</span>
       </div>
     </div>
   );
@@ -219,7 +215,7 @@ export function ByokProviderStep({
   onConnectionChange,
   onProceed,
 }: {
-  stepId: "byok-dictation" | "byok-assistant";
+  stepId: "byok-dictation" | "byok-cleanup";
   /** Set when the user picked "Self-hosted" on setup-choice rather than BYOK. */
   selfHostedRequested?: boolean;
   onSelfHostedChange: (requested: boolean) => void;
@@ -229,8 +225,8 @@ export function ByokProviderStep({
   const { t } = useTranslation();
   const store = useSettingsStore();
   const policy = usePolicySnapshot();
-  const assistant = stepId === "byok-assistant";
-  const scope = assistant ? "llm" : "transcription";
+  const cleanup = stepId === "byok-cleanup";
+  const scope = cleanup ? "llm" : "transcription";
   const selfHostedAllowed =
     isModeAllowedByPolicy(policy, scope, "self-hosted") &&
     isProviderAllowedByPolicy(policy, scope, "custom");
@@ -263,11 +259,11 @@ export function ByokProviderStep({
   const providers = useMemo(
     () =>
       filterByokProviderOptionsByPolicy<HostedProvider>(
-        assistant ? modelRegistry.getCloudProviders() : getTranscriptionProviders(),
+        cleanup ? modelRegistry.getCloudProviders() : getTranscriptionProviders(),
         scope,
         policy
       ),
-    [assistant, policy, scope]
+    [cleanup, policy, scope]
   );
   const currentProvider = providers.find((provider) => provider.id === selectedProvider);
   const models = currentProvider?.models ?? [];
@@ -312,7 +308,7 @@ export function ByokProviderStep({
   const testingProvider = selfHosted ? "custom" : selectedProvider;
   const testingKey = draftApiKey;
   const testingBaseUrl = selfHosted ? draftBaseUrl : undefined;
-  const isCortiTranscription = !assistant && !selfHosted && selectedProvider === "corti";
+  const isCortiTranscription = !cleanup && !selfHosted && selectedProvider === "corti";
   const fieldsReady = selfHosted
     ? Boolean(draftBaseUrl.trim() && draftCustomModel.trim())
     : isCortiTranscription
@@ -327,7 +323,7 @@ export function ByokProviderStep({
       const committedBaseUrl = draftBaseUrl.includes("://")
         ? draftBaseUrl.trim()
         : `https://${draftBaseUrl.trim()}`;
-      if (assistant) {
+      if (cleanup) {
         store.setChatAgentRemoteUrl(committedBaseUrl);
         store.setChatAgentCustomApiKey(draftApiKey);
         store.setChatAgentModel(draftCustomModel);
@@ -340,7 +336,7 @@ export function ByokProviderStep({
         store.switchCloudTranscriptionProvider("dictation", "custom");
         store.setCloudTranscriptionMode("byok");
       }
-    } else if (assistant) {
+    } else if (cleanup) {
       knownCredential.set(draftApiKey);
       store.setChatAgentMode("providers");
       store.switchReasoningProvider("chatIntelligence", selectedProvider, selectedModel);
@@ -539,7 +535,7 @@ export function ByokProviderStep({
         <ProviderConnectionTest
           key={`${stepId}:${testingProvider}`}
           config={{
-            scope: assistant ? "reasoning" : "transcription",
+            scope: cleanup ? "reasoning" : "transcription",
             provider: testingProvider,
             apiKey: testingKey,
             baseUrl: testingBaseUrl,
@@ -571,15 +567,15 @@ export function LocalModelSetupStep({
   onProceed,
   onSkip,
 }: {
-  stepId: "local-dictation" | "local-assistant";
+  stepId: "local-dictation" | "local-cleanup";
   onReadinessChange: (ready: boolean) => void;
   onProceed: () => void;
   onSkip: () => void;
 }) {
   const { t } = useTranslation();
   const store = useSettingsStore();
-  const assistant = stepId === "local-assistant";
-  const [selectedProvider, setSelectedProvider] = useState(assistant ? "qwen" : "whisper");
+  const cleanup = stepId === "local-cleanup";
+  const [selectedProvider, setSelectedProvider] = useState(cleanup ? "qwen" : "whisper");
   const [selectedModel, setSelectedModel] = useState("");
   const [recommendedModel, setRecommendedModel] = useState<string | null>(null);
 
@@ -588,7 +584,7 @@ export function LocalModelSetupStep({
   // RAM before they have heard the app work once. Best-effort: if the probe
   // fails, the step behaves exactly as it did before.
   useEffect(() => {
-    if (assistant) return;
+    if (cleanup) return;
     let cancelled = false;
     void (async () => {
       try {
@@ -611,7 +607,7 @@ export function LocalModelSetupStep({
     return () => {
       cancelled = true;
     };
-  }, [assistant, store.preferredLanguage]);
+  }, [cleanup, store.preferredLanguage]);
   const [downloadedWhisper, setDownloadedWhisper] = useState<Set<string>>(new Set());
   const [downloadedParakeet, setDownloadedParakeet] = useState<Set<string>>(new Set());
   const [downloadedLlm, setDownloadedLlm] = useState<Set<string>>(new Set());
@@ -656,7 +652,7 @@ export function LocalModelSetupStep({
 
   useEffect(() => {
     const saved = useSettingsStore.getState();
-    const defaultProvider = assistant
+    const defaultProvider = cleanup
       ? modelRegistry.getProvider(saved.chatAgentProvider)
         ? saved.chatAgentProvider
         : "qwen"
@@ -666,10 +662,10 @@ export function LocalModelSetupStep({
     setSelectedProvider(defaultProvider);
     setSelectedModel("");
     onReadinessChange(false);
-  }, [assistant, onReadinessChange, stepId]);
+  }, [cleanup, onReadinessChange, stepId]);
 
   const providerOptions = useMemo(() => {
-    if (assistant) {
+    if (cleanup) {
       return modelRegistry.getAllProviders().map((provider) => ({
         id: provider.id,
         name: provider.name,
@@ -680,10 +676,10 @@ export function LocalModelSetupStep({
       { id: "whisper", name: "OpenAI", icon: "openai" },
       { id: "nvidia", name: "NVIDIA", icon: "nvidia" },
     ];
-  }, [assistant]);
+  }, [cleanup]);
 
   const models = useMemo(() => {
-    if (assistant) {
+    if (cleanup) {
       return (modelRegistry.getProvider(selectedProvider)?.models ?? []).map((model) => ({
         id: model.id,
         name: model.name,
@@ -708,15 +704,15 @@ export function LocalModelSetupStep({
       recommended: model.recommended,
       icon: "openai",
     }));
-  }, [assistant, selectedProvider]);
+  }, [cleanup, selectedProvider]);
 
   const currentProvider = providerOptions.find((provider) => provider.id === selectedProvider);
-  const activeDownload = assistant
+  const activeDownload = cleanup
     ? llmDownload
     : selectedProvider === "nvidia"
       ? parakeetDownload
       : whisperDownload;
-  const downloadedModels = assistant
+  const downloadedModels = cleanup
     ? downloadedLlm
     : selectedProvider === "nvidia"
       ? downloadedParakeet
@@ -730,7 +726,7 @@ export function LocalModelSetupStep({
   const selectInstalledModel = useCallback(
     (modelId: string) => {
       setSelectedModel(modelId);
-      if (assistant) {
+      if (cleanup) {
         store.setChatAgentMode("local");
         store.setChatAgentProvider(selectedProvider);
         store.setChatAgentModel(modelId);
@@ -742,10 +738,10 @@ export function LocalModelSetupStep({
         store.setWhisperModel(modelId);
       }
       if (localStorage.getItem("localSetupPending") !== "true") {
-        forgetPendingLocalModel(assistant ? "assistant" : "dictation", modelId);
+        forgetPendingLocalModel(cleanup ? "cleanup" : "dictation", modelId);
       }
     },
-    [assistant, selectedProvider, store]
+    [cleanup, selectedProvider, store]
   );
 
   const downloadModel = (modelId: string) => {
@@ -753,7 +749,7 @@ export function LocalModelSetupStep({
     // runs; recording the pending selection for a refused download leaves a
     // stale entry that a much later download would silently activate.
     if (!activeDownload.isDownloading) {
-      rememberPendingLocalModel(assistant ? "assistant" : "dictation", {
+      rememberPendingLocalModel(cleanup ? "cleanup" : "dictation", {
         provider: selectedProvider,
         modelId,
       });
@@ -767,7 +763,7 @@ export function LocalModelSetupStep({
     onReadinessChange(false);
   };
 
-  const anyDownloadActive = isLocalStageDownloadActive(assistant ? "assistant" : "dictation", {
+  const anyDownloadActive = isLocalStageDownloadActive(cleanup ? "cleanup" : "dictation", {
     whisper: whisperDownload.isDownloading,
     parakeet: parakeetDownload.isDownloading,
     llm: llmDownload.isDownloading,
@@ -801,7 +797,7 @@ export function LocalModelSetupStep({
               <ProviderIcon
                 provider={currentProvider?.icon ?? selectedProvider}
                 className="size-4"
-                monochrome={assistant && selectedProvider === "qwen"}
+                monochrome={cleanup && selectedProvider === "qwen"}
               />
               {currentProvider?.name ?? selectedProvider}
             </div>
@@ -813,7 +809,7 @@ export function LocalModelSetupStep({
                   <ProviderIcon
                     provider={provider.icon}
                     className="size-5"
-                    monochrome={assistant && provider.id === "qwen"}
+                    monochrome={cleanup && provider.id === "qwen"}
                   />
                   {provider.name}
                 </span>
@@ -849,7 +845,7 @@ export function LocalModelSetupStep({
                 <ProviderIcon
                   provider={model.icon}
                   className="size-5"
-                  monochrome={assistant && model.icon === "qwen"}
+                  monochrome={cleanup && model.icon === "qwen"}
                 />
               </span>
               <button
@@ -868,7 +864,7 @@ export function LocalModelSetupStep({
                 </span>
                 <span className="mt-0.5 block truncate text-xs text-[var(--onboarding-text-secondary)]">
                   {model.size}
-                  {!assistant && model.recommended && ` - ${t("common.recommended")}`}
+                  {!cleanup && model.recommended && ` - ${t("common.recommended")}`}
                 </span>
               </button>
 

@@ -8,10 +8,10 @@ whoever picks this up next knows which decisions were deliberate.
 Murmur ships **unsigned**: no Apple notarization, no Authenticode. Signing both
 platforms properly costs roughly:
 
-| | Cost | What it buys |
-|---|---|---|
-| Apple Developer Program | $99/yr | Notarized `.dmg`, no Gatekeeper friction |
-| Azure Trusted Signing | ~$120/yr | Signed `.exe`, no SmartScreen warning |
+|                         | Cost     | What it buys                             |
+| ----------------------- | -------- | ---------------------------------------- |
+| Apple Developer Program | $99/yr   | Notarized `.dmg`, no Gatekeeper friction |
+| Azure Trusted Signing   | ~$120/yr | Signed `.exe`, no SmartScreen warning    |
 
 That was declined for a free community app. The consequence is real and worth
 being honest about: a plain download shows a frightening warning on both
@@ -33,12 +33,12 @@ the shape for it (see "Adding signing later").
 
 Replace the placeholders. They're marked `REPLACE_WITH_YOUR_GITHUB_USER`:
 
-| File | What |
-|---|---|
-| `src/config/projectLinks.ts` | Repo, issues, docs, **Discord invite** |
-| `electron-builder.json` | `publish.owner` / `publish.repo` |
-| `src/updater.js` | Auto-update feed — **must match** the line above |
-| `INSTALL.md` | Both install commands |
+| File                         | What                                             |
+| ---------------------------- | ------------------------------------------------ |
+| `src/config/projectLinks.ts` | Repo, issues, docs, **Discord invite**           |
+| `electron-builder.json`      | `publish.owner` / `publish.repo`                 |
+| `src/updater.js`             | Auto-update feed — **must match** the line above |
+| `INSTALL.md`                 | Both install commands                            |
 
 If the updater feed and the publish target disagree, builds publish to one place
 and clients check another, and auto-update silently never fires.
@@ -65,7 +65,7 @@ The tag push triggers `.github/workflows/release.yml`, which:
 
 ### Why ad-hoc signing is not optional
 
-`electron-builder`'s `identity: null` *skips* signing rather than signing
+`electron-builder`'s `identity: null` _skips_ signing rather than signing
 ad-hoc, and macOS refuses to execute an unsigned arm64 binary at all. The build
 must run:
 
@@ -74,9 +74,9 @@ xattr -cr Murmur.app                       # or codesign rejects the bundle
 codesign --force --deep --sign - Murmur.app
 ```
 
-The `xattr` step is required: without it codesign fails with *"resource fork,
-Finder information, or similar detritus not allowed."* The workflow also repacks
-the `.zip` afterwards, because electron-builder zips the bundle *before* this
+The `xattr` step is required: without it codesign fails with _"resource fork,
+Finder information, or similar detritus not allowed."_ The workflow also repacks
+the `.zip` afterwards, because electron-builder zips the bundle _before_ this
 step runs.
 
 ## The tap and the bucket
@@ -103,7 +103,7 @@ a copy, never a hand-edit.
 
 ## Testing before a wide release
 
-You have no Windows machine. CI can *build* Windows, but hotkeys and clipboard
+You have no Windows machine. CI can _build_ Windows, but hotkeys and clipboard
 injection are exactly the parts that break in platform-specific ways, and they
 cannot be verified in CI.
 

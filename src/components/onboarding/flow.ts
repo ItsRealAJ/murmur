@@ -10,12 +10,11 @@ export type OnboardingStepId =
   | "use-cases"
   | "dictation-hotkey"
   | "activation-mode"
-  | "assistant-hotkey"
   | "setup-choice"
   | "byok-dictation"
-  | "byok-assistant"
   | "local-dictation"
-  | "local-assistant";
+  | "byok-cleanup"
+  | "local-cleanup";
 
 export type OnboardingAuthPath = "account" | "guest" | null;
 export type OnboardingSetupMode = "cloud" | "byok" | "local" | null;
@@ -32,7 +31,6 @@ export interface OnboardingSession {
 export interface OnboardingRouteContext {
   authPath: OnboardingAuthPath;
   setupMode: OnboardingSetupMode;
-  agentAllowed: boolean;
   /** A confirmed Enterprise workspace is already provisioned outside onboarding. */
   skipSetupChoice?: boolean;
 }
@@ -46,8 +44,8 @@ const CORE_ROUTE: OnboardingStepId[] = [
 ];
 
 const SETUP_ROUTES: Record<Exclude<OnboardingSetupMode, null | "cloud">, OnboardingStepId[]> = {
-  byok: ["byok-dictation", "byok-assistant"],
-  local: ["local-dictation", "local-assistant"],
+  byok: ["byok-dictation", "byok-cleanup"],
+  local: ["local-dictation", "local-cleanup"],
 };
 
 // Canonical flow order, independent of any one route. reconcileStepWithRoute uses
@@ -58,12 +56,11 @@ const STEP_ORDER: OnboardingStepId[] = [
   "use-cases",
   "dictation-hotkey",
   "activation-mode",
-  "assistant-hotkey",
   "setup-choice",
   "byok-dictation",
-  "byok-assistant",
+  "byok-cleanup",
   "local-dictation",
-  "local-assistant",
+  "local-cleanup",
 ];
 
 const KNOWN_STEPS = new Set<OnboardingStepId>(STEP_ORDER);
@@ -87,7 +84,6 @@ const LEGACY_STEP_MAP: OnboardingStepId[] = [
   "permissions",
   "permissions",
   "dictation-hotkey",
-  "assistant-hotkey",
   "setup-choice",
 ];
 
@@ -123,20 +119,17 @@ export function getOnboardingRoute(context: OnboardingRouteContext): OnboardingS
   // API key gets entered. Nothing could transcribe yet, so the demo could only
   // ever fail, and it failed on the one screen meant to prove the app works.
   // Onboarding now covers the basics and hands straight over to setup.
+  //
+  // Setup still has two stages, but the second one is the cleanup model, not
+  // the assistant. It was only ever labelled "assistant" — its scope is "llm",
+  // and it is what applyReasoningSelectionToAllScopes configures. Deleting it
+  // with the agent would have left dictation cleanup unconfigured.
   const setupChoice = context.skipSetupChoice ? [] : (["setup-choice"] as OnboardingStepId[]);
 
-  const route: OnboardingStepId[] = [
-    ...CORE_ROUTE,
-    ...(context.agentAllowed ? (["assistant-hotkey"] as OnboardingStepId[]) : []),
-    ...setupChoice,
-  ];
+  const route: OnboardingStepId[] = [...CORE_ROUTE, ...setupChoice];
 
   if (context.setupMode && context.setupMode !== "cloud") {
-    route.push(
-      ...SETUP_ROUTES[context.setupMode].filter(
-        (stepId) => context.agentAllowed || !stepId.endsWith("assistant")
-      )
-    );
+    route.push(...SETUP_ROUTES[context.setupMode]);
   }
 
   return route;
@@ -206,8 +199,8 @@ export function migrateLegacyOnboardingStep(value: string | null): OnboardingSte
  *
  * Clamps to the route step nearest in the canonical order, ties going to the
  * earlier one so nothing gets skipped — falling back to the route's last step
- * would teleport past intermediate steps (with agentAllowed false, asking for an
- * assistant step must land on its neighbour, not on setup-choice).
+ * would teleport past intermediate steps — a saved session naming a removed
+ * step must land on its neighbour, not on the end of the route.
  */
 export function reconcileStepWithRoute(
   stepId: OnboardingStepId,
@@ -243,10 +236,9 @@ export interface OnboardingProgressState {
  * counter on, filled up to the current one.
  *
  * The total comes from the route rather than a constant because the route itself
- * is conditional — the assistant pair drops out when the agent is disallowed, and
- * the provider pair only exists once a non-cloud setup mode is picked. Choosing
- * BYOK/local on setup-choice therefore appends two steps and the row
- * grows by two dots at that moment, which is the flow honestly getting longer.
+ * is conditional — the provider step only exists once a non-cloud setup mode is
+ * picked. Choosing BYOK/local on setup-choice therefore appends a step and the
+ * row grows by one dot at that moment, which is the flow honestly getting longer.
  *
  * Returns null when there is nothing worth drawing: a compact step, an off-route
  * step, or a route with fewer than two counted steps, where a one-dot row would

@@ -111,10 +111,7 @@ test(
 
     assert.equal(HyprlandShortcutManager.getHyprlandConfigStatus().path, luaPath);
     assert.match(fs.readFileSync(luaPath, "utf8"), /pcall\(require, .+murmur-binds\.lua/);
-    assert.equal(
-      (fs.readFileSync(luaPath, "utf8").match(/murmur-binds\.lua/g) || []).length,
-      1
-    );
+    assert.equal((fs.readFileSync(luaPath, "utf8").match(/murmur-binds\.lua/g) || []).length, 1);
     const binds = fs.readFileSync(path.join(configDir, "murmur-binds.lua"), "utf8");
     assert.match(binds, /^-- Murmur keybinds/m);
     assert.match(binds, /hl\.bind\("CTRL \+ SHIFT \+ RETURN", hl\.dsp\.exec_cmd\("dbus-send/);

@@ -8,7 +8,8 @@ import { PROMPT_KINDS, type PromptKind } from "./registry";
 export { PROMPT_KINDS, PROMPT_KIND_LIST, type PromptKind } from "./registry";
 
 export interface ResolvePromptOptions {
-  agentName: string | null;
+  /** Vestigial seam: always null now. See applySubstitutions. */
+  agentName?: string | null;
   uiLanguage?: string;
   language?: string;
   customDictionary?: string[];
@@ -62,7 +63,11 @@ export function appendDictionarySuffix(
 }
 
 function applySubstitutions(template: string, opts: ResolvePromptOptions): string {
-  const name = opts.agentName?.trim() || "Assistant";
+  // The cleanup prompt uses this to say "mentions of <name> are dictated words,
+  // keep them" — it stops the model reacting when someone says the app's name
+  // mid-sentence. It used to come from a user-configurable agent identity; the
+  // agent is gone, so it is just the product name now. Callers pass null.
+  const name = opts.agentName?.trim() || "Murmur";
   let prompt = template.replace(/\{\{agentName\}\}/g, name);
 
   // Tone goes in before the dictionary suffix so the dictionary stays last,

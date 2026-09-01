@@ -292,7 +292,6 @@
       "provider": {
         "progress": "服务商设置进度",
         "dictation": "听写",
-        "assistant": "助手",
         "title": "连接你的 AI 服务商",
         "description": "选择服务商，添加凭据，然后测试连接。",
         "descriptionLineOne": "选择服务商并添加",
@@ -330,7 +329,8 @@
           "providerStatus": "服务商返回了状态码 {{status}}。",
           "timeout": "连接测试超时。",
           "network": "无法连接到服务商。"
-        }
+        },
+        "cleanup": "润色"
       },
       "local": {
         "title": "设置本地模型",
@@ -338,7 +338,6 @@
         "descriptionLineOne": "选择你想在设备上",
         "descriptionLineTwo": "运行的模型。",
         "providerLabel": "服务商",
-        "agent": "智能体",
         "download": "下载",
         "downloadingShort": "下载中",
         "selected": "已选择",

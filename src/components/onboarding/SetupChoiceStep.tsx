@@ -29,8 +29,10 @@ import nvidiaIcon from "../../assets/icons/providers/nvidia.webp";
 // Only the Local card opens the warning dialog now — BYOK goes
 // straight through from the "Choose your API setup" modal.
 
-type SetupMode = Exclude<OnboardingSetupMode, null>;
-type AdvancedSetupMode = Exclude<SetupMode, "cloud">;
+// "cloud" was the hosted OpenWhispr tier; Murmur has no such thing, so it is
+// excluded at the type level rather than left selectable-in-principle.
+type SetupMode = Exclude<OnboardingSetupMode, null | "cloud">;
+type AdvancedSetupMode = SetupMode;
 // Local opens the warning dialog; BYOK is selected directly from the
 // more-options modal, so a "byok" pending state is unreachable.
 type WarningSetupMode = Exclude<AdvancedSetupMode, "byok">;
@@ -39,7 +41,6 @@ const REFERENCE_LOCAL_MODEL_ID = "nemotron-3.5-asr-streaming-0.6b";
 
 interface SetupChoiceStepProps {
   isSignedIn: boolean;
-  agentAllowed: boolean;
   onSelect: (mode: SetupMode, options?: { selfHosted?: boolean }) => void;
 }
 
@@ -113,11 +114,7 @@ const CardAction = forwardRef<
   );
 });
 
-export default function SetupChoiceStep({
-  isSignedIn,
-  agentAllowed,
-  onSelect,
-}: SetupChoiceStepProps) {
+export default function SetupChoiceStep({ isSignedIn, onSelect }: SetupChoiceStepProps) {
   const { t } = useTranslation();
   const policy = usePolicySnapshot();
   const [pending, setPending] = useState<WarningSetupMode | null>(null);
@@ -135,7 +132,6 @@ export default function SetupChoiceStep({
 
   const availability = getOnboardingSetupAvailability({
     policy,
-    agentAllowed,
     transcriptionProviders: getTranscriptionProviders(),
     llmProviders: modelRegistry.getCloudProviders(),
   });

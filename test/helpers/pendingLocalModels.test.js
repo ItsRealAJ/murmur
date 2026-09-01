@@ -16,7 +16,7 @@ test("pending local model selections remain isolated by scope", async () => {
   const pending = await import("../../src/components/onboarding/pendingLocalModels.ts");
 
   pending.rememberPendingLocalModel("dictation", { provider: "whisper", modelId: "base" });
-  pending.rememberPendingLocalModel("assistant", {
+  pending.rememberPendingLocalModel("cleanup", {
     provider: "qwen",
     modelId: "qwen3.5-4b-q4_k_m",
   });
@@ -26,7 +26,7 @@ test("pending local model selections remain isolated by scope", async () => {
     modelId: "base",
   });
   assert.equal(pending.hasPendingLocalModels(), true);
-  assert.deepEqual(pending.readPendingLocalModels().assistant, {
+  assert.deepEqual(pending.readPendingLocalModels().cleanup, {
     provider: "qwen",
     modelId: "qwen3.5-4b-q4_k_m",
   });
@@ -49,7 +49,7 @@ test("pending selections can be cleared when onboarding finishes on another mode
   const pending = await import("../../src/components/onboarding/pendingLocalModels.ts");
 
   pending.rememberPendingLocalModel("dictation", { provider: "whisper", modelId: "base" });
-  pending.rememberPendingLocalModel("assistant", {
+  pending.rememberPendingLocalModel("cleanup", {
     provider: "qwen",
     modelId: "qwen3.5-4b-q4_k_m",
   });
@@ -74,7 +74,7 @@ test("pending local model availability distinguishes active, installed, and orph
     "downloading"
   );
   assert.equal(
-    getPendingLocalModelAvailability("assistant", assistant, {
+    getPendingLocalModelAvailability("cleanup", assistant, {
       llm: [{ id: "qwen-local", isDownloaded: true, isDownloading: false }],
     }),
     "downloaded"

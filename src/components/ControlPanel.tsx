@@ -562,8 +562,7 @@ export default function ControlPanel({ initialSettingsSection }: ControlPanelPro
                 import("../stores/settingsStore"),
               ]);
               const settings = getEffectiveSettings();
-              const agentName = localStorage.getItem("agentName") || null;
-              const route = resolveReasoningRoute(rawText, settings, agentName, false, true);
+              const route = resolveReasoningRoute(rawText, settings, null, false, false);
               if (route.kind === "translation") {
                 const { text, translated } = await executeTranslationChain({
                   text: rawText,
@@ -572,11 +571,11 @@ export default function ControlPanel({ initialSettingsSection }: ControlPanelPro
                     ReasoningService.processText(
                       currentText,
                       getEffectiveCleanupModel(),
-                      agentName,
+                      null,
                       route.cleanupConfig
                     ),
                   runTranslate: (currentText: string) =>
-                    ReasoningService.processText(currentText, route.model, agentName, route.config),
+                    ReasoningService.processText(currentText, route.model, null, route.config),
                   shouldTranslate: shouldRunTranslateStep(
                     settings.translationSourceLanguage,
                     settings.translationTargetLanguage
@@ -633,8 +632,7 @@ export default function ControlPanel({ initialSettingsSection }: ControlPanelPro
               const model = getEffectiveCleanupModel();
               const isCloud = isCloudCleanupMode();
               if (model || isCloud) {
-                const agentName = localStorage.getItem("agentName") || null;
-                const reasonedText = await ReasoningService.processText(rawText, model, agentName, {
+                const reasonedText = await ReasoningService.processText(rawText, model, null, {
                   disableThinking: getSettings().cleanupDisableThinking,
                 });
                 if (hasTextContent(reasonedText) && reasonedText !== rawText) {

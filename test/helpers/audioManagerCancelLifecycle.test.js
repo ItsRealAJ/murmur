@@ -168,14 +168,6 @@ test("a user cancel during batch transcription is not an error and saves nothing
   assert.deepEqual(calls.states, ["idle"]);
 });
 
-test("a directive banked after the pipeline was cancelled is dropped", async (t) => {
-  const { AudioManager } = await loadManagerClass(t);
-  const { manager } = createManager(AudioManager, deferred());
-  manager.cancelProcessing();
-  manager._bankAssistantDirective("late command", {}, null);
-  assert.equal(manager.pendingAssistantConversation, null);
-});
-
 // Round-2 review finding: finalizeBatchRecording's earlier cleanupPreview()
 // call (without dismiss:true) routes through the main process's
 // stop-dictation-preview handler, which — whenever the live-preview toggle

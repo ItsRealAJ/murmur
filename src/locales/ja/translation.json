@@ -292,7 +292,6 @@
       "provider": {
         "progress": "プロバイダー設定の進行状況",
         "dictation": "ディクテーション",
-        "assistant": "アシスタント",
         "title": "AI プロバイダーを接続",
         "description": "プロバイダーを選び、認証情報を追加して、接続をテストします。",
         "descriptionLineOne": "プロバイダーを選んで",
@@ -330,7 +329,8 @@
           "providerStatus": "プロバイダーがステータス {{status}} を返しました。",
           "timeout": "接続テストがタイムアウトしました。",
           "network": "プロバイダーに接続できませんでした。"
-        }
+        },
+        "cleanup": "整形"
       },
       "local": {
         "title": "ローカルモデルを設定",
@@ -338,7 +338,6 @@
         "descriptionLineOne": "デバイス上で実行する",
         "descriptionLineTwo": "モデルを選択してください。",
         "providerLabel": "プロバイダー",
-        "agent": "エージェント",
         "download": "ダウンロード",
         "downloadingShort": "ダウンロード中",
         "selected": "選択済み",

@@ -69,7 +69,7 @@ success states are carried by icon and copy, and the accent never doubles as
 "that worked".
 
 **The one stated exception.** "Accent only while audio is live" governs the
-dictation panel — the always-on-top surface where the colour *is* the state
+dictation panel — the always-on-top surface where the colour _is_ the state
 readout. Onboarding is a different surface with different rules: it is seen
 once, it contains no live audio, and holding the line there produced a first
 screen whose only colour came from three macOS system icons while Murmur's own

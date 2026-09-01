@@ -81,8 +81,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import LinuxPttSetupInfo from "./ui/LinuxPttSetupInfo";
 import { Toggle } from "./ui/toggle";
 import DeveloperSection from "./DeveloperSection";
-import ChatAgentSettings from "./settings/ChatAgentSettings";
-import DictationAgentSettings from "./settings/DictationAgentSettings";
 import DictationTranslationSettings from "./settings/DictationTranslationSettings";
 import InferenceConfigEditor from "./settings/InferenceConfigEditor";
 import LanguageSelector from "./ui/LanguageSelector";
@@ -115,7 +113,6 @@ import {
   canChangeCloudBackupPreference,
   effectiveAudioRetentionDays,
   effectiveLocalHistoryEnabled,
-  isAgentAllowed,
   isCloudBackupAllowed,
   lockedLocalHistoryValue,
   maxAudioRetentionDays,
@@ -429,28 +426,6 @@ const CLEANUP_MODE_TOAST_KEY: Partial<Record<InferenceMode, string>> = {
   "self-hosted": "switchedSelfHosted",
 };
 
-function NoteFormattingSettings() {
-  const { t } = useTranslation();
-  const autoGenerateNoteTitle = useSettingsStore((s) => s.autoGenerateNoteTitle);
-  const setAutoGenerateNoteTitle = useSettingsStore((s) => s.setAutoGenerateNoteTitle);
-
-  return (
-    <div className="space-y-4">
-      <SettingsPanel>
-        <SettingsPanelRow>
-          <SettingsRow
-            label={t("settingsPage.noteFormatting.autoGenerateTitle")}
-            description={t("settingsPage.noteFormatting.autoGenerateTitleDescription")}
-          >
-            <Toggle checked={autoGenerateNoteTitle} onChange={setAutoGenerateNoteTitle} />
-          </SettingsRow>
-        </SettingsPanelRow>
-      </SettingsPanel>
-      <InferenceConfigEditor scope="noteFormatting" />
-    </div>
-  );
-}
-
 function AiModelsSection({ useCleanupModel, setUseCleanupModel, toast }: AiModelsSectionProps) {
   const { t } = useTranslation();
 
@@ -488,22 +463,12 @@ function AiModelsSection({ useCleanupModel, setUseCleanupModel, toast }: AiModel
 }
 
 type SpeechTab = "dictation" | "noteRecording" | "upload";
-type LlmTab =
-  | "dictationCleanup"
-  | "dictationAgent"
-  | "dictationTranslation"
-  | "noteFormatting"
-  | "chatIntelligence";
+// Cleanup and translation are all that is left: the agent's two scopes went
+// with the agent, and note formatting went with the notes strip.
+type LlmTab = "dictationCleanup" | "dictationTranslation";
 
 const SPEECH_TABS: SpeechTab[] = ["dictation", "noteRecording", "upload"];
-const LLM_TABS: LlmTab[] = [
-  "dictationCleanup",
-  "dictationAgent",
-  "dictationTranslation",
-  "noteFormatting",
-  "chatIntelligence",
-];
-const AGENT_LLM_TABS = new Set<LlmTab>(["dictationAgent", "chatIntelligence"]);
+const LLM_TABS: LlmTab[] = ["dictationCleanup", "dictationTranslation"];
 
 function useSubTab<T extends string>(storageKey: string, options: readonly T[], initial?: T) {
   const [tab, setTab] = useLocalStorage<T>(storageKey, initial ?? options[0]);
@@ -600,32 +565,19 @@ function SpeechToTextTabs({ renderDictation }: { renderDictation: () => React.Re
 function LlmsTabs({
   initialTab,
   renderDictationCleanup,
-  renderDictationAgent,
   renderDictationTranslation,
-  renderNoteFormatting,
-  renderChatIntelligence,
 }: {
   initialTab?: LlmTab;
   renderDictationCleanup: () => React.ReactNode;
-  renderDictationAgent: () => React.ReactNode;
   renderDictationTranslation: () => React.ReactNode;
-  renderNoteFormatting: () => React.ReactNode;
-  renderChatIntelligence: () => React.ReactNode;
 }) {
   const { t } = useTranslation();
-  const agentAllowed = usePolicyStore(isAgentAllowed);
-  const visibleTabIds = agentAllowed
-    ? LLM_TABS
-    : LLM_TABS.filter((tabId) => !AGENT_LLM_TABS.has(tabId));
-  const [tab, setTab] = useSubTab<LlmTab>("settings.llmsTab", visibleTabIds, initialTab);
+  const [tab, setTab] = useSubTab<LlmTab>("settings.llmsTab", LLM_TABS, initialTab);
 
   const subTabs = [
     { id: "dictationCleanup", name: t("settingsPage.llms.tabs.dictationCleanup") },
-    { id: "dictationAgent", name: t("settingsPage.llms.tabs.dictationAgent") },
     { id: "dictationTranslation", name: t("settingsPage.llms.tabs.dictationTranslation") },
-    { id: "noteFormatting", name: t("settingsPage.llms.tabs.noteFormatting") },
-    { id: "chatIntelligence", name: t("settingsPage.llms.tabs.chatIntelligence") },
-  ].filter((item) => visibleTabIds.includes(item.id as LlmTab));
+  ];
 
   return (
     <div className="space-y-4">
@@ -637,23 +589,16 @@ function LlmsTabs({
         providers={subTabs}
         selectedId={tab}
         onSelect={(id) => setTab(id as LlmTab)}
-        renderIcon={(id) => {
-          if (id === "dictationCleanup") return <Wand2 className="w-3.5 h-3.5" />;
-          if (id === "dictationAgent") return <Sparkles className="w-3.5 h-3.5" />;
-          if (id === "dictationTranslation") return <Languages className="w-3.5 h-3.5" />;
-          if (id === "noteFormatting") return <BookOpen className="w-3.5 h-3.5" />;
-          return <MessageSquare className="w-3.5 h-3.5" />;
-        }}
+        renderIcon={(id) =>
+          id === "dictationCleanup" ? (
+            <Wand2 className="w-3.5 h-3.5" />
+          ) : (
+            <Languages className="w-3.5 h-3.5" />
+          )
+        }
       />
       <TabPanel active={tab === "dictationCleanup"}>{renderDictationCleanup()}</TabPanel>
-      {agentAllowed && (
-        <TabPanel active={tab === "dictationAgent"}>{renderDictationAgent()}</TabPanel>
-      )}
       <TabPanel active={tab === "dictationTranslation"}>{renderDictationTranslation()}</TabPanel>
-      <TabPanel active={tab === "noteFormatting"}>{renderNoteFormatting()}</TabPanel>
-      {agentAllowed && (
-        <TabPanel active={tab === "chatIntelligence"}>{renderChatIntelligence()}</TabPanel>
-      )}
     </div>
   );
 }
@@ -835,15 +780,12 @@ export default function SettingsPage({
     setWhisperVadSamplesOverlap,
   } = useSettings();
 
-  const voiceAgentKey = useSettingsStore((s) => s.voiceAgentKey);
-  const setVoiceAgentKey = useSettingsStore((s) => s.setVoiceAgentKey);
   const translationKey = useSettingsStore((s) => s.translationKey);
   const verbatimKey = useSettingsStore((s) => s.verbatimKey);
   const setTranslationKey = useSettingsStore((s) => s.setTranslationKey);
   const setVerbatimKey = useSettingsStore((s) => s.setVerbatimKey);
 
   const settingsPolicyState = usePolicySnapshot();
-  const agentAllowedByPolicy = isAgentAllowed(settingsPolicyState);
   const historyLockedByPolicy = lockedLocalHistoryValue(settingsPolicyState) !== null;
   const effectiveDataRetentionEnabled = effectiveLocalHistoryEnabled(
     settingsPolicyState,
@@ -1000,12 +942,12 @@ export default function SettingsPage({
     showAlert: showAlertDialog,
   });
 
-  // Agent hotkey setters resolve to false when main-process registration fails;
+  // These hotkey setters resolve to false when main-process registration fails;
   // surface it and return the result so HotkeyListInput rolls the row back.
-  const [isAgentHotkeyCommitting, setIsAgentHotkeyCommitting] = useState(false);
-  const commitAgentHotkey = useCallback(
+  const [isHotkeyCommitting, setIsHotkeyCommitting] = useState(false);
+  const commitHotkey = useCallback(
     async (setter: (key: string) => Promise<boolean>, key: string) => {
-      setIsAgentHotkeyCommitting(true);
+      setIsHotkeyCommitting(true);
       try {
         const ok = await setter(key);
         if (!ok) {
@@ -1016,7 +958,7 @@ export default function SettingsPage({
         }
         return ok;
       } finally {
-        setIsAgentHotkeyCommitting(false);
+        setIsHotkeyCommitting(false);
       }
     },
     [showAlertDialog, t]
@@ -1027,27 +969,12 @@ export default function SettingsPage({
       validateHotkeyForSlot(
         hotkey,
         {
-          "settingsPage.general.voiceAgentHotkey.title": voiceAgentKey,
           "settingsPage.general.translationHotkey.title": translationKey,
           "settingsPage.general.verbatimHotkey.title": verbatimKey,
         },
         t
       ),
-    [voiceAgentKey, translationKey, verbatimKey, t]
-  );
-
-  const validateVoiceAgentHotkey = useCallback(
-    (hotkey: string) =>
-      validateHotkeyForSlot(
-        hotkey,
-        {
-          "settingsPage.general.hotkey.title": dictationKey,
-          "settingsPage.general.translationHotkey.title": translationKey,
-          "settingsPage.general.verbatimHotkey.title": verbatimKey,
-        },
-        t
-      ),
-    [dictationKey, translationKey, verbatimKey, t]
+    [translationKey, verbatimKey, t]
   );
 
   const validateVerbatimHotkey = useCallback(
@@ -1056,12 +983,11 @@ export default function SettingsPage({
         hotkey,
         {
           "settingsPage.general.hotkey.title": dictationKey,
-          "settingsPage.general.voiceAgentHotkey.title": voiceAgentKey,
           "settingsPage.general.translationHotkey.title": translationKey,
         },
         t
       ),
-    [dictationKey, voiceAgentKey, translationKey, t]
+    [dictationKey, translationKey, t]
   );
 
   const validateTranslationHotkey = useCallback(
@@ -1070,12 +996,11 @@ export default function SettingsPage({
         hotkey,
         {
           "settingsPage.general.hotkey.title": dictationKey,
-          "settingsPage.general.voiceAgentHotkey.title": voiceAgentKey,
           "settingsPage.general.verbatimHotkey.title": verbatimKey,
         },
         t
       ),
-    [dictationKey, voiceAgentKey, verbatimKey, t]
+    [dictationKey, verbatimKey, t]
   );
 
   const {
@@ -2399,28 +2324,6 @@ EOF`,
               </SettingsPanel>
             </div>
 
-            {/* Voice Agent Hotkey */}
-            {agentAllowedByPolicy && (
-              <div>
-                <SectionHeader
-                  title={t("settingsPage.general.voiceAgentHotkey.title")}
-                  description={t("settingsPage.general.voiceAgentHotkey.description")}
-                />
-                <SettingsPanel>
-                  <SettingsPanelRow>
-                    <HotkeyListInput
-                      value={voiceAgentKey}
-                      onChange={(list) => commitAgentHotkey(setVoiceAgentKey, list)}
-                      onClear={() => commitAgentHotkey(setVoiceAgentKey, "")}
-                      validate={validateVoiceAgentHotkey}
-                      disabled={isAgentHotkeyCommitting}
-                      maxHotkeys={isUsingNativeShortcut ? 1 : undefined}
-                    />
-                  </SettingsPanelRow>
-                </SettingsPanel>
-              </div>
-            )}
-
             {/* Translation Hotkey */}
             <div>
               <SectionHeader
@@ -2431,10 +2334,10 @@ EOF`,
                 <SettingsPanelRow>
                   <HotkeyListInput
                     value={translationKey}
-                    onChange={(list) => commitAgentHotkey(setTranslationKey, list)}
-                    onClear={() => commitAgentHotkey(setTranslationKey, "")}
+                    onChange={(list) => commitHotkey(setTranslationKey, list)}
+                    onClear={() => commitHotkey(setTranslationKey, "")}
                     validate={validateTranslationHotkey}
-                    disabled={isAgentHotkeyCommitting}
+                    disabled={isHotkeyCommitting}
                     maxHotkeys={isUsingNativeShortcut ? 1 : undefined}
                   />
                 </SettingsPanelRow>
@@ -2451,10 +2354,10 @@ EOF`,
                 <SettingsPanelRow>
                   <HotkeyListInput
                     value={verbatimKey}
-                    onChange={(list) => commitAgentHotkey(setVerbatimKey, list)}
-                    onClear={() => commitAgentHotkey(setVerbatimKey, "")}
+                    onChange={(list) => commitHotkey(setVerbatimKey, list)}
+                    onClear={() => commitHotkey(setVerbatimKey, "")}
                     validate={validateVerbatimHotkey}
-                    disabled={isAgentHotkeyCommitting}
+                    disabled={isHotkeyCommitting}
                     maxHotkeys={isUsingNativeShortcut ? 1 : undefined}
                   />
                 </SettingsPanelRow>
@@ -3117,7 +3020,6 @@ EOF`,
             initialTab={
               activeSection === "llms" ? (initialSubTab as LlmTab | undefined) : undefined
             }
-            renderChatIntelligence={() => <ChatAgentSettings />}
             renderDictationCleanup={() => (
               <div className="space-y-6">
                 <AiModelsSection
@@ -3136,9 +3038,7 @@ EOF`,
                 </div>
               </div>
             )}
-            renderDictationAgent={() => <DictationAgentSettings />}
             renderDictationTranslation={() => <DictationTranslationSettings />}
-            renderNoteFormatting={() => <NoteFormattingSettings />}
           />
         </TabPanel>
       )}

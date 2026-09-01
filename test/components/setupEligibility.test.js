@@ -30,7 +30,6 @@ function availability(policy, overrides = {}) {
   return load().then(({ getOnboardingSetupAvailability }) =>
     getOnboardingSetupAvailability({
       policy,
-      agentAllowed: true,
       transcriptionProviders: TRANSCRIPTION_PROVIDERS,
       llmProviders: LLM_PROVIDERS,
       ...overrides,
@@ -91,32 +90,20 @@ test("availability reports no setup when policy permits no onboarding mode", asy
   });
 });
 
-test("dictation-only policies ignore LLM availability when the agent is disabled", async () => {
-  const policy = managedPolicy({
-    transcription: {
-      allowedModes: ["openwhispr", "local", "providers", "self-hosted"],
-      allowedByokProviders: ["groq", "custom"],
-    },
-    llm: {
-      allowedModes: [],
-      allowedByokProviders: [],
-      allowedEnterpriseProviders: [],
-    },
-  });
-  policy.policy.features.agentEnabled = false;
-
-  assert.deepEqual(await availability(policy, { agentAllowed: true }), {
-    cloud: false,
-    local: false,
-    byok: false,
-    selfHosted: false,
-  });
-
-  const result = await availability(policy, { agentAllowed: false });
-  assert.deepEqual(result, {
-    cloud: false,
-    local: true,
-    byok: true,
-    selfHosted: true,
-  });
+// Both setup stages always run now, so a policy that blocks LLM providers
+// blocks the whole route rather than leaving a dictation-only path: cleanup
+// needs a model, and there is no agent flag left to make it optional.
+test("blocking LLM providers blocks the route, since cleanup needs a model", async () => {
+  const result = await availability(
+    managedPolicy({
+      transcription: {
+        allowedModes: ["local", "providers", "self-hosted"],
+        allowedByokProviders: ["groq"],
+      },
+      llm: { allowedModes: [], allowedByokProviders: [], allowedEnterpriseProviders: [] },
+    })
+  );
+  assert.equal(result.byok, false);
+  assert.equal(result.local, false);
+  assert.equal(result.selfHosted, false);
 });

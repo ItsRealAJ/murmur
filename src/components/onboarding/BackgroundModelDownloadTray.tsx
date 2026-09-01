@@ -240,7 +240,7 @@ export default function BackgroundModelDownloadTray() {
       if (event.type === "complete") {
         if (hydrationInProgress.current) removedDuringHydration.current.add(key);
         cancelledKeys.current.delete(key);
-        activatePendingLocalModel(event.kind === "llm" ? "assistant" : "dictation", event.id);
+        activatePendingLocalModel(event.kind === "llm" ? "cleanup" : "dictation", event.id);
       }
       setDownloads((current) => {
         if (event.type === "complete") {
@@ -299,7 +299,7 @@ export default function BackgroundModelDownloadTray() {
 
   const cancelDownload = useCallback(async (download: ActiveDownload) => {
     const key = downloadKey(download.kind, download.id);
-    const pendingKind = download.kind === "llm" ? "assistant" : "dictation";
+    const pendingKind = download.kind === "llm" ? "cleanup" : "dictation";
 
     // An error row represents a transfer that has already stopped. Its X is a
     // dismiss action, so no cancellation IPC is needed (and would be refused).

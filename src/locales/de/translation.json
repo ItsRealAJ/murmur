@@ -292,7 +292,6 @@
       "provider": {
         "progress": "Fortschritt der Anbieter-Einrichtung",
         "dictation": "Diktat",
-        "assistant": "Assistent",
         "title": "KI-Anbieter verbinden",
         "description": "Wählen Sie einen Anbieter, fügen Sie Ihre Zugangsdaten hinzu und testen Sie die Verbindung.",
         "descriptionLineOne": "Wählen Sie einen Anbieter und fügen",
@@ -330,7 +329,8 @@
           "providerStatus": "Der Anbieter hat den Status {{status}} zurückgegeben.",
           "timeout": "Der Verbindungstest hat das Zeitlimit überschritten.",
           "network": "Der Anbieter ist nicht erreichbar."
-        }
+        },
+        "cleanup": "Bereinigung"
       },
       "local": {
         "title": "Lokale Modelle einrichten",
@@ -338,7 +338,6 @@
         "descriptionLineOne": "Wählen Sie die Modelle, die",
         "descriptionLineTwo": "auf Ihrem Gerät laufen sollen.",
         "providerLabel": "Anbieter",
-        "agent": "Agent",
         "download": "Herunterladen",
         "downloadingShort": "Wird geladen",
         "selected": "Ausgewählt",

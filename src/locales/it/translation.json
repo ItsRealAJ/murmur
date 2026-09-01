@@ -292,7 +292,6 @@
       "provider": {
         "progress": "Avanzamento della configurazione del provider",
         "dictation": "Dettatura",
-        "assistant": "Assistente",
         "title": "Connetti il tuo provider IA",
         "description": "Scegli un provider, aggiungi le credenziali e prova la connessione.",
         "descriptionLineOne": "Scegli un provider e aggiungi",
@@ -330,7 +329,8 @@
           "providerStatus": "Il provider ha restituito lo stato {{status}}.",
           "timeout": "Il test di connessione è scaduto.",
           "network": "Impossibile raggiungere il provider."
-        }
+        },
+        "cleanup": "Pulizia"
       },
       "local": {
         "title": "Configura i modelli locali",
@@ -338,7 +338,6 @@
         "descriptionLineOne": "Scegli i modelli da eseguire",
         "descriptionLineTwo": "sul tuo dispositivo.",
         "providerLabel": "Provider",
-        "agent": "Agente",
         "download": "Scarica",
         "downloadingShort": "Download",
         "selected": "Selezionato",

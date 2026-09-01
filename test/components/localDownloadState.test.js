@@ -10,8 +10,8 @@ test("transcription transfers only unlock the dictation stage", async () => {
 
   assert.equal(isLocalStageDownloadActive("dictation", whisper), true);
   assert.equal(isLocalStageDownloadActive("dictation", parakeet), true);
-  assert.equal(isLocalStageDownloadActive("assistant", whisper), false);
-  assert.equal(isLocalStageDownloadActive("assistant", parakeet), false);
+  assert.equal(isLocalStageDownloadActive("cleanup", whisper), false);
+  assert.equal(isLocalStageDownloadActive("cleanup", parakeet), false);
 });
 
 test("an LLM transfer only unlocks the assistant stage", async () => {
@@ -19,7 +19,7 @@ test("an LLM transfer only unlocks the assistant stage", async () => {
   const llm = { whisper: false, parakeet: false, llm: true };
 
   assert.equal(isLocalStageDownloadActive("dictation", llm), false);
-  assert.equal(isLocalStageDownloadActive("assistant", llm), true);
+  assert.equal(isLocalStageDownloadActive("cleanup", llm), true);
 });
 
 test("hydration cannot resurrect a download removed by a live terminal event", async () => {
@@ -29,10 +29,9 @@ test("hydration cannot resurrect a download removed by a live terminal event", a
     "llm:qwen": { percentage: 40 },
   };
 
-  assert.deepEqual(
-    mergeHydratedDownloads(staleInventory, {}, new Set(["whisper:base"])),
-    { "llm:qwen": { percentage: 40 } }
-  );
+  assert.deepEqual(mergeHydratedDownloads(staleInventory, {}, new Set(["whisper:base"])), {
+    "llm:qwen": { percentage: 40 },
+  });
 });
 
 test("live download state takes precedence over the hydration snapshot", async () => {

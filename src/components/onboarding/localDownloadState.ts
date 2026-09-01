@@ -6,10 +6,10 @@ export interface LocalDownloadActivity {
 
 /** A transcription transfer must never unlock the separate assistant stage. */
 export function isLocalStageDownloadActive(
-  stage: "dictation" | "assistant",
+  stage: "dictation" | "cleanup",
   activity: LocalDownloadActivity
 ): boolean {
-  return stage === "assistant" ? activity.llm : activity.whisper || activity.parakeet;
+  return stage === "cleanup" ? activity.llm : activity.whisper || activity.parakeet;
 }
 
 /**
