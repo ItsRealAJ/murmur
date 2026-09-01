@@ -631,6 +631,12 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
       );
   }
 
+  /** Route this dictation through the translation chain. */
+  setTranslationRequested(requested) {
+    this.translationRequested = requested;
+    this.translationApplied = false;
+  }
+
   /** Skip the cleanup model for this dictation and paste the raw transcript. */
   setVerbatimRequested(requested) {
     this.verbatimRequested = !!requested;

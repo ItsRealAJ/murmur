@@ -7,11 +7,7 @@ import { getSettings } from "../stores/settingsStore";
 import { expandSnippets } from "../utils/snippets";
 import { getRecordingErrorTitle, getRecordingErrorDescription } from "../utils/recordingErrors";
 import { isAccessibilitySkipped } from "../utils/permissions";
-import {
-  isAgentAllowed,
-  isScreenContextAllowed,
-  isTranscriptionContextAllowed,
-} from "../stores/policyRules";
+import { isAgentAllowed, isTranscriptionContextAllowed } from "../stores/policyRules";
 import { usePolicyStore } from "../stores/policyStore";
 import { getOnboardingDemoKind } from "../utils/onboardingDemo";
 import {
@@ -113,10 +109,6 @@ export const useAudioRecording = (toast, options = {}) => {
 
         if (!canStartDictation(audioManagerRef.current.getState())) return false;
 
-        const assistantSelectionContext = voiceAgentRequested
-          ? (getAssistantSelectionContextRef.current?.() ?? null)
-          : null;
-
         const preparationGeneration = ++preparationGenerationRef.current;
         setIsStopping(false);
         setIsPreparing(true);
@@ -146,35 +138,8 @@ export const useAudioRecording = (toast, options = {}) => {
         }
 
         demoKindRef.current = getOnboardingDemoKind(voiceAgentRequested);
-        audioManagerRef.current.setVoiceAgentRequested(voiceAgentRequested);
-        audioManagerRef.current.setAssistantSelectionContext(assistantSelectionContext);
         audioManagerRef.current.setTranslationRequested(translationRequested);
         audioManagerRef.current.setVerbatimRequested(verbatimRequested);
-        if (voiceAgentRequested) {
-          logger.info(
-            "Voice agent recording start",
-            { screenContextEnabled: !!getSettings().voiceAgentScreenContext },
-            "reasoning"
-          );
-        }
-        // getSettings() already reflects a managed policy that forces the
-        // setting off; the predicate additionally fails closed while the
-        // policy is still loading or errored.
-        if (
-          voiceAgentRequested &&
-          getSettings().voiceAgentScreenContext &&
-          isScreenContextAllowed(policyState)
-        ) {
-          audioManagerRef.current.beginScreenContextCapture();
-        }
-
-        // The selection to edit is whatever was highlighted at press time, so
-        // read it now: it resolves while the user speaks instead of adding a
-        // round trip after transcription.
-        if (voiceAgentRequested && !assistantSelectionContext) {
-          audioManagerRef.current.beginSelectionCapture();
-        }
-
         const didStart = audioManagerRef.current.shouldUseStreaming()
           ? await audioManagerRef.current.startStreamingRecording()
           : await audioManagerRef.current.startRecording();
@@ -282,8 +247,7 @@ export const useAudioRecording = (toast, options = {}) => {
       ).trim() || fallback.trim();
 
     const showDictationError = ({ title, description, transcript = "", duration }) => {
-      const recoverAssistant = Boolean(audioManagerRef.current?.voiceAgentRequested);
-      onDictationError?.({ recoverAssistant });
+      onDictationError?.({ recoverAssistant: false });
       const recoverableTranscript = getRecoverableTranscript(transcript);
       const actions = [
         {
@@ -335,10 +299,9 @@ export const useAudioRecording = (toast, options = {}) => {
         setIsStreaming(isStreaming ?? false);
         if (isRecording) setIsPreparing(false);
         if (!isRecording) setIsStopping(false);
-        // The panel only mirrors assistant-routed recordings; a plain
-        // dictation started while it is open must not masquerade as a
-        // follow-up (its transcript takes the paste route, not the panel).
-        setIsAssistantVoice(!!audioManagerRef.current?.voiceAgentRequested);
+        // No recording is assistant-routed any more; every transcript takes
+        // the paste route.
+        setIsAssistantVoice(false);
         if (micCaptureStatus) {
           setMicCaptureStatus(micCaptureStatus);
           const unavailable = micCaptureStatus === "unavailable";
@@ -419,7 +382,7 @@ export const useAudioRecording = (toast, options = {}) => {
           shouldShowByokStreamingPreview(
             settings.showTranscriptionPreview,
             settings.cloudTranscriptionMode,
-            !!audioManagerRef.current?.voiceAgentRequested
+            false
           )
         ) {
           const previewText = buildLiveTranscriptionPreview(
@@ -632,11 +595,6 @@ export const useAudioRecording = (toast, options = {}) => {
       onToggle?.();
     });
 
-    const disposeVoiceAgentToggle = window.electronAPI.onToggleVoiceAgent?.(() => {
-      handleToggle({ voiceAgentRequested: true });
-      onToggle?.();
-    });
-
     const disposeTranslationToggle = window.electronAPI.onToggleTranslation?.(() => {
       handleToggle({ translationRequested: true });
       onToggle?.();
@@ -679,7 +637,6 @@ export const useAudioRecording = (toast, options = {}) => {
       reportLifecycle("idle");
       unsubscribePolicy();
       disposeToggle?.();
-      disposeVoiceAgentToggle?.();
       disposeTranslationToggle?.();
       disposeVerbatimToggle?.();
       disposeStart?.();
