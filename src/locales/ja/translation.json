@@ -227,21 +227,17 @@
           "title": "利用できるセットアップ方法がありません",
           "description": "ワークスペースのポリシーでは、文字起こしと AI の完全なセットアップが許可されていません。管理者にお問い合わせください。"
         },
-        "cloud": {
-          "title": "Murmur Cloud",
-          "description": "毎週 2,000 語を無料で利用できます。設定はデバイス間で同期されます。",
-          "continue": "無料で続ける",
-          "signIn": "サインインしてクラウドを使う",
-          "features": {
-            "fast": "最速、セットアップ不要",
-            "privacy": "Privacy-focused processing",
-            "sync": "設定をデバイス間で同期",
-            "features": "ノートとアクションの AI 機能"
-          }
-        },
         "byok": {
           "title": "API プロバイダー",
-          "description": "自分の API キーを使用します。"
+          "description": "すでに利用しているプロバイダーの API キーを使います。",
+          "badge": "自分のキー",
+          "action": "API キーを追加",
+          "features": {
+            "key": "手持ちのキーをそのまま使用",
+            "nothing": "ダウンロード不要",
+            "any": "どのマシンでも動作",
+            "billing": "料金はプロバイダーに直接支払い"
+          }
         },
         "local": {
           "title": "デバイス上で実行",
@@ -251,7 +247,7 @@
           "features": {
             "device": "デバイス上で動作",
             "offline": "設定後はオフラインで動作",
-            "models": "ディクテーションとアシスタント用のモデルを選択",
+            "models": "ディクテーションと整形のモデルを選択",
             "free": "ずっと無料で使える"
           }
         },
@@ -277,17 +273,7 @@
             }
           }
         },
-        "useCloud": "代わりにクラウドを使う",
-        "continueSetup": "セットアップを続ける",
-        "showMore": "その他のオプションを表示",
-        "moreOptions": {
-          "title": "API の設定方法を選択",
-          "description": "API キーを追加するか、セルフホストモデルを接続します。",
-          "selfHosted": {
-            "title": "セルフホスト",
-            "description": "自分でホストしているモデルを接続します。"
-          }
-        }
+        "continueSetup": "セットアップを続ける"
       },
       "provider": {
         "progress": "プロバイダー設定の進行状況",

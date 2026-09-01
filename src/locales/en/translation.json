@@ -227,21 +227,17 @@
           "title": "No setup option is available",
           "description": "Your workspace policy does not allow a complete transcription and AI setup. Contact your administrator."
         },
-        "cloud": {
-          "title": "Murmur Cloud",
-          "description": "Get 2,000 free words each week. Your settings stay synced across devices.",
-          "continue": "Continue for free",
-          "signIn": "Sign in to use Cloud",
-          "features": {
-            "fast": "Fastest, no setup required",
-            "privacy": "Clear privacy and zero data-retention",
-            "sync": "Settings sync across devices",
-            "features": "AI features for notes and actions"
-          }
-        },
         "byok": {
           "title": "API Provider",
-          "description": "Use your own API key."
+          "description": "Use an API key from a provider you already pay for.",
+          "badge": "Your key",
+          "action": "Add API key",
+          "features": {
+            "key": "Use a key you already have",
+            "nothing": "Nothing to download",
+            "any": "Works on any machine",
+            "billing": "You pay your provider directly"
+          }
         },
         "local": {
           "title": "On your device",
@@ -251,7 +247,7 @@
           "features": {
             "device": "Runs on your device",
             "offline": "Works offline after setup",
-            "models": "Choose models for dictation and assistant",
+            "models": "Choose models for dictation and cleanup",
             "free": "Forever free to use"
           }
         },
@@ -277,17 +273,7 @@
             }
           }
         },
-        "useCloud": "Use Cloud instead",
-        "continueSetup": "Continue setup",
-        "showMore": "Show More Options",
-        "moreOptions": {
-          "title": "Choose your API setup",
-          "description": "Add an API key or connect a self-hosted model.",
-          "selfHosted": {
-            "title": "Self-hosted",
-            "description": "Connect your own hosted model."
-          }
-        }
+        "continueSetup": "Continue setup"
       },
       "provider": {
         "progress": "Provider setup progress",

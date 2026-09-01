@@ -227,21 +227,17 @@
           "title": "No hay ninguna opción de configuración disponible",
           "description": "La política de tu espacio de trabajo no permite una configuración completa de transcripción e IA. Ponte en contacto con tu administrador."
         },
-        "cloud": {
-          "title": "Murmur Cloud",
-          "description": "Consigue 2.000 palabras gratis cada semana. Tus ajustes se mantienen sincronizados entre dispositivos.",
-          "continue": "Continuar gratis",
-          "signIn": "Inicia sesión para usar Nube",
-          "features": {
-            "fast": "Lo más rápido, sin configuración",
-            "privacy": "Privacy-focused processing",
-            "sync": "Ajustes sincronizados entre dispositivos",
-            "features": "Funciones de IA para notas y acciones"
-          }
-        },
         "byok": {
           "title": "Proveedor de API",
-          "description": "Usa tu propia clave API."
+          "description": "Usa una clave de API de un proveedor que ya tengas.",
+          "badge": "Tu clave",
+          "action": "Añadir clave de API",
+          "features": {
+            "key": "Usa una clave que ya tienes",
+            "nothing": "Sin descargas",
+            "any": "Funciona en cualquier equipo",
+            "billing": "Pagas directamente a tu proveedor"
+          }
         },
         "local": {
           "title": "En tu dispositivo",
@@ -251,7 +247,7 @@
           "features": {
             "device": "Funciona en tu dispositivo",
             "offline": "Funciona sin conexión tras la configuración",
-            "models": "Elige modelos para dictado y asistente",
+            "models": "Elige modelos para dictado y limpieza",
             "free": "Gratis para siempre"
           }
         },
@@ -277,17 +273,7 @@
             }
           }
         },
-        "useCloud": "Usar Nube en su lugar",
-        "continueSetup": "Continuar la configuración",
-        "showMore": "Mostrar más opciones",
-        "moreOptions": {
-          "title": "Elige tu configuración de API",
-          "description": "Añade una clave API o conecta un modelo autoalojado.",
-          "selfHosted": {
-            "title": "Autoalojado",
-            "description": "Conecta tu propio modelo alojado."
-          }
-        }
+        "continueSetup": "Continuar la configuración"
       },
       "provider": {
         "progress": "Progreso de la configuración del proveedor",

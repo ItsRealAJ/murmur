@@ -227,21 +227,17 @@
           "title": "Keine Einrichtungsoption verfügbar",
           "description": "Ihre Workspace-Richtlinie erlaubt keine vollständige Einrichtung für Transkription und KI. Wenden Sie sich an Ihre Administration."
         },
-        "cloud": {
-          "title": "Murmur Cloud",
-          "description": "2.000 Wörter pro Woche gratis. Ihre Einstellungen bleiben geräteübergreifend synchron.",
-          "continue": "Kostenlos fortfahren",
-          "signIn": "Anmelden, um Cloud zu nutzen",
-          "features": {
-            "fast": "Am schnellsten, keine Einrichtung nötig",
-            "privacy": "Privacy-focused processing",
-            "sync": "Einstellungen geräteübergreifend synchron",
-            "features": "KI-Funktionen für Notizen und Aktionen"
-          }
-        },
         "byok": {
           "title": "API-Anbieter",
-          "description": "Verwenden Sie Ihren eigenen API-Schlüssel."
+          "description": "Verwende einen API-Schlüssel eines Anbieters, den du bereits nutzt.",
+          "badge": "Dein Schlüssel",
+          "action": "API-Schlüssel hinzufügen",
+          "features": {
+            "key": "Nutze einen vorhandenen Schlüssel",
+            "nothing": "Kein Download nötig",
+            "any": "Läuft auf jedem Rechner",
+            "billing": "Du zahlst direkt an deinen Anbieter"
+          }
         },
         "local": {
           "title": "Auf Ihrem Gerät",
@@ -251,7 +247,7 @@
           "features": {
             "device": "Läuft auf Ihrem Gerät",
             "offline": "Funktioniert nach der Einrichtung offline",
-            "models": "Modelle für Diktat und Assistant wählen",
+            "models": "Modelle für Diktat und Bereinigung wählen",
             "free": "Für immer kostenlos"
           }
         },
@@ -277,17 +273,7 @@
             }
           }
         },
-        "useCloud": "Stattdessen Cloud verwenden",
-        "continueSetup": "Einrichtung fortsetzen",
-        "showMore": "Weitere Optionen anzeigen",
-        "moreOptions": {
-          "title": "API-Einrichtung wählen",
-          "description": "Fügen Sie einen API-Schlüssel hinzu oder verbinden Sie ein selbst gehostetes Modell.",
-          "selfHosted": {
-            "title": "Selbst gehostet",
-            "description": "Verbinden Sie Ihr eigenes gehostetes Modell."
-          }
-        }
+        "continueSetup": "Einrichtung fortsetzen"
       },
       "provider": {
         "progress": "Fortschritt der Anbieter-Einrichtung",

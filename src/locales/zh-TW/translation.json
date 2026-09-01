@@ -227,21 +227,17 @@
           "title": "沒有可用的設定選項",
           "description": "你的工作區政策不允許完整設定轉錄與 AI。請聯絡管理員。"
         },
-        "cloud": {
-          "title": "Murmur Cloud",
-          "description": "每週獲得 2,000 個免費字數。你的設定會在各裝置間保持同步。",
-          "continue": "免費繼續",
-          "signIn": "登入以使用雲端",
-          "features": {
-            "fast": "最快，無需設定",
-            "privacy": "Privacy-focused processing",
-            "sync": "設定在各裝置間同步",
-            "features": "為筆記與動作提供的 AI 功能"
-          }
-        },
         "byok": {
           "title": "API 服務商",
-          "description": "使用你自己的 API Key。"
+          "description": "使用你已在付費的服務商的 API 金鑰。",
+          "badge": "你的金鑰",
+          "action": "新增 API 金鑰",
+          "features": {
+            "key": "直接用你已有的金鑰",
+            "nothing": "無需下載",
+            "any": "任何機器都能執行",
+            "billing": "費用直接支付給服務商"
+          }
         },
         "local": {
           "title": "在你的裝置上",
@@ -251,7 +247,7 @@
           "features": {
             "device": "在你的裝置上執行",
             "offline": "設定完成後可離線使用",
-            "models": "為語音輸入與助理選擇模型",
+            "models": "為聽寫和潤飾選擇模型",
             "free": "永久免費使用"
           }
         },
@@ -277,17 +273,7 @@
             }
           }
         },
-        "useCloud": "改用雲端",
-        "continueSetup": "繼續設定",
-        "showMore": "顯示更多選項",
-        "moreOptions": {
-          "title": "選擇你的 API 設定方式",
-          "description": "新增 API Key 或連接自架模型。",
-          "selfHosted": {
-            "title": "自架",
-            "description": "連接你自己託管的模型。"
-          }
-        }
+        "continueSetup": "繼續設定"
       },
       "provider": {
         "progress": "服務商設定進度",

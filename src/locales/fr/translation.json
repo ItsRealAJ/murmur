@@ -227,21 +227,17 @@
           "title": "Aucune option de configuration disponible",
           "description": "La politique de votre espace de travail n’autorise pas une configuration complète de la transcription et de l’IA. Contactez votre administrateur."
         },
-        "cloud": {
-          "title": "Murmur Cloud",
-          "description": "Bénéficiez de 2 000 mots gratuits par semaine. Vos réglages restent synchronisés entre vos appareils.",
-          "continue": "Continuer gratuitement",
-          "signIn": "Connectez-vous pour utiliser Cloud",
-          "features": {
-            "fast": "Le plus rapide, aucune configuration",
-            "privacy": "Privacy-focused processing",
-            "sync": "Réglages synchronisés entre appareils",
-            "features": "Fonctions d’IA pour les notes et les actions"
-          }
-        },
         "byok": {
           "title": "Fournisseur d’API",
-          "description": "Utilisez votre propre clé API."
+          "description": "Utilisez une clé API d’un fournisseur que vous avez déjà.",
+          "badge": "Votre clé",
+          "action": "Ajouter une clé API",
+          "features": {
+            "key": "Utilisez une clé que vous avez déjà",
+            "nothing": "Rien à télécharger",
+            "any": "Fonctionne sur n’importe quelle machine",
+            "billing": "Vous payez directement votre fournisseur"
+          }
         },
         "local": {
           "title": "Sur votre appareil",
@@ -251,7 +247,7 @@
           "features": {
             "device": "Fonctionne sur votre appareil",
             "offline": "Fonctionne hors ligne après la configuration",
-            "models": "Choisissez les modèles pour la dictée et l’assistant",
+            "models": "Choisissez les modèles de dictée et de nettoyage",
             "free": "Gratuit pour toujours"
           }
         },
@@ -277,17 +273,7 @@
             }
           }
         },
-        "useCloud": "Utiliser Cloud à la place",
-        "continueSetup": "Poursuivre la configuration",
-        "showMore": "Afficher plus d’options",
-        "moreOptions": {
-          "title": "Choisissez votre configuration d’API",
-          "description": "Ajoutez une clé API ou connectez un modèle auto-hébergé.",
-          "selfHosted": {
-            "title": "Auto-hébergé",
-            "description": "Connectez votre propre modèle hébergé."
-          }
-        }
+        "continueSetup": "Poursuivre la configuration"
       },
       "provider": {
         "progress": "Progression de la configuration du fournisseur",

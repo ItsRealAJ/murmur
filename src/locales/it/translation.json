@@ -227,21 +227,17 @@
           "title": "Nessuna opzione di configurazione disponibile",
           "description": "I criteri del tuo spazio di lavoro non consentono una configurazione completa della trascrizione e dell’IA. Contatta l’amministratore."
         },
-        "cloud": {
-          "title": "Murmur Cloud",
-          "description": "Ricevi 2.000 parole gratis ogni settimana. Le tue impostazioni restano sincronizzate tra i dispositivi.",
-          "continue": "Continua gratis",
-          "signIn": "Accedi per usare Cloud",
-          "features": {
-            "fast": "Il più veloce, nessuna configurazione",
-            "privacy": "Privacy-focused processing",
-            "sync": "Impostazioni sincronizzate tra i dispositivi",
-            "features": "Funzioni IA per note e azioni"
-          }
-        },
         "byok": {
           "title": "Provider API",
-          "description": "Usa la tua chiave API."
+          "description": "Usa una chiave API di un provider che hai già.",
+          "badge": "La tua chiave",
+          "action": "Aggiungi chiave API",
+          "features": {
+            "key": "Usa una chiave che hai già",
+            "nothing": "Nessun download",
+            "any": "Funziona su qualsiasi computer",
+            "billing": "Paghi direttamente il tuo provider"
+          }
         },
         "local": {
           "title": "Sul tuo dispositivo",
@@ -251,7 +247,7 @@
           "features": {
             "device": "Funziona sul tuo dispositivo",
             "offline": "Funziona offline dopo la configurazione",
-            "models": "Scegli i modelli per dettatura e assistente",
+            "models": "Scegli i modelli per dettatura e pulizia",
             "free": "Gratis per sempre"
           }
         },
@@ -277,17 +273,7 @@
             }
           }
         },
-        "useCloud": "Usa Cloud invece",
-        "continueSetup": "Continua la configurazione",
-        "showMore": "Mostra altre opzioni",
-        "moreOptions": {
-          "title": "Scegli la tua configurazione API",
-          "description": "Aggiungi una chiave API o connetti un modello self-hosted.",
-          "selfHosted": {
-            "title": "Self-hosted",
-            "description": "Connetti il tuo modello ospitato."
-          }
-        }
+        "continueSetup": "Continua la configurazione"
       },
       "provider": {
         "progress": "Avanzamento della configurazione del provider",
