@@ -8,6 +8,7 @@ import { WAVEFORM_BAR_COUNT } from "./waveformMath";
 import {
   LISTENING_ENTRANCE_TIMING,
   VOICE_PILL_FOOTPRINT,
+  VOICE_PILL_WAVEFORM_WIDTH,
 } from "../../helpers/voicePillPresentation";
 
 export type VoicePillState =
@@ -21,6 +22,8 @@ interface VoicePillProps extends Omit<HTMLAttributes<HTMLDivElement>, "children"
   collapseToLogo?: boolean;
   beamActive?: boolean;
   waveformVisible?: boolean;
+  /** Shown inside the pill while it is expanded ("Listening", "Processing…"). */
+  statusLabel?: string;
   waveformOnlyWhileRecording?: boolean;
   integratedWithPanel?: boolean;
   agentMode?: boolean;
@@ -71,6 +74,7 @@ export const VoicePill = forwardRef<HTMLDivElement, VoicePillProps>(function Voi
     collapseToLogo = false,
     beamActive,
     waveformVisible = true,
+    statusLabel,
     waveformOnlyWhileRecording = false,
     integratedWithPanel = false,
     agentMode = false,
@@ -180,7 +184,7 @@ export const VoicePill = forwardRef<HTMLDivElement, VoicePillProps>(function Voi
       <div
         className="voice-pill-waveform relative shrink-0 overflow-hidden text-foreground"
         style={{
-          width: showCompactPill ? 52 : 0,
+          width: showCompactPill ? VOICE_PILL_WAVEFORM_WIDTH : 0,
           height: showCompactPill ? 24 : 32,
           transition: `width ${GROW_TRANSITION}, height ${GROW_TRANSITION}`,
         }}
@@ -207,6 +211,21 @@ export const VoicePill = forwardRef<HTMLDivElement, VoicePillProps>(function Voi
           )}
         />
       </div>
+
+      {/* The status lives in the pill, not in a hover tooltip. The tooltip was
+          drawn inside a 96px window and clipped, and a state you have to hover
+          to identify is not a state readout. */}
+      <span
+        className="voice-pill-status shrink-0 overflow-hidden whitespace-nowrap text-left text-[11px] font-medium"
+        style={{
+          maxWidth: showCompactPill && statusLabel ? 96 : 0,
+          marginLeft: showCompactPill && statusLabel ? 8 : 0,
+          opacity: showCompactPill && statusLabel ? 1 : 0,
+          transition: `max-width ${GROW_TRANSITION}, margin-left ${GROW_TRANSITION}, opacity 180ms ease-out`,
+        }}
+      >
+        {statusLabel}
+      </span>
 
       {isUnavailable && (
         <div className="pointer-events-none absolute inset-0 rounded-full border-2 border-foreground/30 animate-pulse" />

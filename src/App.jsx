@@ -465,6 +465,7 @@ export default function App() {
     liveTranscriptEntrancePhase: liveTranscript.entrancePhase,
     assistantOpen: false,
     panelStartPosition,
+    active: isCompactPill,
     horizontalDirection: voiceHorizontalDirection,
   });
   const voicePillTravelDuration =
@@ -514,7 +515,9 @@ export default function App() {
         >
           <PillTooltip
             content={canReopenLiveTranscript ? t("transcriptionPreview.label") : micTooltip}
-            disabled={anyPanelMounted}
+            // The expanded pill prints its own status, so a tooltip repeating it
+            // would be duplicate text in a window with no room for it.
+            disabled={anyPanelMounted || isCompactPill}
             align={panelStartPosition === "center" ? "center" : voiceHorizontalDirection}
           >
             <VoicePill
@@ -522,6 +525,7 @@ export default function App() {
               variant={anyPanelOpen ? "panel" : "floating"}
               state={commonPillState}
               expanded={!anyPanelOpen && isCompactPill}
+              statusLabel={isCompactPill ? micTooltip : undefined}
               collapseToLogo={
                 listeningEntrance.collapseToLogo || assistantFooter.collapsePillToLogo
               }

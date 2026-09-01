@@ -127,7 +127,7 @@ function fitDictationErrorWindowToWorkArea(requestedSize, workArea) {
 
 const WINDOW_SIZES = {
   BASE: { width: 96, height: 96 },
-  RECORDING: { width: 128, height: 96 },
+  RECORDING: { width: 272, height: 96 },
   DICTATION_ERROR: { width: DICTATION_ERROR_WINDOW_LIMITS.width, height: 112 },
   DICTATION_ERROR_WITH_TRANSCRIPT: {
     width: DICTATION_ERROR_WINDOW_LIMITS.width,

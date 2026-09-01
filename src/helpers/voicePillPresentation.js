@@ -8,8 +8,17 @@ export { LIVE_TRANSCRIPT_SURFACE_LIMITS };
 // and that window size may only change together.
 export const VOICE_PILL_FOOTPRINT = Object.freeze({
   idle: Object.freeze({ width: 40, height: 40 }),
-  recording: Object.freeze({ width: 92, height: 36 }),
+  // Active is a genuinely different object from the resting dot: wide enough to
+  // carry the waveform and a status word, so what the app is doing is legible
+  // without hovering. The old 92x36 could not fit a label, which is why the
+  // status lived in a tooltip that the 96px window clipped.
+  recording: Object.freeze({ width: 208, height: 40 }),
 });
+
+// 11 bars at 2px on a 3px gap measure exactly 52px, so a 52px slot clipped the
+// outer bars on any fractional device-pixel ratio. Six px of slack costs
+// nothing and the waveform is centred in it.
+export const VOICE_PILL_WAVEFORM_WIDTH = 58;
 
 export const LISTENING_ENTRANCE_TIMING = Object.freeze({
   // 820ms used to pass before the waveform appeared, most of it a "thinking"
@@ -134,6 +143,7 @@ export function resolveVoicePillDock({
   liveTranscriptEntrancePhase,
   assistantOpen,
   panelStartPosition,
+  active = false,
   horizontalDirection = resolveVoiceHorizontalDirection(panelStartPosition),
 }) {
   if (liveTranscriptOpen) {
@@ -147,7 +157,10 @@ export function resolveVoicePillDock({
     return "live-transcript-bottom-left";
   }
   if (assistantOpen) return `assistant-bottom-${horizontalDirection}`;
-  if (panelStartPosition === "center") return "center";
+  // While dictating, the native window itself has moved to the bottom centre of
+  // the display, so the pill centres inside it whatever dock the user picked
+  // for the resting dot.
+  if (active || panelStartPosition === "center") return "center";
   return `bottom-${horizontalDirection}`;
 }
 
@@ -236,7 +249,7 @@ export function resolveVoiceActivityPresentation({
   }
 
   if (isProcessing) {
-    return { activeState: "thinking", compactPill: false, isAgentThinking: false };
+    return { activeState: "thinking", compactPill: true, isAgentThinking: false };
   }
 
   return { activeState: null, compactPill: false, isAgentThinking: false };

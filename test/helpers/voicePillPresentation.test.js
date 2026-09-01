@@ -505,7 +505,11 @@ test("model thinking stays in the rotating circle after transcription ends", asy
   );
 });
 
-test("regular dictation transcription contracts to the rotating thinking circle", async () => {
+// Processing keeps the wide pill rather than contracting back to the dot.
+// Recording and transcribing are one continuous activity from the user's side,
+// and the pill is where the status word is now shown — collapsing mid-flight
+// took the readout away exactly when it said something other than "Listening".
+test("transcription holds the wide pill so its status stays readable", async () => {
   const { resolveVoiceActivityPresentation } = await load();
   assert.deepEqual(
     resolveVoiceActivityPresentation({
@@ -514,7 +518,7 @@ test("regular dictation transcription contracts to the rotating thinking circle"
       isAssistantVoice: false,
       assistantThinking: false,
     }),
-    { activeState: "thinking", compactPill: false, isAgentThinking: false }
+    { activeState: "thinking", compactPill: true, isAgentThinking: false }
   );
 });
 

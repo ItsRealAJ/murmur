@@ -416,6 +416,31 @@ class WindowManager {
 
     let newX, newY;
 
+    // Dictating moves the pill to the bottom centre of the display and back
+    // again when it finishes. The resting dot belongs wherever the user parked
+    // it — out of the way — but the active pill is the thing they are actually
+    // looking at, so it comes to where the eye already is. BASE restores the
+    // saved dock through _baseBoundsBeforeResize above, so this never walks the
+    // idle position.
+    if (sizeKey === "RECORDING") {
+      const area = display.workArea || display.bounds;
+      const centered = {
+        x: Math.round(area.x + (area.width - newSize.width) / 2),
+        y: Math.round(area.y + area.height - newSize.height),
+        ...newSize,
+      };
+      const clampedCenter = WindowPositionUtil.clampToWorkArea(centered, display);
+      const centerBounds = { ...clampedCenter, ...newSize };
+      await this._prepareRendererForMainWindowResize(centerBounds, "center");
+      if (!this.mainWindow || this.mainWindow.isDestroyed()) {
+        return { success: false, message: "Window not available" };
+      }
+      this._lastResizeBounds = centerBounds;
+      this.mainWindow.setBounds(centerBounds);
+      this._notifyMainWindowHorizontalDirection();
+      return { success: true, bounds: centerBounds, changed: true };
+    }
+
     if (position === "bottom-left") {
       // Anchor bottom-left corner: keep x, expand rightward and upward
       newX = currentBounds.x;
