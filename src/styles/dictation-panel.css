@@ -544,51 +544,28 @@
   transition: opacity 200ms ease-out;
 }
 
-/* Waiting. Slightly slower than a system caret so the pill reads as calm
-   rather than as an input demanding attention. */
+/* The caret does not blink, breathe, or otherwise move. It used to report
+   pipeline state by rhythm — blink while waiting, solid while receiving,
+   breathe while thinking — which is a nice idea and wrong for this product:
+   the resting pill sits on screen all day, so an always-on blinking accent is
+   a permanent distraction in the corner of someone's eye while they work.
+
+   Nothing is lost. The waveform already shows that audio is live, and the pill
+   prints "Recording..." / "Processing..." beside it, so the state is legible
+   without the caret having to twitch. */
 [data-pill-state="idle"] .voice-identity-morph-shell,
-[data-pill-state="hover"] .voice-identity-morph-shell {
-  animation: murmur-caret-blink 1.06s steps(1, end) infinite;
-}
-
-/* Receiving. Solid — a blink here would compete with the waveform beside it. */
-[data-pill-state="recording"] .voice-identity-morph-shell {
-  animation: none;
-  opacity: 1;
-}
-
-/* Thinking. A slow breathe, never a freeze: a still caret after speech reads
-   as a hang. */
+[data-pill-state="hover"] .voice-identity-morph-shell,
+[data-pill-state="recording"] .voice-identity-morph-shell,
 [data-pill-state="processing"] .voice-identity-morph-shell,
 [data-pill-state="thinking"] .voice-identity-morph-shell {
-  animation: murmur-caret-breathe 1.4s ease-in-out infinite;
+  animation: none;
+  opacity: 1;
 }
 
 [data-pill-state="unavailable"] .voice-identity-morph-shell {
   stroke: currentColor;
   opacity: 0.3;
   animation: none;
-}
-
-@keyframes murmur-caret-blink {
-  0%,
-  49% {
-    opacity: 1;
-  }
-  50%,
-  100% {
-    opacity: 0.15;
-  }
-}
-
-@keyframes murmur-caret-breathe {
-  0%,
-  100% {
-    opacity: 0.35;
-  }
-  50% {
-    opacity: 1;
-  }
 }
 
 /* Reduced motion: hold the caret visible rather than mid-blink. An invisible

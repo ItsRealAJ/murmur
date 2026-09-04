@@ -139,9 +139,16 @@ holding a static bar rather than freezing mid-animation.
 
 ## Signature
 
-**The caret.** A blinking text caret inside the pill that the transcribed words
-run into — stating in one element what the whole app does: your voice lands at a
-cursor in someone else's window.
+**The caret.** A text caret inside the pill that the transcribed words run into
+— stating in one element what the whole app does: your voice lands at a cursor
+in someone else's window.
+
+It does not blink. A real caret does, and the first version of this copied that,
+including a rhythm that reported pipeline state. It was wrong for the subject:
+the resting pill is always on screen, so a blinking accent is a permanent
+distraction at the edge of someone's vision while they work — the opposite of a
+control that is supposed to be quiet until spoken to. The waveform and the
+pill's status label carry the state instead.
 
 Boldness is spent here and nowhere else. Everything around it stays quiet.
 

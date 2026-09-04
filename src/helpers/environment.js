@@ -485,7 +485,11 @@ class EnvironmentManager {
   getPanelStartPosition() {
     const v = this._getKey("PANEL_START_POSITION");
     if (v === "bottom-right" || v === "center" || v === "bottom-left") return v;
-    return "bottom-right";
+    // Bottom-centre. This is the authoritative default: main.js reads it before
+    // the window exists and hands it to WindowManager, so it overrides the
+    // renderer store and every other fallback. Changing those without this one
+    // changes nothing at startup.
+    return "center";
   }
 
   savePanelStartPosition(position) {
