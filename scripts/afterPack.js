@@ -269,10 +269,59 @@ function verifyUnpackedBinaries(context) {
 // Main hook
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// macOS ad-hoc signing.
+//
+// electron-builder's `identity: null` does not ad-hoc sign — it skips signing
+// entirely, leaving Electron's own stale signature in place (Identifier=Electron,
+// with a resource seal that no longer matches). An arm64 bundle in that state
+// does not launch.
+//
+// This has to happen in afterPack, not after the build: electron-builder creates
+// the .dmg and .zip from the packed app directory, so signing afterwards fixes
+// only whichever artifact you remember to repack. Signing here means every
+// artifact is built from an already-valid bundle.
+function adhocSignMac(context) {
+  if (context.electronPlatformName !== "darwin") return;
+
+  const appPath = path.join(context.appOutDir, `${context.packager.appInfo.productFilename}.app`);
+  if (!fs.existsSync(appPath)) {
+    throw new Error(`afterPack: ${appPath} not found, cannot ad-hoc sign`);
+  }
+
+  // Extended attributes make codesign refuse with "resource fork, Finder
+  // information, or similar detritus not allowed". A file provider (iCloud
+  // Drive, Dropbox) re-applies com.apple.FinderInfo continuously, so a build
+  // inside a synced folder can fail here even after clearing.
+  execFileSync("xattr", ["-cr", appPath]);
+
+  try {
+    execFileSync("codesign", ["--force", "--deep", "--sign", "-", appPath], {
+      stdio: "pipe",
+    });
+  } catch (error) {
+    const detail = String(error.stderr || error.message || "");
+    if (detail.includes("detritus")) {
+      throw new Error(
+        `afterPack: ad-hoc signing failed because ${appPath} carries extended attributes that ` +
+          `will not clear. This happens when dist/ sits inside a cloud-synced folder ` +
+          `(iCloud Drive, Dropbox). Build somewhere outside the synced tree.\n${detail}`
+      );
+    }
+    throw new Error(`afterPack: ad-hoc signing failed\n${detail}`);
+  }
+
+  // --deep over a stale signature can succeed and still leave an invalid seal,
+  // so verify rather than trusting the exit code above.
+  execFileSync("codesign", ["--verify", "--deep", "--strict", appPath], { stdio: "pipe" });
+  console.log(`  afterPack: ad-hoc signed and verified ${path.basename(appPath)}`);
+}
+
 exports.default = async function (context) {
   stripOnnxruntimeBinaries(context);
   wrapLinuxBinary(context);
   verifyMeetingAecHelper(context);
   verifyUnpackedBinaries(context);
   registerMacResourceBinariesForSigning(context);
+  adhocSignMac(context);
 };

@@ -82,28 +82,21 @@ jobs:
 
       # electron-builder's `identity: null` SKIPS signing rather than signing
       # ad-hoc, and macOS refuses to execute an unsigned arm64 binary. Clearing
-      # extended attributes first is required or codesign rejects the bundle
-      # with "resource fork, Finder information, or similar detritus not allowed".
-      - name: Ad-hoc sign the macOS bundle
+      # Signing happens in scripts/afterPack.js, before electron-builder creates
+      # the .dmg and .zip, so both artifacts are built from an already-valid
+      # bundle. Signing here instead would only fix whichever artifact we
+      # remembered to repack — the .dmg shipped unsigned that way, carrying
+      # Electron's stale signature (Identifier=Electron) and refusing to launch.
+      # This step only confirms the result.
+      - name: Verify the macOS bundle is validly ad-hoc signed
         if: matrix.platform == 'mac'
         run: |
           set -euo pipefail
           APP=$(find dist -maxdepth 2 -name "Murmur.app" -type d | head -1)
           test -n "$APP" || { echo "::error::Murmur.app not found in dist/"; exit 1; }
-          xattr -cr "$APP"
-          codesign --force --deep --sign - "$APP"
-          codesign --verify --verbose=1 "$APP"
-
-      # The .zip electron-builder produced was made before ad-hoc signing, so it
-      # contains the unsigned bundle. Repack it from the signed .app.
-      - name: Repack the signed macOS zip
-        if: matrix.platform == 'mac'
-        run: |
-          set -euo pipefail
-          APP=$(find dist -maxdepth 2 -name "Murmur.app" -type d | head -1)
-          OUT="dist/Murmur-${{ matrix.arch }}.zip"
-          rm -f dist/*.zip
-          ditto -c -k --sequesterRsrc --keepParent "$APP" "$OUT"
+          codesign --verify --deep --strict "$APP"
+          codesign -dv "$APP" 2>&1 | grep -q "Identifier=com.murmur.app" \
+            || { echo "::error::bundle identifier is not com.murmur.app — stale signature"; exit 1; }
 
       - name: Checksums
         shell: bash

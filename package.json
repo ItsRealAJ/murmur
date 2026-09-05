@@ -1,6 +1,6 @@
 {
   "name": "murmur",
-  "version": "1.8.3",
+  "version": "1.0.0",
   "description": "Local-first voice dictation. Hold a key, speak, and cleaned-up text lands at your cursor.",
   "main": "main.js",
   "private": true,
