@@ -38,7 +38,7 @@ const files = fs.readdirSync(releaseDir);
 const find = (re) => files.find((f) => re.test(f));
 
 // macOS ships arm64 and x64 separately; Homebrew picks per-machine.
-const armZip = find(/arm64.*\.zip$/i) || find(/\.zip$/i);
+const armZip = find(/arm64.*\.zip$/i);
 const x64Zip = find(/x64.*\.zip$/i);
 // Scoop wants the PORTABLE build, not the NSIS installer. Scoop's whole value
 // on Windows is that it downloads and extracts rather than running an installer,
@@ -48,7 +48,20 @@ const x64Zip = find(/x64.*\.zip$/i);
 const winExe = find(/-portable\.exe$/i) || find(/\.exe$/i);
 
 if (!armZip) {
-  console.error("No macOS .zip found — cannot generate the Homebrew cask.");
+  console.error("No arm64 macOS .zip found — cannot generate the Homebrew cask.");
+  process.exit(1);
+}
+
+// Shipping an arm64-only cask is worse than shipping none: `brew install` would
+// hand an Intel Mac an Apple Silicon build and fail at launch with nothing
+// explaining why. electron-builder omits the arch from mac filenames when it is
+// the default one, which is exactly how this slipped through the first time.
+if (!x64Zip) {
+  console.error(
+    "No x64 macOS .zip found. The cask would silently serve the arm64 build to " +
+      "Intel Macs. Check mac.artifactName includes ${arch}.\n" +
+      `Saw: ${files.filter((f) => f.endsWith(".zip")).join(", ") || "(no zips)"}`
+  );
   process.exit(1);
 }
 

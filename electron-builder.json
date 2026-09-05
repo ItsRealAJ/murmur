@@ -135,7 +135,8 @@
       "LSUIElement": false,
       "NSMicrophoneUsageDescription": "Murmur uses the microphone to capture your voice for transcription.",
       "NSAccessibilityUsageDescription": "Murmur needs accessibility permissions to paste transcribed text into other applications."
-    }
+    },
+    "artifactName": "${productName}-${version}-${arch}.${ext}"
   },
   "win": {
     "target": ["nsis", "portable"],
