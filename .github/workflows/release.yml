@@ -51,8 +51,14 @@ jobs:
             platform: mac
             arch: arm64
             script: build:mac:arm64
-          # Intel Macs still exist in a mixed community; drop this leg when they don't.
-          - os: macos-13
+          # Intel Macs still exist in a mixed community; drop this leg when they
+          # don't. Cross-compiled from an arm64 runner rather than built on
+          # macos-13: that image has been retired, and a job requesting it sits
+          # queued forever rather than failing, which blocks the publish job
+          # behind it indefinitely. electron-builder fetches the x64 Electron and
+          # afterPack keys off context.arch (the target, not the host), so the
+          # correct onnxruntime binaries are kept.
+          - os: macos-14
             platform: mac
             arch: x64
             script: build:mac:x64
