@@ -218,7 +218,8 @@
     "allowToChangeInstallationDirectory": true,
     "createDesktopShortcut": true,
     "createStartMenuShortcut": true,
-    "include": "resources/nsis/installer.nsh"
+    "include": "resources/nsis/installer.nsh",
+    "artifactName": "${productName}-${version}-win-${arch}-setup.${ext}"
   },
   "dmg": {
     "title": "Murmur",
@@ -234,5 +235,8 @@
     "repo": "murmur",
     "private": false,
     "releaseType": "draft"
+  },
+  "portable": {
+    "artifactName": "${productName}-${version}-win-${arch}-portable.${ext}"
   }
 }

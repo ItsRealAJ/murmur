@@ -72,6 +72,14 @@ jobs:
 
       - name: Fetch platform sidecars
         run: npm run prebuild:${{ matrix.platform }}
+        env:
+          # These scripts pull whisper.cpp, llama-server, sherpa-onnx and the
+          # Windows helpers from GitHub releases. Unauthenticated, a runner gets
+          # 60 API requests an hour shared across all of GitHub Actions' egress
+          # IPs, so the release lookup returns 403 and the build dies before it
+          # compiles anything. download-utils.js already sends this as a bearer
+          # token when it is present; it just was never passed in.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build
         run: npm run ${{ matrix.script }}

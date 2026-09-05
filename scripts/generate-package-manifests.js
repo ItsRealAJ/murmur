@@ -40,7 +40,12 @@ const find = (re) => files.find((f) => re.test(f));
 // macOS ships arm64 and x64 separately; Homebrew picks per-machine.
 const armZip = find(/arm64.*\.zip$/i) || find(/\.zip$/i);
 const x64Zip = find(/x64.*\.zip$/i);
-const winExe = find(/\.exe$/i);
+// Scoop wants the PORTABLE build, not the NSIS installer. Scoop's whole value
+// on Windows is that it downloads and extracts rather than running an installer,
+// which is what sidesteps the SmartScreen installer prompt for an app with no
+// Authenticode signature. Falling back to any .exe would silently hand Scoop the
+// installer and lose that.
+const winExe = find(/-portable\.exe$/i) || find(/\.exe$/i);
 
 if (!armZip) {
   console.error("No macOS .zip found — cannot generate the Homebrew cask.");
@@ -109,7 +114,11 @@ const scoop = {
   checkver: { github: `https://github.com/${repo}` },
   autoupdate: {
     architecture: {
-      "64bit": { url: `${downloadBase.replace(tag, "v$version")}/Murmur-$version-win-x64.exe` },
+      "64bit": {
+        url: winExe
+          ? `${downloadBase.replace(tag, "v$version")}/${winExe.replace(version, "$version")}`
+          : undefined,
+      },
     },
   },
   notes: [
