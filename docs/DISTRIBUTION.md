@@ -31,7 +31,7 @@ the shape for it (see "Adding signing later").
 
 ## Before the first release
 
-Replace the placeholders. They're marked `REPLACE_WITH_YOUR_GITHUB_USER`:
+Replace the placeholders. They're marked `ItsRealAJ`:
 
 | File                         | What                                             |
 | ---------------------------- | ------------------------------------------------ |
@@ -44,7 +44,7 @@ If the updater feed and the publish target disagree, builds publish to one place
 and clients check another, and auto-update silently never fires.
 
 ```sh
-grep -rn REPLACE_WITH_YOUR_GITHUB_USER --include='*.ts' --include='*.js' --include='*.json' --include='*.md' . | grep -v node_modules
+grep -rn ItsRealAJ --include='*.ts' --include='*.js' --include='*.json' --include='*.md' . | grep -v node_modules
 ```
 
 ## Cutting a release

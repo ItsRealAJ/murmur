@@ -169,8 +169,12 @@ for (const entry of PROVIDERS) {
       report.push(`| ${label} | _catalog_ | ⚠️ ${diff.error} |`);
     } else {
       if (diff.vanished.length) {
-        report.push(`| ${label} | _catalog_ | ⚠️ registry ids missing live: ${diff.vanished.join(", ")} |`);
-        failures.push(`${label}: registry ids vanished from live catalog: ${diff.vanished.join(", ")}`);
+        report.push(
+          `| ${label} | _catalog_ | ⚠️ registry ids missing live: ${diff.vanished.join(", ")} |`
+        );
+        failures.push(
+          `${label}: registry ids vanished from live catalog: ${diff.vanished.join(", ")}`
+        );
       }
       if (diff.newConstrained.length) {
         report.push(

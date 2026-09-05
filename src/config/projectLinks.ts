@@ -11,7 +11,7 @@
  */
 
 /** GitHub repository that hosts releases and issues. */
-export const REPO = "https://github.com/REPLACE_WITH_YOUR_GITHUB_USER/murmur";
+export const REPO = "https://github.com/ItsRealAJ/murmur";
 
 export const ISSUES = `${REPO}/issues`;
 

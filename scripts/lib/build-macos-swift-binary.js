@@ -47,7 +47,13 @@ function verifyBinaryArch(binaryPath, expectedArch) {
 // process on failure, matching the original standalone scripts.
 // linkerInfoPlist embeds the given plist as a __TEXT,__info_plist section so
 // unbundled binaries can carry a bundle id and privacy usage strings.
-function buildMacosSwiftBinary({ label, sourceName, binaryName, frameworks = [], linkerInfoPlist }) {
+function buildMacosSwiftBinary({
+  label,
+  sourceName,
+  binaryName,
+  frameworks = [],
+  linkerInfoPlist,
+}) {
   if (process.platform !== "darwin") {
     process.exit(0);
   }
@@ -146,7 +152,16 @@ function buildMacosSwiftBinary({ label, sourceName, binaryName, frameworks = [],
   }
 
   const infoPlistArgs = linkerInfoPlist
-    ? ["-Xlinker", "-sectcreate", "-Xlinker", "__TEXT", "-Xlinker", "__info_plist", "-Xlinker", linkerInfoPlist]
+    ? [
+        "-Xlinker",
+        "-sectcreate",
+        "-Xlinker",
+        "__TEXT",
+        "-Xlinker",
+        "__info_plist",
+        "-Xlinker",
+        linkerInfoPlist,
+      ]
     : [];
   const compileArgs = [
     swiftSource,

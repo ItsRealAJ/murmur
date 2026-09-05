@@ -29,11 +29,10 @@ const version = tag.replace(/^v/, "");
 
 // Filled in by the release workflow from the repository it runs in, so the
 // generated manifests never carry the placeholder from projectLinks.ts.
-const repo = process.env.GITHUB_REPOSITORY || "REPLACE_WITH_YOUR_GITHUB_USER/murmur";
+const repo = process.env.GITHUB_REPOSITORY || "ItsRealAJ/murmur";
 const downloadBase = `https://github.com/${repo}/releases/download/${tag}`;
 
-const sha256 = (file) =>
-  crypto.createHash("sha256").update(fs.readFileSync(file)).digest("hex");
+const sha256 = (file) => crypto.createHash("sha256").update(fs.readFileSync(file)).digest("hex");
 
 const files = fs.readdirSync(releaseDir);
 const find = (re) => files.find((f) => re.test(f));

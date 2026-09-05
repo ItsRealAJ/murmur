@@ -31,13 +31,13 @@ Pack words are injected into the speech model's prompt and appended to the
 cleanup model's system prompt. That makes a pack **untrusted input to an LLM**,
 so Murmur enforces:
 
-| Limit | Value |
-|---|---|
-| Words per pack | 500 |
-| Characters per word | 60 |
-| Document size | 256 KB |
-| Scheme | https only, no credentials in the URL |
-| Redirects | refused (a redirect could leave the vetted origin) |
+| Limit               | Value                                              |
+| ------------------- | -------------------------------------------------- |
+| Words per pack      | 500                                                |
+| Characters per word | 60                                                 |
+| Document size       | 256 KB                                             |
+| Scheme              | https only, no credentials in the URL              |
+| Redirects           | refused (a redirect could leave the vetted origin) |
 
 Entries containing control characters, `<` `>` `{` `}` or backticks, or that
 start with `system:` / `assistant:` / `user:`, are **dropped rather than

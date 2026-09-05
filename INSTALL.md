@@ -13,7 +13,7 @@ line, and it's the recommended path on both platforms.
 ## macOS
 
 ```sh
-brew tap REPLACE_WITH_YOUR_GITHUB_USER/murmur
+brew tap ItsRealAJ/murmur
 brew install --cask --no-quarantine murmur
 ```
 
@@ -24,7 +24,7 @@ Anyway" by hand.
 <details>
 <summary>No Homebrew? Manual install</summary>
 
-1. Download the `.dmg` for your chip from [Releases](https://github.com/REPLACE_WITH_YOUR_GITHUB_USER/murmur/releases)
+1. Download the `.dmg` for your chip from [Releases](https://github.com/ItsRealAJ/murmur/releases)
    — `arm64` for Apple Silicon (M1 and later), `x64` for Intel.
 2. Drag Murmur to Applications.
 3. Remove the quarantine flag, or macOS will refuse to open it:
@@ -37,11 +37,11 @@ Anyway" by hand.
 
 ### Permissions macOS will ask for
 
-| Permission | Why | When |
-|---|---|---|
-| **Microphone** | To hear you | Popup on first dictation — click Allow |
-| **Accessibility** | To paste text into other apps | Grant by hand in Settings |
-| **Input Monitoring** | To notice your hotkey | Grant by hand in Settings |
+| Permission           | Why                           | When                                   |
+| -------------------- | ----------------------------- | -------------------------------------- |
+| **Microphone**       | To hear you                   | Popup on first dictation — click Allow |
+| **Accessibility**    | To paste text into other apps | Grant by hand in Settings              |
+| **Input Monitoring** | To notice your hotkey         | Grant by hand in Settings              |
 
 The last two can't be granted by a popup — macOS requires you to add Murmur in
 **System Settings → Privacy & Security** yourself. Murmur will point you there
@@ -55,14 +55,14 @@ during setup.
 ## Windows
 
 ```powershell
-scoop bucket add murmur https://github.com/REPLACE_WITH_YOUR_GITHUB_USER/scoop-murmur
+scoop bucket add murmur https://github.com/ItsRealAJ/scoop-murmur
 scoop install murmur
 ```
 
 <details>
 <summary>No Scoop? Manual install</summary>
 
-1. Download the `.exe` from [Releases](https://github.com/REPLACE_WITH_YOUR_GITHUB_USER/murmur/releases).
+1. Download the `.exe` from [Releases](https://github.com/ItsRealAJ/murmur/releases).
 2. Windows will say **"Windows protected your PC."** That's SmartScreen not
    recognising an unsigned publisher — not a virus warning.
 3. Click **More info** → **Run anyway**.
@@ -98,7 +98,7 @@ Get-FileHash .\Murmur-*.exe -Algorithm SHA256
 ```
 
 Compare against `SHA256SUMS.txt` on the release page. This is worth doing
-precisely *because* the app isn't signed: the checksum is what proves you got
+precisely _because_ the app isn't signed: the checksum is what proves you got
 the file we built.
 
 ---
@@ -113,7 +113,7 @@ Run `xattr -cr /Applications/Murmur.app`, or reinstall via Homebrew with
 `--no-quarantine`.
 
 **Text appears in the wrong app.** Murmur pastes into whatever was focused when
-you *started* talking. Click into the target field first, then hold the hotkey.
+you _started_ talking. Click into the target field first, then hold the hotkey.
 
 **Nothing is transcribed.** Check the model finished downloading in
 Settings → Speech-to-Text, and that the right microphone is selected.

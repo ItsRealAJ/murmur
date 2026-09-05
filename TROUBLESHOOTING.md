@@ -221,7 +221,7 @@ For detailed diagnostics, see [DEBUG.md](DEBUG.md).
 
 1. Enable debug mode and reproduce the issue
 2. Collect diagnostic output from commands above
-3. Open an issue at https://github.com/REPLACE_WITH_YOUR_GITHUB_USER/murmur/issues with:
+3. Open an issue at https://github.com/ItsRealAJ/murmur/issues with:
    - OS version
    - Murmur version
    - Relevant log sections

@@ -11,7 +11,7 @@
 
 **Please do not open public issues for security vulnerabilities.**
 
-Use [GitHub's private vulnerability reporting](https://github.com/REPLACE_WITH_YOUR_GITHUB_USER/murmur/security/advisories/new)
+Use [GitHub's private vulnerability reporting](https://github.com/ItsRealAJ/murmur/security/advisories/new)
 to submit a report. You can also email security@murmur.com.
 
 We will acknowledge your report within **48 hours** and aim to release a fix

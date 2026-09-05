@@ -63,8 +63,8 @@ npm run download:whisper-cpp:all
 
 ## File Locations
 
-| Data   | macOS                                 | Windows                                           | Linux                                 |
-| ------ | ------------------------------------- | ------------------------------------------------- | ------------------------------------- |
+| Data   | macOS                             | Windows                                       | Linux                             |
+| ------ | --------------------------------- | --------------------------------------------- | --------------------------------- |
 | Models | `~/.cache/murmur/whisper-models/` | `%USERPROFILE%\.cache\murmur\whisper-models\` | `~/.cache/murmur/whisper-models/` |
 
 ## Troubleshooting

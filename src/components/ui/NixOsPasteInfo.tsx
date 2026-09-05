@@ -17,7 +17,7 @@ hardware.uinput.enable  = true;
 users.users.<you>.extraGroups = [ "ydotool" "uinput" ];`;
 
 const FLAKE_CONFIG = `# flake inputs
-inputs.murmur.url = "github:REPLACE_WITH_YOUR_GITHUB_USER/murmur";
+inputs.murmur.url = "github:ItsRealAJ/murmur";
 
 # in your NixOS modules
 imports = [ murmur.nixosModules.default ];

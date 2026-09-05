@@ -29,7 +29,7 @@ class UpdateManager {
 
     autoUpdater.setFeedURL({
       provider: "github",
-      owner: "REPLACE_WITH_YOUR_GITHUB_USER",
+      owner: "ItsRealAJ",
       repo: "murmur",
       private: false,
     });

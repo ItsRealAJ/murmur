@@ -37,14 +37,14 @@ Each key has scoped permissions. The API rejects requests missing the required s
 
 **Workspace key scopes:**
 
-| Scope                           | Grants                                                                          |
-| ------------------------------- | ------------------------------------------------------------------------------- |
-| `workspace:notes:read`          | List, get, and search team-space notes.                                         |
-| `workspace:notes:write`         | Create, update, and delete team-space notes.                                    |
-| `workspace:folders:read`        | List team-space folders.                                                        |
-| `workspace:folders:write`       | Create team-space folders.                                                      |
+| Scope                           | Grants                                                                               |
+| ------------------------------- | ------------------------------------------------------------------------------------ |
+| `workspace:notes:read`          | List, get, and search team-space notes.                                              |
+| `workspace:notes:write`         | Create, update, and delete team-space notes.                                         |
+| `workspace:folders:read`        | List team-space folders.                                                             |
+| `workspace:folders:write`       | Create team-space folders.                                                           |
 | `workspace:transcriptions:read` | Space discovery only for now — no transcription endpoints accept workspace keys yet. |
-| `workspace:*`                   | All of the above (admin).                                                       |
+| `workspace:*`                   | All of the above (admin).                                                            |
 
 Any of the content scopes above also grants `GET /spaces/list` (space discovery).
 
@@ -139,72 +139,79 @@ Scope: any workspace content scope (`workspace:notes:read/write`, `workspace:fol
 ### Notes
 
 **List Notes** — `GET /notes/list`
-| Param | Type | Required | Description |
-|-------|------|----------|-------------|
-| `limit` | integer | No | 1-100, default 50 |
-| `cursor` | string | No | Pagination cursor |
-| `folder_id` | UUID | No | Filter by folder |
-| `space_id` | UUID | Workspace keys | Team space to list. Required for workspace keys; rejected for personal keys. |
-Scope: `notes:read` (personal) / `workspace:notes:read` (workspace)
+
+| Param                                                               | Type    | Required       | Description                                                                  |
+| ------------------------------------------------------------------- | ------- | -------------- | ---------------------------------------------------------------------------- |
+| `limit`                                                             | integer | No             | 1-100, default 50                                                            |
+| `cursor`                                                            | string  | No             | Pagination cursor                                                            |
+| `folder_id`                                                         | UUID    | No             | Filter by folder                                                             |
+| `space_id`                                                          | UUID    | Workspace keys | Team space to list. Required for workspace keys; rejected for personal keys. |
+| Scope: `notes:read` (personal) / `workspace:notes:read` (workspace) |
 
 **Get Note** — `GET /notes/{id}`
 Scope: `notes:read` / `workspace:notes:read`. Returns 404 if the note does not exist or is deleted. A workspace key may fetch any note in its workspace's spaces.
 
 **Create Note** — `POST /notes/create`
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `content` | string | Yes | Note body text |
-| `title` | string | No | Note title |
-| `enhanced_content` | string | No | Cleaned/enhanced version |
-| `note_type` | enum | No | `personal` (default), `meeting`, `upload` |
-| `folder_id` | UUID | No | Target folder |
-| `space_id` | UUID | Workspace keys | Team space to create in. Required for workspace keys; rejected for personal keys. |
-Scope: `notes:write` / `workspace:notes:write`. Returns `201` with the created note.
+
+| Field                                                                                | Type   | Required       | Description                                                                       |
+| ------------------------------------------------------------------------------------ | ------ | -------------- | --------------------------------------------------------------------------------- |
+| `content`                                                                            | string | Yes            | Note body text                                                                    |
+| `title`                                                                              | string | No             | Note title                                                                        |
+| `enhanced_content`                                                                   | string | No             | Cleaned/enhanced version                                                          |
+| `note_type`                                                                          | enum   | No             | `personal` (default), `meeting`, `upload`                                         |
+| `folder_id`                                                                          | UUID   | No             | Target folder                                                                     |
+| `space_id`                                                                           | UUID   | Workspace keys | Team space to create in. Required for workspace keys; rejected for personal keys. |
+| Scope: `notes:write` / `workspace:notes:write`. Returns `201` with the created note. |
 
 **Update Note** — `PATCH /notes/{id}`
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `title` | string | No | New title |
-| `content` | string | No | New content |
-| `enhanced_content` | string | No | New enhanced content |
-| `folder_id` | UUID | No | Move to folder |
-Scope: `notes:write` / `workspace:notes:write`. All fields optional — only provided fields are updated. Cannot change a note's space.
+
+| Field                                                                                                                                 | Type   | Required | Description          |
+| ------------------------------------------------------------------------------------------------------------------------------------- | ------ | -------- | -------------------- |
+| `title`                                                                                                                               | string | No       | New title            |
+| `content`                                                                                                                             | string | No       | New content          |
+| `enhanced_content`                                                                                                                    | string | No       | New enhanced content |
+| `folder_id`                                                                                                                           | UUID   | No       | Move to folder       |
+| Scope: `notes:write` / `workspace:notes:write`. All fields optional — only provided fields are updated. Cannot change a note's space. |
 
 **Delete Note** — `DELETE /notes/{id}`
 Scope: `notes:write` / `workspace:notes:write`. Soft-deletes the note. Returns `204 No Content`.
 
 **Search Notes** — `POST /notes/search`
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `query` | string | Yes | Search text (1-500 chars) |
-| `limit` | integer | No | 1-50, default 20 |
-| `space_id` | UUID | Workspace keys | Team space to search. Required for workspace keys; rejected for personal keys. |
-Scope: `notes:read` / `workspace:notes:read`. Uses hybrid semantic (vector) + full-text search with relevance scoring. Costs 5x against rate limit.
+
+| Field                                                                                                                                               | Type    | Required       | Description                                                                    |
+| --------------------------------------------------------------------------------------------------------------------------------------------------- | ------- | -------------- | ------------------------------------------------------------------------------ |
+| `query`                                                                                                                                             | string  | Yes            | Search text (1-500 chars)                                                      |
+| `limit`                                                                                                                                             | integer | No             | 1-50, default 20                                                               |
+| `space_id`                                                                                                                                          | UUID    | Workspace keys | Team space to search. Required for workspace keys; rejected for personal keys. |
+| Scope: `notes:read` / `workspace:notes:read`. Uses hybrid semantic (vector) + full-text search with relevance scoring. Costs 5x against rate limit. |
 
 ### Folders
 
 **List Folders** — `GET /folders/list`
-| Param | Type | Required | Description |
-|-------|------|----------|-------------|
-| `space_id` | UUID | Workspace keys | Team space to list. Required for workspace keys; rejected for personal keys. |
-Scope: `notes:read` / `workspace:folders:read`. Returns all folders sorted by `sort_order` then `created_at`.
+
+| Param                                                                                                         | Type | Required       | Description                                                                  |
+| ------------------------------------------------------------------------------------------------------------- | ---- | -------------- | ---------------------------------------------------------------------------- |
+| `space_id`                                                                                                    | UUID | Workspace keys | Team space to list. Required for workspace keys; rejected for personal keys. |
+| Scope: `notes:read` / `workspace:folders:read`. Returns all folders sorted by `sort_order` then `created_at`. |
 
 **Create Folder** — `POST /folders/create`
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `name` | string | Yes | Folder name (1-100 chars) |
-| `sort_order` | integer | No | Sort position |
-| `space_id` | UUID | Workspace keys | Team space to create in. Required for workspace keys; rejected for personal keys. |
-Scope: `notes:write` / `workspace:folders:write`. Max 50 folders per user. Returns `409` if name already exists.
+
+| Field                                                                                                            | Type    | Required       | Description                                                                       |
+| ---------------------------------------------------------------------------------------------------------------- | ------- | -------------- | --------------------------------------------------------------------------------- |
+| `name`                                                                                                           | string  | Yes            | Folder name (1-100 chars)                                                         |
+| `sort_order`                                                                                                     | integer | No             | Sort position                                                                     |
+| `space_id`                                                                                                       | UUID    | Workspace keys | Team space to create in. Required for workspace keys; rejected for personal keys. |
+| Scope: `notes:write` / `workspace:folders:write`. Max 50 folders per user. Returns `409` if name already exists. |
 
 ### Transcriptions
 
 **List Transcriptions** — `GET /transcriptions/list`
-| Param | Type | Required | Description |
-|-------|------|----------|-------------|
-| `limit` | integer | No | 1-100, default 50 |
-| `cursor` | string | No | Pagination cursor |
-Scope: `transcriptions:read`. Returns transcription history with `text`, `word_count`, `source`, `provider`, `model`, `language`, `audio_duration_ms`, `processing_ms`.
+
+| Param                                                                                                                                                                   | Type    | Required | Description       |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- | -------- | ----------------- |
+| `limit`                                                                                                                                                                 | integer | No       | 1-100, default 50 |
+| `cursor`                                                                                                                                                                | string  | No       | Pagination cursor |
+| Scope: `transcriptions:read`. Returns transcription history with `text`, `word_count`, `source`, `provider`, `model`, `language`, `audio_duration_ms`, `processing_ms`. |
 
 **Get Transcription** — `GET /transcriptions/{id}`
 Scope: `transcriptions:read`.
