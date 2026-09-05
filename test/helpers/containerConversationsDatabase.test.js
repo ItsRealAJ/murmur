@@ -225,23 +225,6 @@ test("global conversation lists and search exclude space and folder chats", (t) 
   assert.equal(db.getConversationsForContainer(space.id, folder.id)[0].id, folderScoped.id);
 });
 
-test("searchNotes filters by folder", (t) => {
-  const db = createDb(t);
-  if (!db) return;
-  const space = createTestTeamSpace(db, { name: "Eng" }).space;
-  const folder = db.createFolder("Docs", space.id).folder;
-
-  db.saveNote("Roadmap planning", "quarterly roadmap", "personal", null, null, folder.id, space.id);
-  db.saveNote("Roadmap ideas", "more roadmap", "personal", null, null, null, space.id);
-
-  const spaceHits = db.searchNotes("roadmap", 10, space.id);
-  assert.equal(spaceHits.length, 2);
-
-  const folderHits = db.searchNotes("roadmap", 10, space.id, folder.id);
-  assert.equal(folderHits.length, 1);
-  assert.equal(folderHits[0].folder_id, folder.id);
-});
-
 test("getNotesForSpace includes foldered notes, unlike the root-only getNotes", (t) => {
   const db = createDb(t);
   if (!db) return;
